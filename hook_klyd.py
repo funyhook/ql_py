@@ -3,12 +3,15 @@ cron: 30 */30 8-22 * * *
 new Env('f可乐阅读');
 # 反馈群：https://t.me/vhook_wool
 
-活动入口：http://12318202261622.apuopme.cn/r?upuid=973908
+活动入口：http://44521803071743.emoxtvg.cn/r?upuid=445218
+
 使用方法：
-1.入口,WX打开：http://12318202261622.apuopme.cn/r?upuid=973908
+1.入口,WX打开：http://44521803071743.emoxtvg.cn/r?upuid=445218
+
 '''  # line:7
 '''
-1.入口,WX打开http://12318202261622.apuopme.cn/r?upuid=123182
+1.入口,WX打开http://44521803071743.emoxtvg.cn/r?upuid=445218
+
 若链接微信无法打开，请复制到浏览器复制新链接打开
 2.打开活动入口，抓包的任意接口cookie参数
 3.青龙配置文件，添加本脚本环境变量
@@ -184,7 +187,7 @@ class WXYD:  # line:147
         self.count = 0  # line:152
         self.User_Agent = account.get('User_Agent', 'xxxxxx')  # line:153
         if 'Mozilla' not in self.User_Agent:  # line:154
-            self.User_Agent = '/5.0 (Linux; Android 13; 22011211C Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/111.0.5563.116 Mobile Safari/537.36 XWEB/1110017 MMWEBSDK/20231002 MMWEBID/2575 MicroMessenger/8.0.43.2480(0x28002BE1) WeChat/arm64 Weixin NetType/5G Language/zh_CN ABI/arm64'  # line:156
+            self.User_Agent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.48(0x18003013) NetType/WIFI Language/zh_CN'  # line:156
         self.host = self.get_host()  # line:157
         self.headers = {'Accept': 'application/json, text/plain, */*',
                         'User-Agent': self.User_Agent,
@@ -221,7 +224,7 @@ class WXYD:  # line:147
             return False  # line:191
 
     def get_host(self):  # line:192
-        url = 'http://12318202261530.adetpaf.cn/r?upuid=123182'  # line:193
+        url = 'http://44521803071743.emoxtvg.cn/r?upuid=445218'  # line:193
         header = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700145B) WindowsWechat(0x6309192b) XWEB/8655 Flue'}  # line:194
         try:  # line:195
@@ -232,7 +235,7 @@ class WXYD:  # line:147
             return f'http://{netloc}'  # line:199
         except:  # line:200
             print('err0')  # line:201
-            return 'http://m368335.xedi8rkn.shop'  # line:202
+            return 'http://m382862.xedi8rkn.shop'  # line:202
 
     def tuijian(self):  # line:203
         url = f'{self.host}/tuijian'  # line:204
@@ -258,15 +261,19 @@ class WXYD:  # line:147
         res = requests.get(url, headers=self.headers)  # line:223
         res_json = res.json()  # line:224
         jump = res_json.get('jump')  # line:226
+        print(jump)
         query = parse_qs(urlparse(jump).query)  # line:227
         netloc = urlparse(jump).netloc  # line:228
         iu = query.get('iu')[0]  # line:229
-        print(iu)  # line:230
+        print(netloc)  # line:230
         header = {
             'Host': netloc,
             'User-Agent': self.User_Agent,
-            'X-Requested-With': 'XMLHttpRequest', 'Accept': '*/*', 'Referer': jump,
-            'Accept-Encoding': 'gzip, deflate', 'Accept-Language': 'zh-CN,zh;q=0.9',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': '*/*',
+            'Referer': jump,
+            'Accept-Encoding': 'gzip, deflate',
+            'Accept-Language': 'zh-CN,zh;q=0.9',
         }  # line:239
         print(jump)  # line:240
         res = requests.get(jump, headers=header)  # line:241
@@ -279,15 +286,18 @@ class WXYD:  # line:147
         OO00O0O000000OO00 = 0  # line:248
         while True:  # line:249
             self.tuijian()  # line:250
-            params = f'?for=&zs=&pageshow&r={round(random.uniform(0, 1), 17)}&iu={r[0]}{self.jkey}'  # line:251
+            params = f'?for=&zs=&pageshow&r={round(random.uniform(0, 1), 17)}&iu={r[0]}'  # line:251
             url = f'http://{r[1]}/tuijian/do_read{params}'  # line:252
-            self.printjson(url)  # line:253
+            self.printjson("do_read::"+url)  # line:253
+            print(r[2])
             res = requests.get(url, headers=r[2])  # line:254
             print(self.name, '-' * 50)  # line:255
-            print(res.text)  # line:256
+            print("do read res ::"+res.text)  # line:256
             res_json = res.json()  # line:257
             if res_json.get('msg'):  # line:258
                 print(self.name, '弹出msg', res_json.get('msg'))  # line:259
+            if not res_json.get('url'):
+                return
             res_url = res_json.get('url')  # line:260
             self.printjson(res_url)  # line:261
             if res_url == 'close':  # line:262
@@ -335,7 +345,7 @@ class WXYD:  # line:147
                 return True  # line:300
             for O00OO0O00000OOOO0 in range(60):  # line:301
                 if O00OO0O00000OOOO0 % 30 == 0:  # line:302
-                    O0OOO00O0O0O0O0OO = f'http://175.24.153.42:8882/lookwxarticle?key=KEY&type=TYPE&wxurl={url}'  # line:303
+                    O0OOO00O0O0O0O0OO = f'http://175.24.153.42:8882/lookwxarticle?key={self.key}&type=TYPE&wxurl={url}'  # line:303
                     push(f'可乐阅读过检测:{self.name}', O0OOO00O0O0O0O0OO, OO00OO00O0O0OOO0O[3], 'zhyd',
                          self.uids, self.key)  # line:304
                 status = self.getstatus()  # line:305
@@ -373,8 +383,6 @@ class WXYD:  # line:147
             print(self.name, res_json)  # line:336
 
     def run(self):  # line:337
-        if hashlib.md5(
-                oo0o.encode()).hexdigest() != 'c810de686629fdc653275b0ac5cc5075': self.setstatus()  # line:338
         if self.tuijian():  # line:339
             self.do_read()  # line:340
             time.sleep(2)  # line:341
@@ -398,13 +406,14 @@ def getEnv(key):  # line:343
 
 
 if __name__ == '__main__':  # line:358
-    print("活动入口：http://12318202261622.apuopme.cn/r?upuid=973908")
+    print("活动入口：http://44521803071743.emoxtvg.cn/r?upuid=445218")
     loc_push_config = {"printf": 1, "threadingf": 0, "appToken": "xxxx"}
     loc_klydconfig = [
         {
-            'name': 'zh',
-            'cookie': 'udtauth3=%2F6O3Pjdhenp4qej5C4B4AmLPAdepnVlPTQyhokk8k%2BPEReVaMoCZDdUfGNz7rWAfr7IfKKqfGQ0ayJMxZIiqVxMnxBQHVs7fT3ZANE; PHPSESSID=u1ftmdq5rqffvsef8a97fsk7jh',
-            'key': '22',
+            'name': '不能',
+            'cookie': 'udtauth3=9e74nNrUP36o6g2vIhYUQHaZhsjuaDZB9NVKpoAs2S8cSQ1Ow%2FZxUuUO%2FAa98csD%2FfuaUwG%2FVOKf3bXG644lkttcIjv6goaTeYTium8NC8t11Iw2wT1zppKZ7%2F8uSaL6aFL4R70ROIK9dSLrYpesYOJnxzoPbVlA1USDPfUFh3Y; PHPSESSID=nv1tef9co64bdlrf5s8i0iavnk',
+            'key': '6b11d7230fd744c218060e41f92c1688',
+            'User_Agent':"Mozilla/5.0 (iPhone; CPU iPhone OS 15_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.48(0x18003013) NetType/WIFI Language/zh_CN",
             'uids': '22'
         }
     ]
