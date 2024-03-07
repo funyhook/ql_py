@@ -346,7 +346,7 @@ class WXYD:  # line:147
             for O00OO0O00000OOOO0 in range(60):  # line:301
                 if O00OO0O00000OOOO0 % 30 == 0:  # line:302
                     O0OOO00O0O0O0O0OO = f'http://175.24.153.42:8882/lookwxarticle?key={self.key}&type=TYPE&wxurl={url}'  # line:303
-                    push(f'可乐阅读过检测:{self.name}', O0OOO00O0O0O0O0OO, OO00OO00O0O0OOO0O[3], 'zhyd',
+                    push(f'可乐阅读过检测:{self.name}', url, OO00OO00O0O0OOO0O[3], 'zhyd',
                          self.uids, self.key)  # line:304
                 status = self.getstatus()  # line:305
                 if status == '0':  # line:306
