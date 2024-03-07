@@ -35,7 +35,6 @@ cron: 0 */25 8-22 * * *
 new Env('猫猫看看');
 """
 import asyncio
-import concurrent.futures
 import hashlib
 import json
 import math
@@ -606,10 +605,13 @@ if __name__ == "__main__":
     num_processes = num_cores
     push_msg = ''
     # 使用进程池执行
-    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-        # 将每个账号的处理作为一个任务提交给进程池
-        # 这将导致所有任务并行执行
-        futures = [executor.submit(process_account, index, account, push_msg) for index, account in enumerate(accounts)]
-        # 等待所有任务完成
-        concurrent.futures.wait(futures)
+    # with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+    #     # 将每个账号的处理作为一个任务提交给进程池
+    #     # 这将导致所有任务并行执行
+    #     futures = [executor.submit(process_account, index, account, push_msg) for index, account in enumerate(accounts)]
+    #     # 等待所有任务完成
+    #     concurrent.futures.wait(futures)
+    # notify.send("[猫猫看看阅读推送]", push_msg)
+    for index, account in enumerate(accounts):
+        push_msg += process_account(index, account, push_msg)
     notify.send("[猫猫看看阅读推送]", push_msg)
