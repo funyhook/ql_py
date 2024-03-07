@@ -171,7 +171,7 @@ class YongPai:
             'user-agent': self.ua,
         }
         res = requests.post(url, data=data, headers=headers)
-        print(f"抽奖结果===> {res.json()['message']}")
+        print(f"抽奖结果===> {res.json()}")
 
     def do_take_prize(self):
         url = f'https://92722.activity-12.m.duiba.com.cn/crecord/getrecord?page=1&_={int(time.time() * 1000)}'
