@@ -50,6 +50,8 @@ from urllib.parse import quote, urlparse
 import requests
 import urllib3
 
+import notify
+
 urllib3.disable_warnings()
 wxpusherAppToken = os.getenv("wxpusherAppToken") or ""
 wxpusherTopicId = os.getenv("wxpusherTopicId") or ""
@@ -238,9 +240,9 @@ class HHYD:
             rj = r.json()
             self.remain_gold = math.floor(int(rj.get("data").get("remain_gold")))
             self.remain = float(rj.get("data").get("remain"))
-            print(
-                f'账号[{self.name}]今日已经阅读了{rj.get("data").get("dayreads")}篇文章 当前金币{rj.get("data").get("remain_gold")} 当前余额{self.remain}'
-            )
+            content = f'账号[{self.name}]今日已经阅读了{rj.get("data").get("dayreads")}篇文章 当前金币{rj.get("data").get("remain_gold")} 当前余额{self.remain}'
+            print(content)
+            return content
         except:
             print(f"账号[{self.name}]获取金币失败")
             return False
@@ -554,9 +556,10 @@ class HHYD:
             self.gold()
             self.read()
             time.sleep(3)
-            self.gold()
+            run_msg = self.gold()
             time.sleep(3)
             self.withdraw()
+            return run_msg
 
 
 def getNewInviteUrl():
@@ -587,9 +590,9 @@ def getEnv(key):  # line:343
         print(f"活动入口：{inviteUrl}")
 
 
-def process_account(index, account):
+def process_account(index, account, pmsg):
     read = HHYD(index, account)
-    read.run()
+    pmsg += read.run()
 
 
 if __name__ == "__main__":
@@ -601,10 +604,12 @@ if __name__ == "__main__":
     print(f'系统CPU核心数量为: {num_cores},开始并发任务！')
     # 根据CPU核心数量设置进程数量
     num_processes = num_cores
+    push_msg = ''
     # 使用进程池执行
     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
         # 将每个账号的处理作为一个任务提交给进程池
         # 这将导致所有任务并行执行
-        futures = [executor.submit(process_account, index, account) for index, account in enumerate(accounts)]
+        futures = [executor.submit(process_account, index, account, push_msg) for index, account in enumerate(accounts)]
         # 等待所有任务完成
         concurrent.futures.wait(futures)
+    notify.send("[猫猫看看阅读推送]", push_msg)
