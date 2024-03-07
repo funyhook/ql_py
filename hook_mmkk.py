@@ -554,9 +554,9 @@ class HHYD:
             self.user_info()
             self.gold()
             self.read()
-            time.sleep(3)
+            time.sleep(2)
             run_msg = self.gold()
-            time.sleep(3)
+            time.sleep(1)
             self.withdraw()
             return run_msg
 
@@ -589,9 +589,9 @@ def getEnv(key):  # line:343
         print(f"活动入口：{inviteUrl}")
 
 
-def process_account(index, account, pmsg):
+def process_account(index, account):
     read = HHYD(index, account)
-    pmsg += read.run()
+    return read.run()
 
 
 if __name__ == "__main__":
@@ -613,5 +613,5 @@ if __name__ == "__main__":
     #     concurrent.futures.wait(futures)
     # notify.send("[猫猫看看阅读推送]", push_msg)
     for index, account in enumerate(accounts):
-        push_msg += process_account(index, account, push_msg)
+        push_msg += process_account(index, account)
     notify.send("[猫猫看看阅读推送]", push_msg)
