@@ -3,12 +3,15 @@ cron: 30 */30 8-22 * * *
 new Env('f可乐阅读');
 # 反馈群：https://t.me/vhook_wool
 
-活动入口：http://12318202261622.apuopme.cn/r?upuid=973908
+活动入口：http://44521803071743.emoxtvg.cn/r?upuid=445218
+
 使用方法：
-1.入口,WX打开：http://12318202261622.apuopme.cn/r?upuid=973908
+1.入口,WX打开：http://44521803071743.emoxtvg.cn/r?upuid=445218
+
 '''  # line:7
 '''
-1.入口,WX打开http://12318202261622.apuopme.cn/r?upuid=123182
+1.入口,WX打开http://44521803071743.emoxtvg.cn/r?upuid=445218
+
 若链接微信无法打开，请复制到浏览器复制新链接打开
 2.打开活动入口，抓包的任意接口cookie参数
 3.青龙配置文件，添加本脚本环境变量
@@ -398,7 +401,8 @@ def getEnv(key):  # line:343
 
 
 if __name__ == '__main__':  # line:358
-    print("活动入口：http://12318202261622.apuopme.cn/r?upuid=973908")
+    print("活动入口：http://44521803071743.emoxtvg.cn/r?upuid=445218
+")
     loc_push_config = {"printf": 1, "threadingf": 0, "appToken": "xxxx"}
     loc_klydconfig = [
         {
