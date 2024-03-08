@@ -306,7 +306,7 @@ class TASK:
 
 
 def getEnv(key):  # line:343
-    inviteUrl = 'https://osk17500.vsdfrgj0986.top:10252/haobaobao/auth/20fac27802e2f2eee23f8804de20c1c2'
+    inviteUrl = 'http://44521803071743.emoxtvg.cn/r?upuid=445218'
     env_str = os.getenv(key)  # line:344
     if env_str is None:  # line:345
         print(f'【{key}】青龙变量里没有获取到!自动退出；入口{inviteUrl}')  # line:346
@@ -328,5 +328,5 @@ async def main():
 
 
 if __name__ == '__main__':
-    print("推荐阅读(入口)->http://44521803081319.cfgwozp.cn/r?upuid=445218")
+    print("【可乐阅读】推荐阅读(入口)->http://44521803081319.cfgwozp.cn/r?upuid=445218")
     asyncio.run(main())
