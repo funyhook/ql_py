@@ -243,7 +243,7 @@ class TASK:
             self.log("⚠️⚠️⚠️⚠️⚠️出现检测文章了！")
             encoded_url = quote(url)
             await self.wxpuser(encoded_url)
-            await self.pushAutMan("微信阅读检测【可乐】",url)
+            await self.pushAutMan("微信阅读检测【可乐】\n请20秒内点击下方链接",url)
             self.log("⚠️⚠️⚠️请20秒内点击阅读啦")
             time.sleep(20)
             return True
@@ -326,7 +326,7 @@ class TASK:
                 print("❌ 推送文章到autman失败！")
                 return False
         except:
-            print("❌ 推送文章到autman失败！")
+            print("❌ 推送文章到autman异常！！！！")
             return False
 
     async def run(self,):
