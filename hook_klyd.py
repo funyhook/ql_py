@@ -37,7 +37,7 @@ from datetime import datetime
 from typing import Optional, Dict
 from urllib.parse import urlparse, parse_qs, quote
 
-import aiohttp
+import requests
 
 logging.basicConfig(level=logging.INFO)
 
@@ -52,7 +52,7 @@ class TASK:
         self.ua = 'Mozilla/5.0 (Linux; Android 13; M2012K11AC Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/117.0.0.0 Mobile Safari/537.36 MMWEBID/2651 MicroMessenger/8.0.42.2460(0x28002A58) WeChat/arm64 Weixin NetType/WIFI Language/en ABI/arm64'
         if hasattr(ck, "ua") and ck['ua'] != "":
             self.ua = ck['ua']
-        self.sessions = aiohttp.ClientSession()
+        self.sessions = requests.session()
         self.logger = logging.getLogger(f"用户{self.index}")
         self.content = ''
         self.read_count = 0
@@ -61,11 +61,11 @@ class TASK:
         timeStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         print(f"{timeStr}-用户{self.index}【{self.name}】：{msg}")
 
-    async def close(self):
-        await self.sessions.close()
+    def close(self):
+        self.sessions.close()
 
-    async def request(self, url, method='get', data=None, add_headers: Optional[Dict[str, str]] = None, headers=None,
-                      dtype='json'):
+    def request(self, url, method='get', data=None, add_headers: Optional[Dict[str, str]] = None, headers=None,
+                dtype='json'):
         host = urlparse(url).netloc
         _default_headers = {
             "Host": host,
@@ -80,21 +80,21 @@ class TASK:
             request_headers = headers or _default_headers
             if add_headers:
                 request_headers.update(add_headers)
-            async with getattr(self.sessions, method)(url, headers=request_headers, data=data) as response:
-                if response.status == 200:
+            with getattr(self.sessions, method)(url, headers=request_headers, data=data) as response:
+                if response.status_code == 200:
                     if dtype == 'json':
-                        return await response.json()
+                        return response.json()
                     else:
-                        return await response.text()
+                        return response.text()
                 else:
-                    self.log(f"请求失败状态码：{response.status}")
+                    self.log(f"请求失败状态码：{response.status_code}")
                     # 可以选择休眠一段时间再重试，以避免频繁请求
-                    await asyncio.sleep(random.randint(3, 5))  # 休眠1秒钟
+                    asyncio.sleep(random.randint(3, 5))  # 休眠1秒钟
         except Exception as e:
             self.log(f"请求出现错误：{e}")
-            await asyncio.sleep(random.randint(3, 5))  # 休眠1秒钟
+            asyncio.sleep(random.randint(3, 5))  # 休眠1秒钟
 
-    async def get_base_url(self):
+    def get_base_url(self):
         url = 'http://44521803071743.emoxtvg.cn/r?upuid=445218'
         host = urlparse(url).netloc
         add_headers = {
@@ -104,8 +104,8 @@ class TASK:
             "Accept-Encoding": "gzip, deflate",
             "Accept-Language": "zh-CN,zh;q=0.9",
         }
-        async with self.sessions.get(url, headers=add_headers, allow_redirects=False) as response:
-            if response.status == 302:
+        with self.sessions.get(url, headers=add_headers, allow_redirects=False) as response:
+            if response.status_code == 302:
                 url = response.headers.get('Location')
                 # print(self.url)
                 self.url = 'http://' + urlparse(url).netloc
@@ -113,12 +113,12 @@ class TASK:
                 self.log("获取base_url失败,改备用的url")
                 self.url = 'http://m224482.ww1112017.cn'
 
-    async def user_info(self):
+    def user_info(self):
         url = self.url + '/tuijian'
         add_headers = {
             "Referer": self.url + "/new",
         }
-        res = await self.request(url, add_headers=add_headers)
+        res = self.request(url, add_headers=add_headers)
         if not res:
             self.log("获取用户信息失败")
             return
@@ -134,28 +134,28 @@ class TASK:
         else:
             self.log(f"获取用户信息失败：{res}")
 
-    async def get_article(self):
+    def get_article(self):
 
         url = self.url + '/new/get_read_url'
         add_headers = {
             "Referer": self.url + "/new?upuid=445218",
         }
-        res = await self.request(url, add_headers=add_headers, dtype='text')
+        res = self.request(url, add_headers=add_headers, dtype='text')
         if not res:
             self.log("获取文章失败")
             return
         if 'jump' in res:
             res = json.loads(res)
-            await self.jump_location(res['jump'])
+            self.jump_location(res['jump'])
         else:
             self.log(f"获取文章失败：{res}")
 
-    async def jump_location(self, url):
+    def jump_location(self, url):
         host = urlparse(url).netloc
         add_headers = {
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/wxpic,image/tpg,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7'}
 
-        res1 = await self.request(url, add_headers=add_headers, dtype='text')
+        res1 = self.request(url, add_headers=add_headers, dtype='text')
         parsed_url = urlparse(url)
         query_parameters = parse_qs(parsed_url.query)
         iu = query_parameters['iu'][0]
@@ -164,15 +164,15 @@ class TASK:
             self.log("加载阅读文章中")
             # 获取url的iu参数
             if iu is not None:
-                await asyncio.sleep(random.randint(2, 3))
-                await self.do_read(url1, iu, url)
+                asyncio.sleep(random.randint(2, 3))
+                self.do_read(url1, iu, url)
             else:
                 self.log("获取url参数失败")
         else:
             self.log(f"加载不了")
             return
 
-    async def do_read(self, url, iu, referer, jkey=None, ):
+    def do_read(self, url, iu, referer, jkey=None, ):
         self.read_count += 1
         if jkey is None:
             url1 = url + f'&r={round(random.uniform(0, 1), 16)}&iu={iu}'
@@ -182,7 +182,7 @@ class TASK:
             "Referer": referer,
             "X-Requested-With": "XMLHttpRequest"
         }
-        res = await self.request(url1, add_headers=add_headers)
+        res = self.request(url1, add_headers=add_headers)
         # print(f"doread::: {res}")
         if not res or not res['url']:
             self.log(f"第{self.read_count}次阅读失败,请稍后再试试")
@@ -192,21 +192,21 @@ class TASK:
                 self.log(f"第{self.read_count}次：{res['success_msg']}")
             else:
                 self.log(f"第{self.read_count}次阅读成功")
-            if await self.verify_status(res['url']):
+            if self.verify_status(res['url']):
                 pass
             else:
                 return
-            await asyncio.sleep(random.randint(6, 12))
-            await self.do_read(url, iu, referer, res['jkey'])
+            asyncio.sleep(random.randint(6, 12))
+            self.do_read(url, iu, referer, res['jkey'])
         else:
             self.log(f"{res}")
 
-    async def verify_status(self, url):
+    def verify_status(self, url):
         if 'chksm' in url:
             self.log(f"第{self.read_count}次️出现检测文章了❗️❗️❗️❗")
             encoded_url = quote(url)
-            await self.wxpuser(encoded_url)
-            await self.pushAutMan("微信阅读检测【可乐】\n请20秒内点击下方链接", url)
+            self.wxpuser(encoded_url)
+            self.pushAutMan("微信阅读检测【可乐】\n请20秒内点击下方链接", url)
             self.log(f"第{self.read_count}次️ ️请20秒内点击阅读啦❗️❗️❗")
             time.sleep(20)
             return True
@@ -214,12 +214,12 @@ class TASK:
             self.log(f"第{self.read_count}次️ 这次阅读没有检测✅")
             return True
 
-    async def with_draw(self):
+    def with_draw(self):
         url = self.url + '/withdrawal'
         add_headers = {
             "Referer": self.url + "/new",
         }
-        res = await self.request(url, add_headers=add_headers)
+        res = self.request(url, add_headers=add_headers)
         if not res:
             self.log("获取提现信息失败")
             return
@@ -229,12 +229,12 @@ class TASK:
             tag = 60
             if float(res['data']['user']['score']) > tag:
                 draw_money = int(float(res['data']['user']['score']))
-                await self.do_withdraw(draw_money)
+                self.do_withdraw(draw_money)
         else:
             self.log(f"获取提现信息失败：{res}")
             return
 
-    async def do_withdraw(self, amount):
+    def do_withdraw(self, amount):
         url = self.url + '/withdrawal/doWithdraw'
         # data = f'amount={amount}&type=wx'
         data = {
@@ -246,7 +246,7 @@ class TASK:
             "Origin": self.url,
             "X-Requested-With": "XMLHttpRequest"
         }
-        res = await self.request(url, 'post', data=data, add_headers=add_headers, dtype='text')
+        res = self.request(url, 'post', data=data, add_headers=add_headers, dtype='text')
         if not res:
             self.log("提现失败")
             return
@@ -256,17 +256,17 @@ class TASK:
         else:
             self.log(f"提现失败：{res}")
 
-    async def wxpuser(self, url):
+    def wxpuser(self, url):
         content = "检测文章-可乐%0A请在90秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27link%27%22%3E"
         content = content.replace('link', url)
         wxpuser_url = f'https://wxpusher.zjiecode.com/demo/send/custom/{self.wxpusher_uid}?content={content}'
-        res = await self.request(wxpuser_url, 'get', headers={"Content-Type": "application/json"})
+        res = self.request(wxpuser_url, 'get', headers={"Content-Type": "application/json"})
         if res['success']:
             self.log(f"第{self.read_count}次，[通知]--->检测发送成功！✅")
         else:
             self.log(f"第{self.read_count}次，[通知]====>发送失败❌")
 
-    async def pushAutMan(self, title, msg):
+    def pushAutMan(self, title, msg):
         autman_push_config = os.getenv("autman_push_config") or ""
         if not autman_push_config or autman_push_config == "":
             self.log(f"第{self.read_count}次，推送文章到autman失败！")
@@ -285,7 +285,7 @@ class TASK:
         }
         try:
 
-            p = await self.request(config['url'], "post", data=json.dumps(datapust), headers=headers)
+            p = self.request(config['url'], "post", data=json.dumps(datapust), headers=headers)
             if p["ok"]:
                 self.log(f"第{self.read_count}次，推送文章到autman成功✅")
             else:
@@ -293,40 +293,37 @@ class TASK:
         except Exception as e:
             self.log(f"第{self.read_count}次，推送文章到autman异常️❗️❗{e}")
 
-    async def run(self, ):
-        sleepTime = self.index - 1 * random.randint(10, 15)
-        await asyncio.sleep(sleepTime)
-        await self.get_base_url()
+    def run(self, ):
+        sleepTime = random.randint(3, 5)
+        print(f"降低封控，休息{sleepTime}秒")
+        time.sleep(sleepTime)
+        self.get_base_url()
         self.log(f"{'=' * 13}开始运行{'=' * 13}")
-        if await self.user_info():
-            await self.get_article()
-        await self.with_draw()
+        if self.user_info():
+            self.get_article()
+        self.with_draw()
         self.log(f"{'=' * 13}运行结束{'=' * 13}")
-        await self.close()
+        self.close()
 
 
-def getEnv(key):  # line:343
+def getEnv(key):  # line:343`
     inviteUrl = 'http://44521803071743.emoxtvg.cn/r?upuid=445218'
-    env_str = os.getenv(key)  # line:344
-    if env_str is None:  # line:345
-        print(f'【{key}】青龙变量里没有获取到!自动退出；入口{inviteUrl}')  # line:346
+    env_str = os.getenv(key)
+    if env_str is None:
+        print(f'【{key}】青龙变量里没有获取到!自动退出；入口{inviteUrl}')
         exit()
     try:  # line:348
         env_str = json.loads(
-            env_str.replace("'", '"').replace("\n", "").replace(" ", "").replace("\t", ""))  # line:349
+            env_str.replace("'", '"').replace("\n", "").replace(" ", "").replace("\t", ""))
         return env_str  # line:350
     except Exception as e:  # line:351
-        print(f'请检查变量[{key}]参数是否填写正确')  # line:354
+        print(f'请检查变量[{key}]参数是否填写正确 {e}')  # line:354
         print(f"活动入口：{inviteUrl}")
-
-
-async def main():
-    accounts = getEnv("hook_klyd")
-    for index, ck in enumerate(accounts):
-        abc = TASK(index + 1, ck)
-        await abc.run()
 
 
 if __name__ == '__main__':
     print("【可乐】推荐阅读(入口)->http://44521803081319.cfgwozp.cn/r?upuid=445218")
-    asyncio.run(main())
+    accounts = getEnv("hook_klyd")
+    for index, ck in enumerate(accounts):
+        abc = TASK(index + 1, ck)
+        abc.run()
