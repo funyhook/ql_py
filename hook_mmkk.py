@@ -561,6 +561,7 @@ class HHYD:
         return self.inviteUrl
 
     def run(self):
+        run_msg =''
         self.log(f"{'=' * 13}{self.timeStr()}开始运行{'=' * 13}")
         if self.init():
             self.user_info()
@@ -570,8 +571,9 @@ class HHYD:
             run_msg = self.gold()
             time.sleep(1)
             self.withdraw()
-            return run_msg
         self.log(f"{'=' * 13}{self.timeStr()}运行结束{'=' * 13}")
+        return run_msg
+
 
 
 def getEnv(key):  # line:343

@@ -47,6 +47,8 @@ from urllib.parse import quote, urlparse
 import requests
 import urllib3
 
+import notify
+
 urllib3.disable_warnings()
 
 wxpusherAppToken = os.getenv("wxpusherAppToken") or ""
@@ -123,6 +125,7 @@ def pushAutMan(title, msg):
     except:
         print("❌ 推送文章到autman失败！")
         return False
+
 
 def getNewInviteUrl():  # line:594:def getNewInviteUrl():
     r = requests.get("https://www.filesmej.cn/waidomain.php", verify=False).json()
@@ -272,8 +275,10 @@ class HHYD:  # line:145:class HHYD:
             r = self.sec.get(u)
             rj = r.json()
             self.remain = math.floor(int(rj.get("data").get("last_gold")))
+            content = f'【账号】：{self.name} \n今日阅读：{rj.get("data").get("dayreads")}篇｜当前金币：{rj.get("data").get("remain_gold")}个｜当前余额：{self.remain}元'
             print(
                 f'账号[{self.name}]今日已经阅读了{rj.get("data").get("day_read")}篇文章,剩余{rj.get("data").get("remain_read")}未阅读，今日获取金币{rj.get("data").get("day_gold")}，剩余{self.remain}')
+            return content
         except:
             print(f"账号[{self.name}]获取金币失败")
             return False
@@ -600,23 +605,23 @@ class HHYD:  # line:145:class HHYD:
             return False  # line:580:return False
 
     def run(self):
-        print(f"{'+' * 20}第{self.index}个账号{'+' * 20}")
+        run_msg = ''
+        print(f"{'+' * 20}开始第{self.index}个账号{'+' * 20}")
         if self.init():
             self.user_info()
             self.hasWechat()
             self.gold()
             self.read()
             time.sleep(3)
-            self.gold()
+            run_msg = self.gold()
             time.sleep(3)
             self.withdraw()
+        return run_msg
 
 
-
-
-def process_account(index, account):
+def process_account(index, account, msg):
     read = HHYD(index, account)
-    read.run()
+    msg += read.run()
 
 
 if __name__ == "__main__":
@@ -628,10 +633,12 @@ if __name__ == "__main__":
     print(f'系统CPU核心数量为: {num_cores},开始并发任务！')
     # 根据CPU核心数量设置进程数量
     num_processes = num_cores
+    push_msg = ''
     # 使用进程池执行
     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
         # 将每个账号的处理作为一个任务提交给进程池
         # 这将导致所有任务并行执行
-        futures = [executor.submit(process_account, index, account) for index, account in enumerate(accounts)]
+        futures = [executor.submit(process_account, index, account, push_msg) for index, account in enumerate(accounts)]
         # 等待所有任务完成
         concurrent.futures.wait(futures)
+        notify.send("[小阅阅推送]", push_msg)
