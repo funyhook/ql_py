@@ -357,7 +357,7 @@ class HHYD:
                         f"⚠️ 获取阅读第[{arctileTime}]篇文章链接失败，疑似台子接口太垃圾，崩了，返回数据为：{res.get('data')}")
                     continue
                 if "mp.weixin.qq.com" in returnLink:
-                    self.log(" 阅读第[{arctileTime}]篇微信文章")
+                    self.log(f" 阅读第[{arctileTime}]篇微信文章")
                     wechatPostLink = returnLink
                 else:
                     # self.log(" 阅读第[{arctileTime}]篇文章准备跳转：{link}")
