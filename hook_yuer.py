@@ -10,10 +10,10 @@ cron: 9 9-21/2 * * *
 反馈群：https://t.me/vhook_wool
 推荐阅读 入口-> http://h5.alswywo.cn/pipa_read?upuid=1601717
 (如无法打开，请复制链接在手机浏览器打开，获取最新入口)
-export hook_klyd="[
+export hook_yuer="[
     {
         'name': '不能',
-        'cookie': 'PHPSESSID=; udtauth3=',
+        'cookie': 'PHPSESSID=',
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
         'wxpusher_token': '',
         'wxpusher_uid': ''
