@@ -243,7 +243,7 @@ class TASK:
             self.log("⚠️⚠️⚠️⚠️⚠️出现检测文章了！")
             encoded_url = quote(url)
             await self.wxpuser(encoded_url)
-            await self.pushAutMan("微信阅读检测【可乐】\n请20秒内点击下方链接",url)
+            await self.pushAutMan("微信阅读检测【可乐】\n请20秒内点击下方链接", url)
             self.log("⚠️⚠️⚠️请20秒内点击阅读啦")
             time.sleep(20)
             return True
@@ -318,19 +318,16 @@ class TASK:
             "content": msg
         }
         try:
-            p = await self.request(config['url'], "post",data=json.dumps(datapust),headers=None)
-            if p.json()["ok"]:
-                print("✅ ⚠️推送文章到autman成功！⚠️")
-                return True
+            p = await self.request(config['url'], "post", data=json.dumps(datapust),headers={"Content-Type": "application/json"})
+            if p["ok"]:
+                print("✅推送文章到autman成功✅")
             else:
-                print("❌ 推送文章到autman失败！")
-                return False
-        except:
-            print("❌ 推送文章到autman异常！！！！")
-            return False
+                print(" 😭😭😭推送文章到autman失败😭😭😭")
+        except Exception as e:
+            print(f"❌ 推送文章到autman异常！！！！{e}")
 
-    async def run(self,):
-        sleepTime = self.index-1 * random.randint(10,15)
+    async def run(self, ):
+        sleepTime = self.index - 1 * random.randint(10, 15)
         await asyncio.sleep(sleepTime)
         await self.get_base_url()
         self.log(f"{'=' * 13}开始运行{'=' * 13}")
