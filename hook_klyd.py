@@ -1,460 +1,354 @@
-import urllib3
+"""
+代码请勿用于非法盈利,一切与本人无关,该代码仅用于学习交流,请阅览下载24小时内删除代码
+走不走邀请都无所谓了,能走更好,不走也没关系,我的要求,
+请勿擅自修改脚本注释,
+请勿将脚本擅自分享传播至任何地方,请勿将邀请更改为自己的邀请拉取人头,
+如果你这样做了,我是没办法怎么样你的
+阅读：可乐阅读
+new Env("可乐阅读")
+cron: 9 9-21/2 * * *
+反馈群：https://t.me/vhook_wool
+走邀请:推荐阅读 -> http://44521803081319.cfgwozp.cn/r?upuid=445218
+(如无法打开，请复制链接在手机浏览器打开，获取最新入口)
 
-oo0o = '''
-cron: 30 */30 8-22 * * *
-new Env('f可乐阅读');
-# 反馈群：https://t.me/vhook_wool
+"""
 
-活动入口：http://44521803071743.emoxtvg.cn/r?upuid=445218
+import asyncio
+import json
+import logging
+import os
+import random
+import time
+from typing import Optional, Dict
+from urllib.parse import urlparse, parse_qs, quote
 
-使用方法：
-1.入口,WX打开：http://44521803071743.emoxtvg.cn/r?upuid=445218
+import aiohttp
 
-'''  # line:7
-'''
-1.入口,WX打开http://44521803071743.emoxtvg.cn/r?upuid=445218
-
-若链接微信无法打开，请复制到浏览器复制新链接打开
-2.打开活动入口，抓包的任意接口cookie参数
-3.青龙配置文件，添加本脚本环境变量
-填写变量参数时为方便填写可以随意换行
-单账户：export klydconfig="[{'name':'备注名','cookie': 'PHPSESSID=xxxx; udtauth3=a267Rxxxxx','key':'xxxxxxx','uids':'xxxxxxx'}]"
-多账户：export klydconfig="[
-{'name':'备注名','cookie': 'PHPSESSID=xxxx; udtauth3=a267Rxxxxx','key':'xxxxxxx','uids':'xxxxxxx'},
-{'name':'备注名','cookie': 'PHPSESSID=xxxx; udtauth3=a267Rxxxxx','key':'xxxxxxx','uids':'xxxxxxx'},
-{'name':'备注名','cookie': 'PHPSESSID=xxxx; udtauth3=a267Rxxxxx','key':'xxxxxxx','uids':'xxxxxxx'}
-]"
-参数说明：
-name:备注名随意填写
-cookie:打开活动入口，抓包的任意接口headers中的cookie参数
-key：每个账号的推送标准，每个账号全阅读只需要一个key,多个账号需要多个key,key永不过期。
-为了防止恶意调用key接口，限制每个ip每天只能获取一个key。手机开飞行模式10s左右可以变更ip重新获取key
-通过浏览器打开链接获取:http://175.24.153.42:8882/getkey
-uids:wxpusher的参数，当一个微信关注了一个wxpusher的推送应用后，会在推送管理后台(https://wxpusher.zjiecode.com/admin/main)的'用户管理-->用户列表'中显示
-用户在推送页面点击’我的-->我的UID‘也可以获取
-User-Agent:抓包任意接口在headers中看到
-4.青龙环境变量菜单，添加本脚wxpusher环境变量(不需要重复添加)
-建议使用方式二
-方式一：青龙添加环境变量参数 ：
-名称 ：push_config
-参数 ：{"printf":0,"threadingf":1,"threadingt":3,"appToken":"xxxx"}
-方式二：配置文件添加
-export push_config="{'printf':0,'threadingf':1,'threadingt':3,'appToken':'xxxx'}"
-参数说明：
-printf:0是不打印调试日志，1是打印调试日志
-threadingf:并行运行账号参数 1并行执行，0顺序执行，并行执行优点，能够并行跑所以账号，加快完成时间，缺点日志打印混乱。
-threadingt:并行运行时每个账号的间隔时间默认3s
-appToken 这个是填wxpusher的appToken,找不到自己百度
-
-5.本地电脑python运行
-在本脚本最下方代码if __name__ == '__main__':下填写
-例如
-loc_push_config={"printf":0,"threadingf":1,"threadingt":3,"appToken":"xxxx"}
-loc_klydconfig=[
-{'name':'备注名','cookie': 'PHPSESSID=xxxx; udtauth3=a267Rxxxxx','key':'xxxxxxx','uids':'xxxxxxx'},
-{'name':'备注名','cookie': 'PHPSESSID=xxxx; udtauth3=a267Rxxxxx','key':'xxxxxxx','uids':'xxxxxxx'},
-{'name':'备注名','cookie': 'PHPSESSID=xxxx; udtauth3=a267Rxxxxx','key':'xxxxxxx','uids':'xxxxxxx'}
-]
-6.在本脚本最下方代码if __name__ == '__main__':下配置UA变量
-User-Agent参数可以抓包任意接口在headers中看到
-定时运行每半个小时一次
-'''  # line:54
-
-import json  # line:60
-import os  # line:58
-import random  # line:57
-import re  # line:56
-import threading  # line:59
-import time  # line:62
-from urllib.parse import urlparse, parse_qs  # line:63
-
-import urllib3
-import requests  # line:55
-urllib3.disable_warnings()
-checkDict = {'onenotischeck': ['第一篇文章', '过检测'], }  # line:66
-push_num = [-1]  # line:67
+logging.basicConfig(level=logging.INFO)
 
 
-def getmsg():  # line:68
-    ver = 'v1.6f'  # line:69
-    res = ''  # line:70
-    try:  # line:71
-        url = 'http://175.24.153.42:8881/getmsg'  # line:72
-        data = {'type': 'zhyd'}  # line:73
-        res = requests.get(url, params=data, timeout=2)  # line:74
-        res_json = res.json()  # line:75
-        version = res_json.get('version')  # line:76
-        gdict = res_json.get('gdict')  # line:77
-        gmmsg = res_json.get('gmmsg')  # line:78
-        # print('系统公告:', gmmsg)  # line:79
-        # print(f'最新版本{version},当前版本{ver}')  # line:80
-        print(f'系统的公众号字典{len(gdict)}个:{gdict}')  # line:81
-        print(f'本脚本公众号字典{len(checkDict.values())}个:{list(checkDict.keys())}')  # line:82
-        print('=' * 50)  # line:83
-    except Exception as e:  # line:84
-        print(e)  # line:85
-        print('公告服务器异常')  # line:86
+class TASK:
+    def __init__(self, index, ck):
+        self.index = index
+        self.cookie = ck['cookie']
+        self.name = ck['name']
+        self.wxpusher_token = ck['wxpusher_token']
+        self.wxpusher_uid = ck['wxpusher_uid']
+        self.ua = 'Mozilla/5.0 (Linux; Android 13; M2012K11AC Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/117.0.0.0 Mobile Safari/537.36 MMWEBID/2651 MicroMessenger/8.0.42.2460(0x28002A58) WeChat/arm64 Weixin NetType/WIFI Language/en ABI/arm64'
+        if hasattr(ck, "ua") and ck['ua'] != "":
+            self.ua = ck['ua']
+        self.sessions = aiohttp.ClientSession()
+        self.logger = logging.getLogger(f"用户{self.index}")
+        self.content = ''
 
+    def log(self, msg):  # 改写一下日志
+        print(f"用户{self.index}｜{self.name}:{msg}")
+        # self.content += str(msg) + '\n'
 
-def push(title, link, text, type, uid, key):  # line:87
-    pushAutMan(link)
-    html = f'<body onload="window.location.href=${link}"><p>{text}</p><br><p><a href="http://175.24.153.42:8882/lookstatus?key={key}&type=${type}">查看状态</a></p><br></body>'
-    # line:93
-    data = {
-        "appToken": appToken,
-        "content": html,
-        "summary": title,
-        "contentType": 2,
-        "uids": [uid]}  # line:102
-    url = 'http://wxpusher.zjiecode.com/api/send/message'  # line:103
-    try:  # line:104
-        res = requests.post(url=url, json=data).text  # line:105
-        print('推送结果：', res)  # line:106
-        return True  # line:107
-    except Exception as e:  # line:108
-        print('推送失败！')  # line:109
-        print('推送结果：', e)  # line:110
-        return False  # line:111
+    async def close(self):
+        await self.sessions.close()
 
-
-def pushAutMan(link):
-    autman_push_config = os.getenv("autman_push_config") or ""
-    if not autman_push_config or autman_push_config == "":
-        print("❌ 推送文章到企业微信失败！")
-        return
-    config = json.loads(autman_push_config)
-    print(config)
-    datapust = {
-        "token": config['token'],
-        "plat": config['plat'],
-        "groupCode": config['groupCode'],
-        "userId": config['userId'],
-        "title": "阅读检测推送【可乐阅读】",
-        "content": f"快点下方链接\n{link}\n等待时间：17秒 ,别耽搁时间了"
-    }
-    try:  # line:77:try:
-        p = requests.post(url=config['url'], json=datapust, verify=False)
-        if p.json()["ok"]:
-            print("✅ 推送文章到autman成功！")  # line:81:print("✅ 推送文章到企业微信成功！")
-            return True  # line:82:return True
-        else:  # line:83:else:
-            print("❌ 推送文章到autman失败！")  # line:84:print("❌ 推送文章到企业微信失败！")
-            return False  # line:85:return False
-    except:  # line:86:except:
-        print("❌ 推送文章到autman失败！")  # line:87:print("❌ 推送文章到企业微信失败！")
-        return False  # line:88:return False
-
-
-def getinfo(url):  # line:112
-    try:  # line:113
-        res = requests.get(url)  # line:114
-        text = re.sub('\s', '', res.text)  # line:116
-        varbiz = re.findall('varbiz="(.*?)"\|\|', text)  # line:117
-        if varbiz != []:  # line:118
-            varbiz = varbiz[0]  # line:119
-        if varbiz == '' or varbiz == []:  # line:120
-            if '__biz' in url:  # line:121
-                varbiz = re.findall('__biz=(.*?)&', url)  # line:122
-                if varbiz != []:  # line:123
-                    varbiz = varbiz[0]  # line:124
-        OOO000OO00OOO0O0O = re.findall('varnickname=htmlDecode\("(.*?)"\);', text)  # line:125
-        if OOO000OO00OOO0O0O != []:  # line:126
-            OOO000OO00OOO0O0O = OOO000OO00OOO0O0O[0]  # line:127
-        OO0OOO0O0OOOO00OO = re.findall('varuser_name="(.*?)";', text)  # line:128
-        if OO0OOO0O0OOOO00OO != []:  # line:129
-            OO0OOO0O0OOOO00OO = OO0OOO0O0OOOO00OO[0]  # line:130
-        OOOOOOO0O00O000OO = re.findall("varmsg_title='(.*?)'\.html\(", text)  # line:131
-        if OOOOOOO0O00O000OO != []:  # line:132
-            OOOOOOO0O00O000OO = OOOOOOO0O00O000OO[0]  # line:133
-        OO0O0000OO0OOOOO0 = re.findall("varoriCreateTime='(.*?)';", text)  # line:134
-        if OO0O0000OO0OOOOO0 != []:  # line:135
-            OO0O0000OO0OOOOO0 = OO0O0000OO0OOOOO0[0]  # line:136
-        O0OO00000O0O0OO00 = re.findall("varcreateTime='(.*?)';", text)  # line:137
-        if O0OO00000O0O0OO00 != []:  # line:138
-            O0OO00000O0O0OO00 = O0OO00000O0O0OO00[0]  # line:139
-        OO0OOO00OOO0OO0OO = f'公众号唯一标识：{varbiz}|文章:{OOOOOOO0O00O000OO}|作者:{OOO000OO00OOO0O0O}|账号:{OO0OOO0O0OOOO00OO}|文章时间戳:{OO0O0000OO0OOOOO0}|文章时间:{O0OO00000O0O0OO00}'  # line:140
-        print(OO0OOO00OOO0OO0OO)  # line:141
-        return OOO000OO00OOO0O0O, OO0OOO0O0OOOO00OO, OOOOOOO0O00O000OO, OO0OOO00OOO0OO0OO, varbiz, OO0O0000OO0OOOOO0, O0OO00000O0O0OO00  # line:142
-    except Exception as OOO0O0OO0000OOOO0:  # line:143
-        print(OOO0O0OO0000OOOO0)  # line:144
-        print('异常')  # line:145
-        return False  # line:146
-
-
-class WXYD:  # line:147
-    def __init__(self, account):  # line:148
-        self.name = account['name']  # line:149
-        self.key = account['key']  # line:150
-        self.uids = account['uids']  # line:151
-        self.count = 0  # line:152
-        self.User_Agent = account.get('User_Agent', 'xxxxxx')  # line:153
-        if 'Mozilla' not in self.User_Agent:  # line:154
-            self.User_Agent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.48(0x18003013) NetType/WIFI Language/zh_CN'  # line:156
-        self.host = self.get_host()  # line:157
-        self.headers = {'Accept': 'application/json, text/plain, */*',
-                        'User-Agent': self.User_Agent,
-                        'Referer': f'{self.host}/new?upuid=',
-                        'Accept-Encoding': 'gzip, deflate', 'Accept-Language': 'zh-CN,zh;q=0.9',
-                        'Cookie': account['cookie'], }  # line:165
-
-    def printjson(self, msg):  # line:166
-        if printf == 0:  # line:167
-            return False  # line:168
-        print(self.name, msg)  # line:169
-
-    def setstatus(self):  # line:170
-        try:  # line:171
-            url = 'http://175.24.153.42:8882/setstatus'  # line:172
-            data = {'key': self.key, 'type': 'zhyd', 'val': '1', 'ven': oo0o}  # line:173
-            res = requests.get(url, params=data, timeout=5)  # line:174
-            # print(self.name, res.text)  # line:175
-            if '无效' in res.text:  # line:176
-                print()  # exit(0)  # line:177
-        except Exception as e:  # line:178
-            print(self.name, '设置状态异常')  # line:179
-            print(self.name, e)  # line:180
-            return 99  # line:181
-
-    def getstatus(self):  # line:183
-        try:  # line:184
-            url = 'http://175.24.153.42:8882/getstatus'  # line:185
-            data = {'key': self.key, 'type': 'zhyd'}  # line:186
-            res = requests.get(url, params=data, timeout=3)  # line:187
-            return res.text  # line:188
-        except Exception as e:  # line:189
-            print(self.name, '查询状态异常', e)  # line:190
-            return False  # line:191
-
-    def get_host(self):  # line:192
-        url = 'http://44521803071743.emoxtvg.cn/r?upuid=445218'  # line:193
-        header = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700145B) WindowsWechat(0x6309192b) XWEB/8655 Flue'}  # line:194
-        try:  # line:195
-            res = requests.get(url, headers=header, allow_redirects=False)  # line:196
-            location = res.headers.get('Location')
-            netloc = urlparse(location).netloc
-            print(netloc)
-            return f'http://{netloc}'
+    async def request(self, url, method='get', data=None, add_headers: Optional[Dict[str, str]] = None, headers=None,
+                      dtype='json'):
+        host = urlparse(url).netloc
+        _default_headers = {
+            "Host": host,
+            "User-Agent": self.ua,
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "zh-CN,zh;q=0.9",
+            "X-Requested-With": "com.tencent.mm",
+            "Cookie": self.cookie
+        }
+        try:
+            request_headers = headers or _default_headers
+            if add_headers:
+                request_headers.update(add_headers)
+            async with getattr(self.sessions, method)(url, headers=request_headers, data=data) as response:
+                if response.status == 200:
+                    if dtype == 'json':
+                        return await response.json()
+                    else:
+                        return await response.text()
+                else:
+                    self.log(f"请求失败状态码：{response.status}")
+                    # 可以选择休眠一段时间再重试，以避免频繁请求
+                    await asyncio.sleep(random.randint(3, 5))  # 休眠1秒钟
         except Exception as e:
-            print(f'err0{e}')
-            return 'http://m382862.xedi8rkn.shop'
+            self.log(f"请求出现错误：{e}")
+            await asyncio.sleep(random.randint(3, 5))  # 休眠1秒钟
 
-    def tuijian(self):  # line:203
-        url = f'{self.host}/tuijian'  # line:204
-        print(url)
-        res = requests.get(f'{self.host}/tuijian', headers=self.headers,verify=False)  # line:205
-        try:  # line:206
-            res_json = res.json()  # line:207
-            if res_json.get('code') == 0:  # line:208
-                username = res_json['data']['user']['username']  # line:209
-                score = float(res_json['data']['user']['score']) / 100  # line:210
-                print(self.name, f'{username}:当前剩余{score}元')  # line:211
-                return True  # line:212
-            else:  # line:213
-                print(self.name, res_json)  # line:214
-                print(self.name, '账号异常0,ck可能失效')  # line:215
-                return False  # line:216
-        except Exception as e:  # line:217
-            print(self.name, e)  # line:218
-            print(self.name, '账号异常1，ck可能失效')  # line:219
-            return False  # line:220
+    async def get_base_url(self):
+        url = 'http://44521803071743.emoxtvg.cn/r?upuid=445218'
+        host = urlparse(url).netloc
+        add_headers = {
+            'Host': host,
+            "User-Agent": self.ua,
+            "Accept": "Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/wxpic,image/tpg,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "zh-CN,zh;q=0.9",
+        }
+        async with self.sessions.get(url, headers=add_headers, allow_redirects=False) as response:
+            if response.status == 302:
+                url = response.headers.get('Location')
+                # print(self.url)
+                self.url = 'http://' + urlparse(url).netloc
+            else:
+                self.log("获取base_url失败,改备用的url")
+                self.url = 'http://m224482.ww1112017.cn'
 
-    def get_read_url(self):  # line:221
-        url = f'{self.host}/new/get_read_url'  # line:222
-        res = requests.get(url, headers=self.headers)  # line:223
-        res_json = res.json()  # line:224
-        jump = res_json.get('jump')  # line:226
-        print(jump)
-        query = parse_qs(urlparse(jump).query)  # line:227
-        netloc = urlparse(jump).netloc  # line:228
-        iu = query.get('iu')[0]  # line:229
-        print(netloc)  # line:230
-        header = {
-            'Host': netloc,
-            'User-Agent': self.User_Agent,
-            'X-Requested-With': 'XMLHttpRequest',
-            'Accept': '*/*',
-            'Referer': jump,
-            'Accept-Encoding': 'gzip, deflate',
-            'Accept-Language': 'zh-CN,zh;q=0.9',
-        }  # line:239
-        print(jump)  # line:240
-        res = requests.get(jump, headers=header)  # line:241
-        header.update({'Cookie': f'PHPSESSID={res.cookies.get("PHPSESSID")}'})  # line:242
-        return iu, netloc, header  # line:243
+    async def user_info(self):
+        url = self.url + '/tuijian'
+        add_headers = {
+            "Referer": self.url + "/new",
+        }
+        res = await self.request(url, add_headers=add_headers)
+        if not res:
+            self.log("获取用户信息失败")
+            return
+        if res['code'] == 0:
+            self.log(
+                f"{res['data']['user']['username']} uid:{res['data']['user']['uid']}, 积分{res['data']['user']['score']},已阅读{res['data']['infoView']['num']}篇")
+            if 'msg' in res['data']['infoView']:
+                self.log(f"提示：{res['data']['infoView']['msg']}")
+                return False
+            self.read_num = int(res['data']['infoView']['num'])
 
-    def do_read(self):  # line:245
-        r = self.get_read_url()  # line:246
-        self.jkey = ''  # line:247
-        OO00O0O000000OO00 = 0  # line:248
-        while True:  # line:249
-            self.tuijian()  # line:250
-            params = f'?for=&zs=&pageshow&r={round(random.uniform(0, 1), 17)}&iu={r[0]}'  # line:251
-            url = f'http://{r[1]}/tuijian/do_read{params}'  # line:252
-            self.printjson("do_read::" + url)  # line:253
-            print(r[2])
-            res = requests.get(url, headers=r[2])  # line:254
-            print(self.name, '-' * 50)  # line:255
-            print("do read res ::" + res.text)  # line:256
-            res_json = res.json()  # line:257
-            if res_json.get('msg'):  # line:258
-                print(self.name, '弹出msg', res_json.get('msg'))  # line:259
-            if not res_json.get('url'):
+            return True
+        else:
+            self.log(f"获取用户信息失败：{res}")
+
+    async def get_article(self):
+
+        url = self.url + '/new/get_read_url'
+        add_headers = {
+            "Referer": self.url + "/new?upuid=445218",
+        }
+        res = await self.request(url, add_headers=add_headers, dtype='text')
+        if not res:
+            self.log("获取文章失败")
+            return
+        if 'jump' in res:
+            res = json.loads(res)
+            # self.log(f"jump 文章地址：{res['jump']}")
+            # 获取当前小时数
+            # now_num = int(time.strftime('%H', time.localtime()))
+            # if self.read_num < 2:
+            #     self.log("🤡🤡🤡,今天还没手动阅读，推送是过不了的，结束该账户任务")
+            #     return
+            # if now_num in [12,13,14]:
+            #     self.log("🤡🤡🤡,现在是中下午，推荐手动阅读或者等待3点后，如不需要请注释脚本153，154，155行")
+            #     return
+            # await self.wxpuser(f"可乐阅读[用户{self.index}]请90秒阅读2-3篇过检测", quote(url))
+            # self.log("请90秒内读文章2-3篇,没过就算了,我就在原地死等90秒!!!!")
+            # start_time = int(time.time())
+            # while True:
+            #     if await self.get_read_state():
+            #         self.log(f"👌👌👌你已经打开了阅读链接,请耐心的阅读2-3篇文章")
+            #         break
+            #     if int(time.time())- start_time > 90:
+            #         self.log(f"😓😓😓90秒到啦,本次阅读你放弃了,下次再来")
+            #         return
+            # end_time = int(time.time())
+            # await asyncio.sleep((start_time+90)-end_time)
+            await self.jump_location(res['jump'])
+        else:
+            self.log(f"获取文章失败：{res}")
+
+    async def jump_location(self, url):
+        host = urlparse(url).netloc
+        # print("jump_location:: " + url)
+        headers = {
+            "Host": host,
+            "User-Agent": self.ua,
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "zh-CN,zh;q=0.9",
+        }
+        # async with self.sessions.get(url,headers=headers, allow_redirects=False) as response:
+        #     print(response.headers)
+        #     if response.status == 302:
+        #         # 获取响应头里的set-cookie
+        #         location = response.headers.get('Location')
+        #     else:
+        #         self.logger.error(f'获取重定向地址失败，状态码：{response.status}')
+        #         return
+        add_headers = {
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/wxpic,image/tpg,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7'}
+
+        res1 = await self.request(url, add_headers=add_headers, dtype='text')
+        parsed_url = urlparse(url)
+        query_parameters = parse_qs(parsed_url.query)
+        iu = query_parameters['iu'][0]
+        url1 = 'http://' + parsed_url.netloc + f'/tuijian/do_read?for=&zs=&pageshow='
+        if '加载中' in res1:
+            self.log("加载阅读文章中")
+            # 获取url的iu参数
+            if iu is not None:
+                await asyncio.sleep(random.randint(2, 3))
+                await self.do_read(url1, iu, url)
+            else:
+                self.log("获取url参数失败")
+        else:
+            self.log(f"加载不了")
+            return
+
+    async def do_read(self, url, iu, referer, jkey=None, ):
+        if jkey is None:
+            url1 = url + f'&r={round(random.uniform(0, 1), 16)}&iu={iu}'
+        else:
+            url1 = url + f'&r={round(random.uniform(0, 1), 16)}&iu={iu}&jkey={jkey}'
+        add_headers = {
+            "Referer": referer,
+            "X-Requested-With": "XMLHttpRequest"
+        }
+        res = await self.request(url1, add_headers=add_headers)
+        # print(f"doread::: {res}")
+        if not res or not res['url']:
+            self.log("阅读失败,请稍后再试试")
+            return
+        if res['url'] != 'close' and 'jkey' in res:
+            if 'success_msg' in res:
+                self.log(f"{res['success_msg']}")
+            else:
+                self.log(f"阅读成功")
+            if await self.verify_status(res['url']):
+                pass
+            else:
                 return
-            res_url = res_json.get('url')  # line:260
-            self.printjson(res_url)  # line:261
-            if res_url == 'close':  # line:262
-                print(self.name, f'阅读结果：{res_json.get("success_msg")}')  # line:263
-                return True  # line:264
-            print(res_url)
-            if 'weixin' in res_url:  # line:265
-                OO00O0O000000OO00 += 1  # line:266
-                print(self.name,
-                      f'上一篇阅读结果：{res_json.get("success_msg", "开始阅读或者异常")}')  # line:267
-                jkey = res_json.get('jkey')  # line:268
-                self.jkey = f'&jkey={jkey}'  # line:269
-                OO00O0O0000O0OO00 = getinfo(res_url)  # line:270
-                if OO00O0O000000OO00 in push_num:  # line:271
-                    OO000O0O0OOOOOOOO = list(OO00O0O0000O0OO00)  # line:272
-                    OO000O0O0OOOOOOOO[4] = 'oneischeck'  # line:273
-                    if self.testCheck(OO000O0O0OOOOOOOO, res_url) == False:  # line:274
-                        return False  # line:275
-                else:  # line:276
-                    if self.testCheck(OO00O0O0000O0OO00, res_url) == False:  # line:277
-                        return False  # line:278
-                if self.count >= 5:  # line:280
-                    print(self.name, '过检测超过4次中止阅读')  # line:281
-                    return False  # line:282
-                O000OO000O000O0O0 = random.randint(6, 9)  # line:283
-                print(self.name, f'本次模拟读{O000OO000O000O0O0}秒')  # line:284
-                time.sleep(O000OO000O000O0O0)  # line:285
-            else:  # line:286
-                print(self.name, '未知结果')  # line:287
-                print(self.name, res_json)  # line:288
-                break  # line:289
+            await asyncio.sleep(random.randint(6, 12))
+            await self.do_read(url, iu, referer, res['jkey'])
+        else:
+            self.log(f"{res}")
 
-    def testCheck(self, OO00OO00O0O0OOO0O, url):  # line:290
-        if OO00OO00O0O0OOO0O[4] == []:  # line:291
-            print(self.name, '这个链接没有获取到微信号id', url)  # line:292
-            return True  # line:293
-        if (checkDict.get(OO00OO00O0O0OOO0O[4]) != None) or (
-                int(time.time()) - int(OO00OO00O0O0OOO0O[5]) > 60 * 60 * 24 * 30):  # line:294
-            self.count += 1  # line:295
-            if self.setstatus() == 99:  # line:296
-                print(self.name, '过检测服务器异常，使用无回调方案，请在50s内阅读检测文章')  # line:297
-                push(f'可乐阅读过检测:{self.name}', url, OO00OO00O0O0OOO0O[3], 'zhyd',
-                     self.uids, self.key)  # line:298
-                time.sleep(50)  # line:299
-                return True  # line:300
-            for O00OO0O00000OOOO0 in range(60):  # line:301
-                if O00OO0O00000OOOO0 % 30 == 0:  # line:302
-                    O0OOO00O0O0O0O0OO = f'http://175.24.153.42:8882/lookwxarticle?key={self.key}&type=TYPE&wxurl={url}'  # line:303
-                    push(f'可乐阅读过检测:{self.name}', url, OO00OO00O0O0OOO0O[3], 'zhyd',
-                         self.uids, self.key)  # line:304
-                status = self.getstatus()  # line:305
-                if status == '0':  # line:306
-                    print(self.name, '过检测文章已经阅读')  # line:307
-                    return True  # line:308
-                elif status == '1':  # line:309
-                    print(self.name, f'正在等待过检测文章阅读结果{O00OO0O00000OOOO0}秒。。。')  # line:310
-                    time.sleep(1)  # line:311
-                else:  # line:312
-                    print(self.name, status)  # line:313
-                    print(self.name, '服务器异常')  # line:314
-                    return False  # line:315
-            print(self.name, '过检测超时中止脚本防止黑号')  # line:316
-            return False  # line:317
-        else:  # line:318
-            return True  # line:319
+    async def verify_status(self, url):
+        if 'chksm' in url:
+            self.log("⚠️⚠️⚠️⚠️⚠️出现检测文章了！")
+            encoded_url = quote(url)
+            await self.wxpuser(encoded_url)
+            self.log("⚠️⚠️⚠️请20秒内点击阅读啦")
+            time.sleep(20)
+            return True
+        else:
+            self.log(f"✅这次阅读没有检测")
+            return True
 
-    def withdrawal(self):  # line:320
-        url = f'{self.host}/withdrawal'  # line:321
-        res = requests.get(url, headers=self.headers)  # line:322
-        res_json = res.json()  # line:323
-        time.sleep(3)  # line:324
-        if res_json.get('code') == 0:  # line:325
-            score = int(float(res_json['data']['user']['score']))  # line:326
-            if score >= 2000:  # line:327
-                score = 2000  # line:328
-            header = self.headers.copy()  # line:329
-            header.update({'Content-Type': 'application/x-www-form-urlencoded'})  # line:330
-            url = f'{self.host}/withdrawal/doWithdraw'  # line:331
-            data = f'amount={score}&type=wx'  # line:332
-            res = requests.post(url, headers=header, data=data)  # line:333
-            print(self.name, '提现结果', res.text)  # line:334
-        else:  # line:335
-            print(self.name, res_json)  # line:336
+    async def with_draw(self):
+        url = self.url + '/withdrawal'
+        add_headers = {
+            "Referer": self.url + "/new",
+        }
+        res = await self.request(url, add_headers=add_headers)
+        if not res:
+            self.log("获取提现信息失败")
+            return
+        if res['code'] == 0:
+            self.log(
+                f"{res['data']['user']['username']}当前积分{res['data']['user']['score']}=={round(float(res['data']['user']['score']) / 100, 2)}元")
+            tag = 60
+            if float(res['data']['user']['score']) > tag:
+                draw_money = int(float(res['data']['user']['score']))
+                await self.do_withdraw(draw_money)
+        else:
+            self.log(f"获取提现信息失败：{res}")
+            return
 
-    def run(self):  # line:337
-        if self.tuijian():  # line:339
-            self.do_read()  # line:340
-            time.sleep(2)  # line:341
-            self.withdrawal()  # line:342
+    async def do_withdraw(self, amount):
+        url = self.url + '/withdrawal/doWithdraw'
+        # data = f'amount={amount}&type=wx'
+        data = {
+            'amount': amount,
+            'type': 'wx'
+        }
+        add_headers = {
+            "Referer": self.url + "/new",
+            "Origin": self.url,
+            "X-Requested-With": "XMLHttpRequest"
+        }
+        res = await self.request(url, 'post', data=data, add_headers=add_headers, dtype='text')
+        if not res:
+            self.log("提现失败")
+            return
+        # self.log(res)
+        if '"code":0' in res:
+            self.log(f"提现成功")
+        else:
+            self.log(f"提现失败：{res}")
+
+    async def wxpuser(self, url):
+        content = "检测文章-可乐%0A请在90秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27link%27%22%3E"
+        content = content.replace('link', url)
+        wxpuser_url = f'https://wxpusher.zjiecode.com/demo/send/custom/{self.wxpusher_uid}?content={content}'
+        res = await self.request(wxpuser_url, 'get', headers={"Content-Type": "application/json"})
+        if res['success'] == True:
+            self.log(f"[通知]--->检测发送成功！")
+        else:
+            self.log(f"[通知]====>发送失败！！！！！")
+
+    async def pushAutMan(self,title, msg):
+        autman_push_config = os.getenv("autman_push_config") or ""
+        if not autman_push_config or autman_push_config == "":
+            print("❌ 推送文章到autman失败！")
+            return
+        config = json.loads(autman_push_config)
+        datapust = {
+            "token": config['token'],
+            "plat": config['plat'],
+            "groupCode": config['groupCode'],
+            "userId": config['userId'],
+            "title": title,
+            "content": msg
+        }
+        try:
+            p = self.request(config['url'], "post",data=datapust,headers=None)
+            if p.json()["ok"]:
+                print("✅ ⚠️推送文章到autman成功！⚠️")
+                return True
+            else:
+                print("❌ 推送文章到autman失败！")
+                return False
+        except:
+            print("❌ 推送文章到autman失败！")
+            return False
+
+    async def run(self,sleepTime):
+        if sleepTime:
+            self.log(f"[等待]:{sleepTime}秒,加点延迟是最好的")
+            await asyncio.sleep(sleepTime)
+        await self.get_base_url()
+        self.log(f"{'=' * 13}开始运行{'=' * 13}")
+        if await self.user_info():
+            await self.get_article()
+        await self.with_draw()
+        self.log(f"{'=' * 13}运行结束{'=' * 13}")
+        await self.close()
 
 
 def getEnv(key):  # line:343
+    inviteUrl = 'https://osk17500.vsdfrgj0986.top:10252/haobaobao/auth/20fac27802e2f2eee23f8804de20c1c2'
     env_str = os.getenv(key)  # line:344
-    if env_str == None:  # line:345
-        print(f'{key}青龙变量里没有获取到，使用本地参数')  # line:346
-        return False  # line:347
+    if env_str is None:  # line:345
+        print(f'【{key}】青龙变量里没有获取到!自动退出；入口{inviteUrl}')  # line:346
+        exit()
     try:  # line:348
         env_str = json.loads(
             env_str.replace("'", '"').replace("\n", "").replace(" ", "").replace("\t", ""))  # line:349
         return env_str  # line:350
     except Exception as e:  # line:351
-        print('错误:', e)  # line:352
-        print('你填写的变量是:', env_str)  # line:353
-        print('请检查变量参数是否填写正确')  # line:354
-        print(f'{key}使用本地参数')  # line:355
+        print(f'请检查变量[{key}]参数是否填写正确')  # line:354
+        print(f"活动入口：{inviteUrl}")
 
 
-if __name__ == '__main__':  # line:358
-    print("活动入口：http://44521803071743.emoxtvg.cn/r?upuid=445218")
-    loc_push_config = {"printf": 1, "threadingf": 0, "appToken": "xxxx"}
-    loc_klydconfig = [
-        {
-            'name': '不能',
-            'cookie': 'PHPSESSID=s7icv23bskcdqb175vb47ca9af; udtauth3=83dftG0lf3y%2F7TIzjWImkEIFDUqhiX2pRIewS%2BrBrPhcPtlm6iO%2BWxeaDql0WmEsqdX8BalGIYWc70iVmezDLYeXlq3yivWQhRakvP0oEGPGzmtGX1HiPrKhG6te6jAzcbFhNDPy99joVQgTcO3asRLurce6UENbPgAob2lpleM',
-            'key': '6b11d7230fd744c218060e41f92c1688',
-            'User_Agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 15_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.48(0x18003013) NetType/WIFI Language/zh_CN",
-            'uids': '22'
-        }
-    ]
-    # --------------------------------------------------------
-    push_config = getEnv('push_config')
-    if not push_config:
-        push_config = loc_push_config
-    print(push_config)
-    klydconfig = getEnv('klydconfig')
-    if not klydconfig:
-        klydconfig = loc_klydconfig
-    print(klydconfig)
-    printf = push_config.get('printf', 0)  # 打印调试日志0不打印，1打印，若运行异常请打开调试
-    appToken = push_config['appToken']  # 这个是填wxpusher的appToken
-    threadingf = push_config.get('threadingf', 1)
-    getmsg()
-    if threadingf == 1:
-        tl = []
-        for cg in klydconfig:
-            print('*' * 50)
-            print(f'开始执行{cg["name"]}')
-            api = WXYD(cg)
-            t = threading.Thread(target=api.run, args=())
-            tl.append(t)
-            t.start()
-            threadingt = push_config.get('threadingt', 3)
-            time.sleep(threadingt)
-        for t in tl:
-            t.join()
-    elif threadingf == 0:
-        for cg in klydconfig:
-            print('*' * 50)
-            print(f'开始执行{cg["name"]}')
-            api = WXYD(cg)
-            api.run()
-            print(f'{cg["name"]}执行完毕')
-            time.sleep(3)
-    else:
-        print('请确定推送变量中threadingf参数是否正确')
-    print('全部账号执行完成')
-    time.sleep(15)
+async def main():
+    delay = os.getenv("gbyd_delay", '10')
+    accounts = getEnv("hook_klyd")
+    random_sleep_list = [i * random.randint(int(delay), int(delay) + 5) for i in range(len(accounts))]
+
+    for index, ck in enumerate(accounts):
+        abc = TASK(index + 1, ck)
+        await abc.run(random_sleep_list[index])
+
+
+if __name__ == '__main__':
+    print("推荐阅读(入口)->http://44521803081319.cfgwozp.cn/r?upuid=445218")
+    asyncio.run(main())
