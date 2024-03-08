@@ -329,10 +329,9 @@ class TASK:
             print("❌ 推送文章到autman失败！")
             return False
 
-    async def run(self,sleepTime):
-        if sleepTime:
-            self.log(f"[等待]:{sleepTime}秒,加点延迟是最好的")
-            await asyncio.sleep(sleepTime)
+    async def run(self,):
+        sleepTime = self.index-1 * random.randint(10,15)
+        await asyncio.sleep(sleepTime)
         await self.get_base_url()
         self.log(f"{'=' * 13}开始运行{'=' * 13}")
         if await self.user_info():
@@ -358,13 +357,10 @@ def getEnv(key):  # line:343
 
 
 async def main():
-    delay = os.getenv("gbyd_delay", '10')
     accounts = getEnv("hook_klyd")
-    random_sleep_list = [i * random.randint(int(delay), int(delay) + 5) for i in range(len(accounts))]
-
     for index, ck in enumerate(accounts):
         abc = TASK(index + 1, ck)
-        await abc.run(random_sleep_list[index])
+        await abc.run()
 
 
 if __name__ == '__main__':
