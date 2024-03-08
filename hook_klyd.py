@@ -318,7 +318,7 @@ class TASK:
             "content": msg
         }
         try:
-            p = self.request(config['url'], "post",data=datapust,headers=None)
+            p = await self.request(config['url'], "post",data=datapust,headers=None)
             if p.json()["ok"]:
                 print("✅ ⚠️推送文章到autman成功！⚠️")
                 return True
