@@ -234,6 +234,7 @@ class TASK:
             self.log("⚠️⚠️⚠️⚠️⚠️出现检测文章了！")
             encoded_url = quote(url)
             await self.wxpuser(encoded_url)
+            await self.pushAutMan(encoded_url)
             self.log("⚠️⚠️⚠️请20秒内点击阅读啦")
             time.sleep(20)
             return True
