@@ -620,6 +620,7 @@ def process_account(index, account):
 
 
 if __name__ == "__main__":
+    print("【小阅阅】 推荐阅读(入口)->https://osl4.f4135.shop/yunonline/v1/auth/c5c3f97ce3894f1c08593c4a6c54dbfe?codeurl=osl4.f4135.shop&codeuserid=2&time=1709089052")
     accounts = getEnv("hook_xyy")
     print(f'******共获取到{len(accounts)}个账号******')
     # 获取CPU核心数量

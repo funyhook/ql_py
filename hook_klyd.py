@@ -328,5 +328,5 @@ async def main():
 
 
 if __name__ == '__main__':
-    print("【可乐阅读】推荐阅读(入口)->http://44521803081319.cfgwozp.cn/r?upuid=445218")
+    print("【可乐】推荐阅读(入口)->http://44521803081319.cfgwozp.cn/r?upuid=445218")
     asyncio.run(main())

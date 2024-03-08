@@ -348,7 +348,7 @@ class TASK:
 
 
 def getEnv(key):  # line:343
-    inviteUrl = 'https://osk17500.vsdfrgj0986.top:10252/haobaobao/auth/20fac27802e2f2eee23f8804de20c1c2'
+    inviteUrl = 'http://h5.alswywo.cn/pipa_read?upuid=1601717'
     env_str = os.getenv(key)  # line:344
     if env_str is None:  # line:345
         print(f'青龙变量【{key}】没有获取到!自动退出；入口{inviteUrl}')  # line:346
@@ -363,7 +363,7 @@ def getEnv(key):  # line:343
 
 
 if __name__ == '__main__':
-    print("鱼儿 推荐阅读(入口)->http://h5.alswywo.cn/pipa_read?upuid=1601717")
+    print("【鱼儿】推荐阅读(入口)->http://h5.alswywo.cn/pipa_read?upuid=1601717")
     accounts = getEnv("hook_yuer")
     for index, ck in enumerate(accounts):
         abc = TASK(index + 1, ck)

@@ -590,7 +590,7 @@ def process_account(index, account):
 
 
 if __name__ == "__main__":
-    print("阅读入口：https://osk17500.vsdfrgj0986.top:10252/haobaobao/auth/20fac27802e2f2eee23f8804de20c1c2")
+    print("【猫猫看看】阅读入口：https://osk17500.vsdfrgj0986.top:10252/haobaobao/auth/20fac27802e2f2eee23f8804de20c1c2")
     accounts = getEnv("hook_mmkk")
 
     print(f'******共获取到{len(accounts)}个账号******')
