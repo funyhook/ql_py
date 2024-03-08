@@ -127,39 +127,7 @@ async def pushAutMan(title, msg):
         return False
 
 
-def getinfo(link):
-    try:
-        r = requests.get(link, verify=False)
-        # print(link, r.text)
-        html = re.sub("\s", "", r.text)
-        biz = re.findall('varbiz="(.*?)"\|\|', html)
-        if biz:
-            biz = biz[0]
-        if biz == "" or biz == []:
-            if "__biz" in link:
-                biz = re.findall("__biz=(.*?)&", link)
-                if biz:
-                    biz = biz[0]
-        nickname = re.findall('varnickname=htmlDecode\("(.*?)"\);', html)
-        if nickname:
-            nickname = nickname[0]
-        user_name = re.findall('varuser_name="(.*?)";', html)
-        if user_name:
-            user_name = user_name[0]
-        msg_title = re.findall("varmsg_title='(.*?)'\.html\(", html)
-        if msg_title:
-            msg_title = msg_title[0]
-        text = f"公众号唯一标识：{biz}|文章:{msg_title}|作者:{nickname}|账号:{user_name}"
-        return nickname, user_name, msg_title, text, biz
-    except Exception as e:
-        print("❌ 提取文章信息失败")
-        return False
 
-
-def ts():
-    return (
-            str(int(time.time())) + "000"
-    )
 
 
 checkDict = {
@@ -183,6 +151,7 @@ checkDict = {
 
 class HHYD:
     def __init__(self, i, cg):
+        self.inviteUrl = None
         self.remain = None
         self.Cookie = cg["Cookie"]
         self.index = i + 1
@@ -211,11 +180,16 @@ class HHYD:
         self.sec.verify = False
         self.sec.headers = self.headers
         self.lastbiz = ""
+        self.datTimeformat = '%Y-%m-%d %H:%M:%S'
+
+    def ts(self):
+        return str(int(time.time())) + "000"
+
+    def timeStr(self):
+        return datetime.now().strftime(self.datTimeformat)
 
     def log(self, msg):
-        timeStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        print(f"{timeStr}-用户{self.index}【{self.name}】：{msg}")
-
+        print(f"用户{self.index}【{self.name}】：{msg}")
 
     def user_info(self):
         u = f"http://{self.domnainHost}/haobaobao/user"
@@ -241,8 +215,9 @@ class HHYD:
             rj = r.json()
             self.remain_gold = math.floor(int(rj.get("data").get("remain_gold")))
             self.remain = float(rj.get("data").get("remain"))
-            content = f'【账号】：{self.name}】\n【今日阅读】：{rj.get("data").get("dayreads")}篇 \n【当前金币】：{rj.get("data").get("remain_gold")}个 \n【当前余额】：{self.remain}元'
-            self.log(f'今日已经阅读了{rj.get("data").get("dayreads")}篇文章 当前金币{rj.get("data").get("remain_gold")} 当前余额{self.remain}')
+            content = f'【账号】：{self.name}\n【今日阅读】：{rj.get("data").get("dayreads")}篇 \n【当前金币】：{rj.get("data").get("remain_gold")}个 \n【当前余额】：{self.remain}元'
+            self.log(
+                f'今日已经阅读了{rj.get("data").get("dayreads")}篇文章 当前金币{rj.get("data").get("remain_gold")} 当前余额{self.remain}')
             return content
         except:
             self.log("获取金币失败")
@@ -304,6 +279,33 @@ class HHYD:
         }
         return uk, h
 
+    def getinfo(self,link):
+        try:
+            r = requests.get(link, verify=False)
+            html = re.sub("\s", "", r.text)
+            biz = re.findall('varbiz="(.*?)"\|\|', html)
+            if biz:
+                biz = biz[0]
+            if biz == "" or biz == []:
+                if "__biz" in link:
+                    biz = re.findall("__biz=(.*?)&", link)
+                    if biz:
+                        biz = biz[0]
+            nickname = re.findall('varnickname=htmlDecode\("(.*?)"\);', html)
+            if nickname:
+                nickname = nickname[0]
+            user_name = re.findall('varuser_name="(.*?)";', html)
+            if user_name:
+                user_name = user_name[0]
+            msg_title = re.findall("varmsg_title='(.*?)'\.html\(", html)
+            if msg_title:
+                msg_title = msg_title[0]
+            text = f"公众号唯一标识：{biz}|文章:{msg_title}|作者:{nickname}|账号:{user_name}"
+            return nickname, user_name, msg_title, text, biz
+        except Exception as e:
+            self.log(f"提取文章信息失败❌ {e}")
+            return False
+
     def read(self):
         info = self.getKey()
         if not info:
@@ -318,7 +320,7 @@ class HHYD:
             res = {"errcode": -1}
             refreshTime = 0
             while res["errcode"] != 0:
-                timeStamp = str(ts())
+                timeStamp = str(self.ts())
                 mysign = hashlib.md5((info[1]["Origin"].replace("https://", "").replace("/",
                                                                                         "") + timeStamp + "Lj*?Q3#pOviW").encode()).hexdigest()
                 self.params = {
@@ -336,7 +338,8 @@ class HHYD:
                 else:
                     decoded_str = json.loads(r.text)
                     if decoded_str["msg"]:
-                        self.log(f"第[{refreshTime + 1}]次获取第[{arctileTime}]篇阅读文章跳转链接失败：{decoded_str['msg']}")
+                        self.log(
+                            f"第[{refreshTime + 1}]次获取第[{arctileTime}]篇阅读文章跳转链接失败：{decoded_str['msg']}")
                         return False
                     else:
                         self.log(f"第[{refreshTime + 1}]次获取第[{arctileTime}]篇阅读文章跳转链接失败：{r.text}")
@@ -350,7 +353,8 @@ class HHYD:
                 try:
                     returnLink = res.get("data").get("link")
                 except Exception as e:
-                    self.log(f"⚠️ 获取阅读第[{arctileTime}]篇文章链接失败，疑似台子接口太垃圾，崩了，返回数据为：{res.get('data')}")
+                    self.log(
+                        f"⚠️ 获取阅读第[{arctileTime}]篇文章链接失败，疑似台子接口太垃圾，崩了，返回数据为：{res.get('data')}")
                     continue
                 if "mp.weixin.qq.com" in returnLink:
                     self.log(" 阅读第[{arctileTime}]篇微信文章")
@@ -358,9 +362,9 @@ class HHYD:
                 else:
                     # self.log(" 阅读第[{arctileTime}]篇文章准备跳转：{link}")
                     wechatPostLink = self.jump(returnLink)
-                    self.log(" 阅读第[{arctileTime}]篇微信文章")
-                self.log(" 阅读第[{arctileTime}]篇文章")
-                a = getinfo(wechatPostLink)
+                    self.log(f"阅读第[{arctileTime}]篇微信文章")
+                self.log(f"阅读第[{arctileTime}]篇文章")
+                a = self.getinfo(wechatPostLink)
                 if not a:
                     self.log(f"⚠️ 因获取公众号文章信息不成功，导致阅读第[{arctileTime}]篇文章 失败……")
                     return False
@@ -368,7 +372,8 @@ class HHYD:
                 # 如果是检测特征到的文章 或者 后一篇文章与前一篇相似
                 if checkDict.get(a[4]) is not None or (res.get("data").get("a") == 2) or ("&chksm=" in wechatPostLink):
                     sleepTime = random.randint(15, 20)
-                    self.log(f"⚠️ 账号[{self.name}]阅读第[{arctileTime}]篇文章 检测到疑似检测文章，正在推送，等待过检测，等待时间：{sleepTime}秒。。。")
+                    self.log(
+                        f"⚠️ 账号[{self.name}]阅读第[{arctileTime}]篇文章 检测到疑似检测文章，正在推送，等待过检测，等待时间：{sleepTime}秒。。。")
                     asyncio.run(pushAutMan('阅读检测推送【猫猫看看】',
                                            f"快点下方链接\n{wechatPostLink}\n等待时间：{sleepTime}秒 ,别耽搁时间了"))
                     asyncio.run(pushWechatBussiness(wechatPostLink))
@@ -390,7 +395,8 @@ class HHYD:
                 r1 = requests.get(u1, headers=info[1], verify=False)
                 if r1.text and r1.json():
                     try:
-                        self.log(f"✅ 阅读第[{arctileTime}]篇文章所得金币：{r1.json()['data']['gold']}个，账户当前金币：{r1.json()['data']['last_gold']}个，今日已读：{r1.json()['data']['day_read']}次，今日未读 {r1.json()['data']['remain_read']}篇文章")
+                        self.log(
+                            f"✅ 阅读第[{arctileTime}]篇文章所得金币：{r1.json()['data']['gold']}个，账户当前金币：{r1.json()['data']['last_gold']}个，今日已读：{r1.json()['data']['day_read']}次，今日未读 {r1.json()['data']['remain_read']}篇文章")
                     except Exception as e:
                         self.log(f"❌阅读第[{arctileTime}]篇文章异常：{r1.json().get('msg')}")
                         if "本次阅读无效" in r1.json().get("msg"):
@@ -512,7 +518,7 @@ class HHYD:
             "Cookie": self.Cookie,
         }
         try:
-            r = requests.get(getNewInviteUrl(), headers=headers, verify=False, allow_redirects=False)
+            r = requests.get(self.getNewInviteUrl(), headers=headers, verify=False, allow_redirects=False)
             self.domnainHost = r.headers.get("Location").split("/")[2]
             # print(r.text)
             self.log(f"提取到的域名：{self.domnainHost}")
@@ -542,8 +548,20 @@ class HHYD:
             self.log("初始化失败,请检查你的ck")
             return False
 
+    def getNewInviteUrl(self):
+        r = requests.get("https://code.sywjmlou.com.cn/baobaocode.php", verify=False).json()
+        if r.get("code") == 0:
+            newEntryUrl = r.get("data").get("luodi")
+            parsed_url = urlparse(newEntryUrl)
+            host = parsed_url.hostname
+            self.inviteUrl = f"https://s1i6.1obg.shop/haobaobao/auth/20fac27802e2f2eee23f8804de20c1c2".replace(
+                "s1i6.1obg.shop", host or "s1i6.1obg.shop")
+        else:
+            self.inviteUrl = "https://s1i6.1obg.shop/haobaobao/auth/20fac27802e2f2eee23f8804de20c1c2"
+        return self.inviteUrl
+
     def run(self):
-        self.log(f"{'=' * 13}开始运行{'=' * 13}")
+        self.log(f"{'=' * 13}{self.timeStr()}开始运行{'=' * 13}")
         if self.init():
             self.user_info()
             self.gold()
@@ -553,20 +571,7 @@ class HHYD:
             time.sleep(1)
             self.withdraw()
             return run_msg
-        self.log(f"{'=' * 13}运行结束{'=' * 13}")
-
-
-def getNewInviteUrl():
-    r = requests.get("https://code.sywjmlou.com.cn/baobaocode.php", verify=False).json()
-    if r.get("code") == 0:
-        newEntryUrl = r.get("data").get("luodi")
-        parsed_url = urlparse(newEntryUrl)
-        host = parsed_url.hostname
-        return f"https://s1i6.1obg.shop/haobaobao/auth/20fac27802e2f2eee23f8804de20c1c2".replace(
-            "s1i6.1obg.shop", host or "s1i6.1obg.shop"
-        )
-    else:
-        return "https://s1i6.1obg.shop/haobaobao/auth/20fac27802e2f2eee23f8804de20c1c2"
+        self.log(f"{'=' * 13}{self.timeStr()}运行结束{'=' * 13}")
 
 
 def getEnv(key):  # line:343
@@ -584,8 +589,8 @@ def getEnv(key):  # line:343
         print(f"活动入口：{inviteUrl}")
 
 
-def process_account(index, account):
-    read = HHYD(index, account)
+def process_account(i, ck):
+    read = HHYD(i, ck)
     return read.run()
 
 
@@ -609,6 +614,6 @@ if __name__ == "__main__":
     #     concurrent.futures.wait(futures)
     # notify.send("[猫猫看看阅读推送]", push_msg)
     for index, account in enumerate(accounts):
-        push_msg +=f"\n{'-'*50}\n"
-        push_msg +=process_account(index, account)
+        push_msg += f"\n{'-' * 50}\n"
+        push_msg += process_account(index, account)
     notify.send("[猫猫看看阅读推送]", push_msg)
