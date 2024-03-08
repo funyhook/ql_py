@@ -1,3 +1,5 @@
+import urllib3
+
 oo0o = '''
 cron: 30 */30 8-22 * * *
 new Env('f可乐阅读');
@@ -58,7 +60,6 @@ User-Agent参数可以抓包任意接口在headers中看到
 定时运行每半个小时一次
 '''  # line:54
 
-import hashlib  # line:61
 import json  # line:60
 import os  # line:58
 import random  # line:57
@@ -67,8 +68,9 @@ import threading  # line:59
 import time  # line:62
 from urllib.parse import urlparse, parse_qs  # line:63
 
+import urllib3
 import requests  # line:55
-
+urllib3.disable_warnings()
 checkDict = {'onenotischeck': ['第一篇文章', '过检测'], }  # line:66
 push_num = [-1]  # line:67
 
@@ -228,18 +230,19 @@ class WXYD:  # line:147
         header = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700145B) WindowsWechat(0x6309192b) XWEB/8655 Flue'}  # line:194
         try:  # line:195
-            res = requests.get(url, headers=header,
-                               allow_redirects=False)  # line:196
-            location = res.headers.get('Location')  # line:197
-            netloc = urlparse(location).netloc  # line:198
-            return f'http://{netloc}'  # line:199
-        except:  # line:200
-            print('err0')  # line:201
-            return 'http://m382862.xedi8rkn.shop'  # line:202
+            res = requests.get(url, headers=header, allow_redirects=False)  # line:196
+            location = res.headers.get('Location')
+            netloc = urlparse(location).netloc
+            print(netloc)
+            return f'http://{netloc}'
+        except Exception as e:
+            print(f'err0{e}')
+            return 'http://m382862.xedi8rkn.shop'
 
     def tuijian(self):  # line:203
         url = f'{self.host}/tuijian'  # line:204
-        res = requests.get(url, headers=self.headers)  # line:205
+        print(url)
+        res = requests.get(f'{self.host}/tuijian', headers=self.headers,verify=False)  # line:205
         try:  # line:206
             res_json = res.json()  # line:207
             if res_json.get('code') == 0:  # line:208
@@ -288,11 +291,11 @@ class WXYD:  # line:147
             self.tuijian()  # line:250
             params = f'?for=&zs=&pageshow&r={round(random.uniform(0, 1), 17)}&iu={r[0]}'  # line:251
             url = f'http://{r[1]}/tuijian/do_read{params}'  # line:252
-            self.printjson("do_read::"+url)  # line:253
+            self.printjson("do_read::" + url)  # line:253
             print(r[2])
             res = requests.get(url, headers=r[2])  # line:254
             print(self.name, '-' * 50)  # line:255
-            print("do read res ::"+res.text)  # line:256
+            print("do read res ::" + res.text)  # line:256
             res_json = res.json()  # line:257
             if res_json.get('msg'):  # line:258
                 print(self.name, '弹出msg', res_json.get('msg'))  # line:259
@@ -411,9 +414,9 @@ if __name__ == '__main__':  # line:358
     loc_klydconfig = [
         {
             'name': '不能',
-            'cookie': 'udtauth3=9e74nNrUP36o6g2vIhYUQHaZhsjuaDZB9NVKpoAs2S8cSQ1Ow%2FZxUuUO%2FAa98csD%2FfuaUwG%2FVOKf3bXG644lkttcIjv6goaTeYTium8NC8t11Iw2wT1zppKZ7%2F8uSaL6aFL4R70ROIK9dSLrYpesYOJnxzoPbVlA1USDPfUFh3Y; PHPSESSID=nv1tef9co64bdlrf5s8i0iavnk',
+            'cookie': 'PHPSESSID=s7icv23bskcdqb175vb47ca9af; udtauth3=83dftG0lf3y%2F7TIzjWImkEIFDUqhiX2pRIewS%2BrBrPhcPtlm6iO%2BWxeaDql0WmEsqdX8BalGIYWc70iVmezDLYeXlq3yivWQhRakvP0oEGPGzmtGX1HiPrKhG6te6jAzcbFhNDPy99joVQgTcO3asRLurce6UENbPgAob2lpleM',
             'key': '6b11d7230fd744c218060e41f92c1688',
-            'User_Agent':"Mozilla/5.0 (iPhone; CPU iPhone OS 15_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.48(0x18003013) NetType/WIFI Language/zh_CN",
+            'User_Agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 15_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.48(0x18003013) NetType/WIFI Language/zh_CN",
             'uids': '22'
         }
     ]
