@@ -124,6 +124,33 @@ def pushAutMan(title, msg):
         print("❌ 推送文章到autman失败！")
         return False
 
+def getNewInviteUrl():  # line:594:def getNewInviteUrl():
+    r = requests.get("https://www.filesmej.cn/waidomain.php", verify=False).json()
+    if r.get("code") == 0:  # line:596:if r.get("code") == 0:
+        newEntryUrl = r.get("data").get("luodi")
+        parsed_url = urlparse(newEntryUrl)
+        host = parsed_url.hostname
+        return f"https://u7ds.sy673.shop/yunonline/v1/auth/2639bb95daba1d99e5338a8c2e21e2f0?codeurl=u7ds.sy673.shop&codeuserid=2&time=1709089052".replace(
+            "u7ds.sy673.shop", host or "u7ds.sy673.shop"
+        )  # line:602:)
+    else:  # line:603:else:
+        return "https://osl4.f4135.shop/yunonline/v1/auth/c5c3f97ce3894f1c08593c4a6c54dbfe?codeurl=osl4.f4135.shop&codeuserid=2&time=1709089052"  # line:604:return "https://u7ds.sy673.shop/yunonline/v1/auth/2639bb95daba1d99e5338a8c2e21e2f0?codeurl=u7ds.sy673.shop&codeuserid=2&time=1709021176"
+
+
+def getEnv(key):  # line:343
+    inviteUrl = getNewInviteUrl()
+    env_str = os.getenv(key)  # line:344
+    if env_str is None:  # line:345
+        print(f'【{key}】青龙变量里没有获取到!自动退出；入口{inviteUrl}')  # line:346
+        exit()
+    try:  # line:348
+        env_str = json.loads(
+            env_str.replace("'", '"').replace("\n", "").replace(" ", "").replace("\t", ""))  # line:349
+        return env_str  # line:350
+    except Exception as e:  # line:351
+        print(f'请检查变量[{key}]参数是否填写正确')  # line:354
+        print(f"活动入口：{inviteUrl}")
+
 
 def getinfo(link):
     try:  # line:92:try:
@@ -210,69 +237,65 @@ class HHYD:  # line:145:class HHYD:
         self.lastbiz = ""  # line:176:self.lastbiz = ""
 
     def user_info(self):  # line:178:def user_info(self):
-        u = f"http://{self.domnainHost}/yunonline/v1/sign_info?time={ts()}&unionid={self.unionId}"  # line:179:u = f"http://{self.domnainHost}/yunonline/v1/sign_info?time={ts()}&unionid={self.unionId}"
-        r = ""  # line:180:r = ""
-        try:  # line:181:try:
+        u = f"http://{self.domnainHost}/yunonline/v1/sign_info?time={ts()}&unionid={self.unionId}"
+        r = ""
+        try:
             r = self.sec.get(u)
             rj = r.json()
             if rj.get("errcode") == 0:
                 print(
                     f"账号[{self.name}]获取信息成功，当前阅读文章每篇奖励 {r.json()['data']['award']}个金币"
                 )  # line:187:)
-                return True  # line:188:return True
-            else:  # line:189:else:
+                return True
+            else:
                 print(f"账号[{self.name}]获取用户信息失败，账号异常 或者 ysm_uid无效，请检测ysm_uid是否正确")
-                return False  # line:191:return False
-        except:  # line:192:except:
-            print(r.text)  # line:193:print(r.text)
-            print(
-                f"账号[{self.name}]获取用户信息失败,ysm_uid无效，请检测ysm_uid是否正确"
-            )  # line:194:print(f"账号[{self.name}]获取用户信息失败,ysm_uid无效，请检测ysm_uid是否正确")
-            return False  # line:195:return False
+                return False
+        except:
+            print(r.text)
+            print(f"账号[{self.name}]获取用户信息失败,ysm_uid无效，请检测ysm_uid是否正确")
+            return False
 
-    def hasWechat(self):  # line:197:def hasWechat(self):
-        r = ""  # line:198:r = ""
-        try:  # line:199:try:
-            u = f"http://{self.domnainHost}/yunonline/v1/hasWechat?unionid={self.unionId}"  # line:200:u = f"http://{self.domnainHost}/yunonline/v1/hasWechat?unionid={self.unionId}"
+    def hasWechat(self):
+        r = ""
+        try:
+            u = f"http://{self.domnainHost}/yunonline/v1/hasWechat?unionid={self.unionId}"
             r = self.sec.get(u)
             print(f"账号[{self.name}]判断公众号任务数量：{r.json()['data']['has']}")
         except:  # line:203:except:
             print(f"账号[{self.name}]判断是否有公众号任务失败：{r.text}")
-            return False  # line:205:return False
+            return False
 
-    def gold(self):  # line:207:def gold(self):
-        r = ""  # line:208:r = ""
-        try:  # line:209:try:
-            u = f"http://{self.domnainHost}/yunonline/v1/gold?unionid={self.unionId}&time={ts()}"  # line:210:u = f"http://{self.domnainHost}/yunonline/v1/gold?unionid={self.unionId}&time={ts()}"
+    def gold(self):
+        r = ""
+        try:
+            u = f"http://{self.domnainHost}/yunonline/v1/gold?unionid={self.unionId}&time={ts()}"
             r = self.sec.get(u)
-            rj = r.json()  # line:213:rj = r.json()
-            self.remain = math.floor(
-                int(rj.get("data").get("last_gold"))
-            )  # line:214:self.remain = math.floor(int(rj.get("data").get("last_gold")))
+            rj = r.json()
+            self.remain = math.floor(int(rj.get("data").get("last_gold")))
             print(
-                f'账号[{self.name}]今日已经阅读了{rj.get("data").get("day_read")}篇文章,剩余{rj.get("data").get("remain_read")}未阅读，今日获取金币{rj.get("data").get("day_gold")}，剩余{self.remain}')  # line:217:)
-        except:  # line:218:except:
+                f'账号[{self.name}]今日已经阅读了{rj.get("data").get("day_read")}篇文章,剩余{rj.get("data").get("remain_read")}未阅读，今日获取金币{rj.get("data").get("day_gold")}，剩余{self.remain}')
+        except:
             print(f"账号[{self.name}]获取金币失败")
-            return False  # line:220:return False
+            return False
 
-    def getKey(self):  # line:222:def getKey(self):
-        uk = ""  # line:223:uk = ""
-        ukRes = None  # line:224:ukRes = None
-        for i in range(10):  # line:225:for i in range(10):
-            u = f"http://{self.domnainHost}/yunonline/v1/wtmpdomain"  # line:226:u = f"http://{self.domnainHost}/yunonline/v1/wtmpdomain"
-            p = f"unionid={self.unionId}"  # line:228:p = f"unionid={self.unionId}"
+    def getKey(self):
+        uk = ""
+        ukRes = None
+        for i in range(10):
+            u = f"http://{self.domnainHost}/yunonline/v1/wtmpdomain"
+            p = f"unionid={self.unionId}"
             r = requests.post(u, headers=self.headers, data=p, verify=False)
-            rj = r.json()  # line:231:rj = r.json()
+            rj = r.json()
             domain = rj.get("data").get("domain")
             pp = parse_qs(urlparse(domain).query)
             hn = urlparse(domain).netloc
             uk = pp.get("uk")[0]
             ukRes = r.text
-            if uk:  # line:238:if uk:
-                break  # line:239:break
-        if uk == "":  # line:240:if uk == "":
+            if uk:
+                break
+        if uk == "":
             print(f"账号[{self.name}]获取uk失败，返回错误：{ukRes}")
-            return  # line:242:return
+            return
         time.sleep(8)  # line:243:time.sleep(8)
         r = requests.get(
             domain,
@@ -589,32 +612,6 @@ class HHYD:  # line:145:class HHYD:
             self.withdraw()
 
 
-def getNewInviteUrl():  # line:594:def getNewInviteUrl():
-    r = requests.get("https://www.filesmej.cn/waidomain.php", verify=False).json()
-    if r.get("code") == 0:  # line:596:if r.get("code") == 0:
-        newEntryUrl = r.get("data").get("luodi")
-        parsed_url = urlparse(newEntryUrl)
-        host = parsed_url.hostname
-        return f"https://u7ds.sy673.shop/yunonline/v1/auth/2639bb95daba1d99e5338a8c2e21e2f0?codeurl=u7ds.sy673.shop&codeuserid=2&time=1709089052".replace(
-            "u7ds.sy673.shop", host or "u7ds.sy673.shop"
-        )  # line:602:)
-    else:  # line:603:else:
-        return "https://osl4.f4135.shop/yunonline/v1/auth/c5c3f97ce3894f1c08593c4a6c54dbfe?codeurl=osl4.f4135.shop&codeuserid=2&time=1709089052"  # line:604:return "https://u7ds.sy673.shop/yunonline/v1/auth/2639bb95daba1d99e5338a8c2e21e2f0?codeurl=u7ds.sy673.shop&codeuserid=2&time=1709021176"
-
-
-def getEnv(key):  # line:343
-    inviteUrl = getNewInviteUrl()
-    env_str = os.getenv(key)  # line:344
-    if env_str is None:  # line:345
-        print(f'【{key}】青龙变量里没有获取到!自动退出；入口{inviteUrl}')  # line:346
-        exit()
-    try:  # line:348
-        env_str = json.loads(
-            env_str.replace("'", '"').replace("\n", "").replace(" ", "").replace("\t", ""))  # line:349
-        return env_str  # line:350
-    except Exception as e:  # line:351
-        print(f'请检查变量[{key}]参数是否填写正确')  # line:354
-        print(f"活动入口：{inviteUrl}")
 
 
 def process_account(index, account):
