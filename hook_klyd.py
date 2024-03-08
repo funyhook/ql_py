@@ -33,6 +33,7 @@ import logging
 import os
 import random
 import time
+from datetime import datetime
 from typing import Optional, Dict
 from urllib.parse import urlparse, parse_qs, quote
 
@@ -54,10 +55,11 @@ class TASK:
         self.sessions = aiohttp.ClientSession()
         self.logger = logging.getLogger(f"用户{self.index}")
         self.content = ''
+        self.read_count = 0
 
     def log(self, msg):  # 改写一下日志
-        print(f"用户{self.index}｜{self.name}:{msg}")
-        # self.content += str(msg) + '\n'
+        timeStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        print(f"{timeStr}-用户{self.index}【{self.name}】：{msg}")
 
     async def close(self):
         await self.sessions.close()
@@ -144,49 +146,12 @@ class TASK:
             return
         if 'jump' in res:
             res = json.loads(res)
-            # self.log(f"jump 文章地址：{res['jump']}")
-            # 获取当前小时数
-            # now_num = int(time.strftime('%H', time.localtime()))
-            # if self.read_num < 2:
-            #     self.log("🤡🤡🤡,今天还没手动阅读，推送是过不了的，结束该账户任务")
-            #     return
-            # if now_num in [12,13,14]:
-            #     self.log("🤡🤡🤡,现在是中下午，推荐手动阅读或者等待3点后，如不需要请注释脚本153，154，155行")
-            #     return
-            # await self.wxpuser(f"可乐阅读[用户{self.index}]请90秒阅读2-3篇过检测", quote(url))
-            # self.log("请90秒内读文章2-3篇,没过就算了,我就在原地死等90秒!!!!")
-            # start_time = int(time.time())
-            # while True:
-            #     if await self.get_read_state():
-            #         self.log(f"👌👌👌你已经打开了阅读链接,请耐心的阅读2-3篇文章")
-            #         break
-            #     if int(time.time())- start_time > 90:
-            #         self.log(f"😓😓😓90秒到啦,本次阅读你放弃了,下次再来")
-            #         return
-            # end_time = int(time.time())
-            # await asyncio.sleep((start_time+90)-end_time)
             await self.jump_location(res['jump'])
         else:
             self.log(f"获取文章失败：{res}")
 
     async def jump_location(self, url):
         host = urlparse(url).netloc
-        # print("jump_location:: " + url)
-        headers = {
-            "Host": host,
-            "User-Agent": self.ua,
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Encoding": "gzip, deflate",
-            "Accept-Language": "zh-CN,zh;q=0.9",
-        }
-        # async with self.sessions.get(url,headers=headers, allow_redirects=False) as response:
-        #     print(response.headers)
-        #     if response.status == 302:
-        #         # 获取响应头里的set-cookie
-        #         location = response.headers.get('Location')
-        #     else:
-        #         self.logger.error(f'获取重定向地址失败，状态码：{response.status}')
-        #         return
         add_headers = {
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/wxpic,image/tpg,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7'}
 
@@ -208,6 +173,7 @@ class TASK:
             return
 
     async def do_read(self, url, iu, referer, jkey=None, ):
+        self.read_count += 1
         if jkey is None:
             url1 = url + f'&r={round(random.uniform(0, 1), 16)}&iu={iu}'
         else:
@@ -219,13 +185,13 @@ class TASK:
         res = await self.request(url1, add_headers=add_headers)
         # print(f"doread::: {res}")
         if not res or not res['url']:
-            self.log("阅读失败,请稍后再试试")
+            self.log(f"第{self.read_count}次阅读失败,请稍后再试试")
             return
         if res['url'] != 'close' and 'jkey' in res:
             if 'success_msg' in res:
-                self.log(f"{res['success_msg']}")
+                self.log(f"第{self.read_count}次：{res['success_msg']}")
             else:
-                self.log(f"阅读成功")
+                self.log(f"第{self.read_count}次阅读成功")
             if await self.verify_status(res['url']):
                 pass
             else:
@@ -237,15 +203,15 @@ class TASK:
 
     async def verify_status(self, url):
         if 'chksm' in url:
-            self.log("❗️❗️❗️❗️出现检测文章了！")
+            self.log(f"第{self.read_count}次️出现检测文章了❗️❗️❗️❗")
             encoded_url = quote(url)
             await self.wxpuser(encoded_url)
             await self.pushAutMan("微信阅读检测【可乐】\n请20秒内点击下方链接", url)
-            self.log("❗️❗️❗️请20秒内点击阅读啦")
+            self.log(f"第{self.read_count}次️ ️请20秒内点击阅读啦❗️❗️❗")
             time.sleep(20)
             return True
         else:
-            self.log(f"✅这次阅读没有检测")
+            self.log(f"第{self.read_count}次️ 这次阅读没有检测✅")
             return True
 
     async def with_draw(self):
