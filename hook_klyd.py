@@ -261,15 +261,15 @@ class TASK:
         content = content.replace('link', url)
         wxpuser_url = f'https://wxpusher.zjiecode.com/demo/send/custom/{self.wxpusher_uid}?content={content}'
         res = await self.request(wxpuser_url, 'get', headers={"Content-Type": "application/json"})
-        if res['success'] == True:
-            self.log(f"[通知]--->检测发送成功！")
+        if res['success']:
+            self.log(f"第{self.read_count}次，[通知]--->检测发送成功！✅")
         else:
-            self.log(f"[通知]====>发送失败！！！！！")
+            self.log(f"第{self.read_count}次，[通知]====>发送失败❌")
 
-    async def pushAutMan(self,title, msg):
+    async def pushAutMan(self, title, msg):
         autman_push_config = os.getenv("autman_push_config") or ""
         if not autman_push_config or autman_push_config == "":
-            print("❌ 推送文章到autman失败！")
+            self.log(f"第{self.read_count}次，推送文章到autman失败！")
             return
         config = json.loads(autman_push_config)
         datapust = {
@@ -280,14 +280,18 @@ class TASK:
             "title": title,
             "content": msg
         }
+        headers = {
+            "Content-Type": "application/json"
+        }
         try:
-            p = await self.request(config['url'], "post", data=json.dumps(datapust),headers={"Content-Type": "application/json"})
+
+            p = await self.request(config['url'], "post", data=json.dumps(datapust), headers=headers)
             if p["ok"]:
-                print("✅推送文章到autman成功✅")
+                self.log(f"第{self.read_count}次，推送文章到autman成功✅")
             else:
-                print(" 😭😭😭推送文章到autman失败😭😭😭")
+                self.log(f"第{self.read_count}次，推送文章到autman失败😭😭😭")
         except Exception as e:
-            print(f"❌ 推送文章到autman异常！！！！{e}")
+            self.log(f"第{self.read_count}次，推送文章到autman异常️❗️❗{e}")
 
     async def run(self, ):
         sleepTime = self.index - 1 * random.randint(10, 15)
