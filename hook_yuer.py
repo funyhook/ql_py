@@ -5,7 +5,7 @@
 请勿将脚本擅自分享传播至任何地方,请勿将邀请更改为自己的邀请拉取人头,
 如果你这样做了,我是没办法怎么样你的
 阅读：鱼儿阅读
-new Env("可乐阅读")
+new Env("鱼儿阅读")
 cron: 9 9-21/2 * * *
 反馈群：https://t.me/vhook_wool
 推荐阅读 入口-> http://h5.alswywo.cn/pipa_read?upuid=1601717
