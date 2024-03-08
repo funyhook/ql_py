@@ -4,11 +4,11 @@
 请勿擅自修改脚本注释,
 请勿将脚本擅自分享传播至任何地方,请勿将邀请更改为自己的邀请拉取人头,
 如果你这样做了,我是没办法怎么样你的
-阅读：可乐阅读
+阅读：鱼儿阅读
 new Env("可乐阅读")
 cron: 9 9-21/2 * * *
 反馈群：https://t.me/vhook_wool
-走邀请:推荐阅读 -> http://44521803081319.cfgwozp.cn/r?upuid=445218
+推荐阅读 入口-> http://h5.alswywo.cn/pipa_read?upuid=1601717
 (如无法打开，请复制链接在手机浏览器打开，获取最新入口)
 export hook_klyd="[
     {
@@ -367,7 +367,7 @@ def getEnv(key):  # line:343
 
 
 if __name__ == '__main__':
-    print("鱼儿 推荐阅读(入口)->http://44521803081319.cfgwozp.cn/r?upuid=445218")
+    print("鱼儿 推荐阅读(入口)->http://h5.alswywo.cn/pipa_read?upuid=1601717")
     accounts = getEnv("hook_yuer")
     for index, ck in enumerate(accounts):
         abc = TASK(index + 1, ck)
