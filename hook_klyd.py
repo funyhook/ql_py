@@ -19,6 +19,15 @@ export hook_klyd="[
         'wxpusher_uid': ''
     }
 ]"
+
+autman 推送配置
+export autman_push_config='{
+    "url":"http://ip:port/push",
+    "token":"自定义token",
+    "plat":"wb",
+    "userId":"用户ID",
+    "groupCode":"群号"
+}'
 """
 
 import asyncio
