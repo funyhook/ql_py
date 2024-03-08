@@ -5,8 +5,7 @@
 new Env("鱼儿阅读")
 cron: 9 9-21/2 * * *
 反馈群：https://t.me/vhook_wool
-推荐阅读 入口-> http://h5.alswywo.cn/pipa_read?upuid=1601717
-(如无法打开，请复制链接在手机浏览器打开，获取最新入口)
+推荐阅读 入口-> http://h5.alswywo.cn/pipa_read?upuid=1601717 (如无法打开，请复制链接在手机浏览器打开，获取最新入口)
 export hook_yuer="[
     {
         'name': '不能',
@@ -17,7 +16,7 @@ export hook_yuer="[
     }
 ]"
 
-autman 推送配置
+autman 推送配置 需要市场安装【消息推送API】插件
 export autman_push_config='{
     "url":"http://ip:port/push",
     "token":"自定义token",
