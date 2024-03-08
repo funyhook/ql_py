@@ -189,7 +189,7 @@ class TASK:
         query_parameters = parse_qs(parsed_url.query)
         iu = query_parameters['iu'][0]
         url1 = f'https://h5.127-server.xyz/read_task/do_read?iu={iu}&type=7&pageshow'
-        if '加载中' in res:
+        if '加载中' in r.text:
             self.log("加载阅读文章中")
             # 获取url的iu参数
             if iu is not None:
@@ -293,8 +293,8 @@ class TASK:
         if not res:
             self.log("提现失败")
             return
-        # self.log(res)
-        if res['code'] == 0:
+        self.log(f"提现返回结果：{res.text}")
+        if res.json()['code'] == 0:
             self.log(f"提现成功")
         else:
             self.log(f"提现失败：{res}")
