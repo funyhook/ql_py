@@ -215,7 +215,7 @@ class HHYD:
             rj = r.json()
             self.remain_gold = math.floor(int(rj.get("data").get("remain_gold")))
             self.remain = float(rj.get("data").get("remain"))
-            content = f'【账号】：{self.name}\n【今日阅读】：{rj.get("data").get("dayreads")}篇 \n【当前金币】：{rj.get("data").get("remain_gold")}个 \n【当前余额】：{self.remain}元'
+            content = f'【账号】：{self.name} \n今日阅读：{rj.get("data").get("dayreads")}篇｜当前金币：{rj.get("data").get("remain_gold")}个｜当前余额：{self.remain}元'
             self.log(
                 f'今日已经阅读了{rj.get("data").get("dayreads")}篇文章 当前金币{rj.get("data").get("remain_gold")} 当前余额{self.remain}')
             return content
