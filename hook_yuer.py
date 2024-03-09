@@ -347,19 +347,18 @@ class TASK:
             self.log(f"❌ 推送文章到autman异常！！！！{e}")
 
     def run(self, ):
-        self.wxpuser("https://jdpro.birdbls.cn")
-        # sleepTime = random.randint(3, 5)
-        # print(f"降低封控，休息{sleepTime}秒")
-        # time.sleep(sleepTime)
-        # self.log(f"{'=' * 13}开始运行{'=' * 13}")
-        # self.get_base_url()
-        # self.user_info()
-        # if self.limitTip:
-        #     self.log(self.limitTip)
-        # else:
-        #     self.get_article()
-        # self.with_draw()
-        # self.log(f"{'=' * 13}运行结束{'=' * 13}")
+        sleepTime = random.randint(3, 5)
+        print(f"降低封控，休息{sleepTime}秒")
+        time.sleep(sleepTime)
+        self.log(f"{'=' * 13}开始运行{'=' * 13}")
+        self.get_base_url()
+        self.user_info()
+        if self.limitTip:
+            self.log(self.limitTip)
+        else:
+            self.get_article()
+        self.with_draw()
+        self.log(f"{'=' * 13}运行结束{'=' * 13}")
 
 
 def getEnv(key):  # line:343
