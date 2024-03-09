@@ -49,8 +49,8 @@ class TASK:
         self.wxpusher_token = ck['wxpusher_token']
         self.wxpusher_uid = ck['wxpusher_uid']
         self.ua = 'Mozilla/5.0 (Linux; Android 13; M2012K11AC Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/117.0.0.0 Mobile Safari/537.36 MMWEBID/2651 MicroMessenger/8.0.42.2460(0x28002A58) WeChat/arm64 Weixin NetType/WIFI Language/en ABI/arm64'
-        if hasattr(ck, "ua") and ck['ua'] != "":
-            self.ua = ck['ua']
+        if hasattr(ck, "User-Agent") and ck['User-Agent'] != "":
+            self.ua = ck['User-Agent']
         self.sessions = requests.session()
         self.logger = logging.getLogger(f"用户{self.index}")
         self.content = ''
@@ -62,36 +62,6 @@ class TASK:
 
     def close(self):
         self.sessions.close()
-
-    def request(self, url, method='get', data=None, add_headers: Optional[Dict[str, str]] = None, headers=None,
-                dtype='json'):
-        host = urlparse(url).netloc
-        _default_headers = {
-            "Host": host,
-            "User-Agent": self.ua,
-            "Accept": "application/json, text/plain, */*",
-            "Accept-Encoding": "gzip, deflate",
-            "Accept-Language": "zh-CN,zh;q=0.9",
-            "X-Requested-With": "com.tencent.mm",
-            "Cookie": self.cookie
-        }
-        try:
-            request_headers = headers or _default_headers
-            if add_headers:
-                request_headers.update(add_headers)
-            with getattr(self.sessions, method)(url, headers=request_headers, data=data) as response:
-                if response.status_code == 200:
-                    if dtype == 'json':
-                        return response.json()
-                    else:
-                        return response.text()
-                else:
-                    self.log(f"请求失败状态码：{response.status_code}")
-                    # 可以选择休眠一段时间再重试，以避免频繁请求
-                    time.sleep(random.randint(3, 5))  # 休眠1秒钟
-        except Exception as e:
-            self.log(f"请求出现错误：{e}")
-            time.sleep(random.randint(3, 5))  # 休眠1秒钟
 
     def get_base_url(self):
         url = 'http://44521803071743.emoxtvg.cn/r?upuid=445218'
@@ -114,52 +84,75 @@ class TASK:
 
     def user_info(self):
         url = self.url + '/tuijian'
-        add_headers = {
+        host = urlparse(url).netloc
+        headers = {
             "Referer": self.url + "/new",
+            "Host": host,
+            "User-Agent": self.ua,
+            "Cookie": self.cookie,
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "zh-CN,zh;q=0.9",
+            "X-Requested-With": "com.tencent.mm",
         }
-        res = self.request(url, add_headers=add_headers)
+        res = requests.get(url, headers=headers)
         if not res:
             self.log("获取用户信息失败")
             return
-        if res['code'] == 0:
+        rj = res.json()
+        if rj['code'] == 0:
             self.log(
-                f"{res['data']['user']['username']} uid:{res['data']['user']['uid']}, 积分{res['data']['user']['score']},已阅读{res['data']['infoView']['num']}篇")
-            if 'msg' in res['data']['infoView']:
-                self.log(f"提示：{res['data']['infoView']['msg']}")
+                f"{rj['data']['user']['username']} uid:{rj['data']['user']['uid']}, 积分{rj['data']['user']['score']},已阅读{rj['data']['infoView']['num']}篇")
+            if 'msg' in rj['data']['infoView']:
+                self.log(f"提示：{rj['data']['infoView']['msg']}")
                 return False
-            self.read_num = int(res['data']['infoView']['num'])
+            self.read_num = int(rj['data']['infoView']['num'])
 
             return True
         else:
             self.log(f"获取用户信息失败：{res}")
 
     def get_article(self):
-
         url = self.url + '/new/get_read_url'
-        add_headers = {
+        host = urlparse(url).netloc
+        headers = {
             "Referer": self.url + "/new?upuid=445218",
+            "Host": host,
+            "User-Agent": self.ua,
+            "Cookie": self.cookie,
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "zh-CN,zh;q=0.9",
+            "X-Requested-With": "com.tencent.mm",
+
         }
-        res = self.request(url, add_headers=add_headers, dtype='text')
-        if not res:
+        res = requests.get(url, headers=headers)
+        if res.status_code != 200:
             self.log("获取文章失败")
             return
-        if 'jump' in res:
-            res = json.loads(res)
-            self.jump_location(res['jump'])
+        rj = res.json()
+        if 'jump' in rj:
+            self.jump_location(rj['jump'])
         else:
-            self.log(f"获取文章失败：{res}")
+            self.log(f"获取文章失败：{res.text}")
 
     def jump_location(self, url):
         host = urlparse(url).netloc
-        add_headers = {
+        headers = {
+            "Host": host,
+            "User-Agent": self.ua,
+            "Cookie": self.cookie,
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "zh-CN,zh;q=0.9",
+            "X-Requested-With": "com.tencent.mm",
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/wxpic,image/tpg,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7'}
 
-        res1 = self.request(url, add_headers=add_headers, dtype='text')
+        res1 = requests.get(url, headers=headers)
         parsed_url = urlparse(url)
         query_parameters = parse_qs(parsed_url.query)
         iu = query_parameters['iu'][0]
         url1 = 'http://' + parsed_url.netloc + f'/tuijian/do_read?for=&zs=&pageshow='
-        if '加载中' in res1:
+        if '加载中' in res1.text:
             self.log("加载阅读文章中")
             # 获取url的iu参数
             if iu is not None:
@@ -177,26 +170,34 @@ class TASK:
             url1 = url + f'&r={round(random.uniform(0, 1), 16)}&iu={iu}'
         else:
             url1 = url + f'&r={round(random.uniform(0, 1), 16)}&iu={iu}&jkey={jkey}'
-        add_headers = {
+        host = urlparse(url).netloc
+        headers = {
             "Referer": referer,
+            "Host": host,
+            "User-Agent": self.ua,
+            "Cookie": self.cookie,
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "zh-CN,zh;q=0.9",
             "X-Requested-With": "XMLHttpRequest"
+
         }
-        res = self.request(url1, add_headers=add_headers)
-        # print(f"doread::: {res}")
-        if not res or not res['url']:
+        res = requests.get(url1, headers=headers)
+        # print(f"doread::: {res.text}")
+        if not res or not res.json()['url']:
             self.log(f"第{self.read_count}次阅读失败,请稍后再试试")
             return
-        if res['url'] != 'close' and 'jkey' in res:
+        if res.json()['url'] != 'close' and 'jkey' in res:
             if 'success_msg' in res:
-                self.log(f"第{self.read_count}次：{res['success_msg']}")
+                self.log(f"第{self.read_count}次：{res.json()['success_msg']}")
             else:
                 self.log(f"第{self.read_count}次阅读成功")
-            if self.verify_status(res['url']):
+            if self.verify_status(res.json()['url']):
                 pass
             else:
                 return
             time.sleep(random.randint(6, 12))
-            self.do_read(url, iu, referer, res['jkey'])
+            self.do_read(url, iu, referer, res.json()['jkey'])
         else:
             self.log(f"{res}")
 
@@ -215,22 +216,32 @@ class TASK:
 
     def with_draw(self):
         url = self.url + '/withdrawal'
+        host = urlparse(url).netloc
         add_headers = {
             "Referer": self.url + "/new",
+            "Host": host,
+            "User-Agent": self.ua,
+            "Cookie": self.cookie,
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "zh-CN,zh;q=0.9",
+            "X-Requested-With": "XMLHttpRequest"
+
         }
-        res = self.request(url, add_headers=add_headers)
+        res = requests.get(url, headers=add_headers)
         if not res:
             self.log("获取提现信息失败")
             return
-        if res['code'] == 0:
+        rj = res.json()
+        if rj['code'] == 0:
             self.log(
-                f"{res['data']['user']['username']}当前积分{res['data']['user']['score']}=={round(float(res['data']['user']['score']) / 100, 2)}元")
+                f"{rj['data']['user']['username']}当前积分{rj['data']['user']['score']}=={round(float(rj['data']['user']['score']) / 100, 2)}元")
             tag = 60
-            if float(res['data']['user']['score']) > tag:
-                draw_money = int(float(res['data']['user']['score']))
+            if float(rj['data']['user']['score']) > tag:
+                draw_money = int(float(rj['data']['user']['score']))
                 self.do_withdraw(draw_money)
         else:
-            self.log(f"获取提现信息失败：{res}")
+            self.log(f"获取提现信息失败：{res.text}")
             return
 
     def do_withdraw(self, amount):
@@ -245,7 +256,7 @@ class TASK:
             "Origin": self.url,
             "X-Requested-With": "XMLHttpRequest"
         }
-        res = self.request(url, 'post', data=data, add_headers=add_headers, dtype='text')
+        res = requests.post(url, data=data, headers=add_headers)
         if not res:
             self.log("提现失败")
             return
@@ -259,7 +270,7 @@ class TASK:
         content = "检测文章-可乐%0A请在90秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27link%27%22%3E"
         content = content.replace('link', url)
         wxpuser_url = f'https://wxpusher.zjiecode.com/demo/send/custom/{self.wxpusher_uid}?content={content}'
-        res = self.request(wxpuser_url, 'get', headers={"Content-Type": "application/json"})
+        res = requests.get(wxpuser_url, headers={"Content-Type": "application/json"})
         if res['success']:
             self.log(f"第{self.read_count}次，[通知]--->检测发送成功！✅")
         else:
@@ -284,7 +295,7 @@ class TASK:
         }
         try:
 
-            p = self.request(config['url'], "post", data=json.dumps(datapust), headers=headers)
+            p = requests.post(config['url'], data=json.dumps(datapust), headers=headers)
             if p["ok"]:
                 self.log(f"第{self.read_count}次，推送文章到autman成功✅")
             else:
@@ -295,7 +306,7 @@ class TASK:
     def run(self, ):
         sleepTime = random.randint(3, 5)
         print(f"降低封控，休息{sleepTime}秒")
-        time.sleep(sleepTime)
+        # time.sleep(sleepTime)
         self.get_base_url()
         self.log(f"{'=' * 13}开始运行{'=' * 13}")
         if self.user_info():
@@ -322,7 +333,14 @@ def getEnv(key):  # line:343`
 
 if __name__ == '__main__':
     print("【可乐】推荐阅读(入口)->http://44521803081319.cfgwozp.cn/r?upuid=445218")
-    accounts = getEnv("hook_klyd")
+    # accounts = getEnv("hook_klyd")
+    accounts = [{
+        'name': 'shao',
+        'cookie': 'PHPSESSID=919pu86a2h20milvh9l0ps7veh; udtauth3=8a51OhwEqEhSEBuHwbvDc%2BSfkSI5i6%2FUwrybkJY%2B%2B6QIWPHisxbIdzK8hCqysVDw5clwd1nKqcl1QEnIKYzapLMDNNfRS%2BX1lThPFuqgGFDp3VqHkGbgp3ItIC2xIeut7D0AtHvWxYkSBbzdIOAO03jswJV5PSp8JhYBQIRR%2BP0',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
+        'wxpusher_token': 'AT_9QMHP2jfb733ObTbxXFA3ZsrFTz0xtPR',
+        'wxpusher_uid': 'UID_rDaUycMDJ7RZJaPEnpJdhXMcI2yl'
+    }]
     for index, ck in enumerate(accounts):
         abc = TASK(index + 1, ck)
         abc.run()
