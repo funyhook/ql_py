@@ -155,34 +155,6 @@ def getEnv(key):  # line:343
         print(f"活动入口：{inviteUrl}")
 
 
-def getinfo(link):
-    try:  # line:92:try:
-        r = requests.get(link, verify=False)
-        html = re.sub("\s", "", r.text)
-        biz = re.findall('varbiz="(.*?)"\|\|', html)
-        if biz != []:
-            biz = biz[0]
-        if biz == "" or biz == []:
-            if "__biz" in link:
-                biz = re.findall("__biz=(.*?)&", link)
-                if biz != []:
-                    biz = biz[0]
-        nickname = re.findall('varnickname=htmlDecode\("(.*?)"\);', html)
-        if nickname != []:
-            nickname = nickname[0]
-        user_name = re.findall('varuser_name="(.*?)";', html)
-        if user_name != []:
-            user_name = user_name[0]
-        msg_title = re.findall("varmsg_title='(.*?)'\.html\(", html)
-        if msg_title != []:
-            msg_title = msg_title[0]
-        text = f"公众号唯一标识：{biz}|文章:{msg_title}|作者:{nickname}|账号:{user_name}"
-        print(text)
-        return nickname, user_name, msg_title, text, biz
-    except Exception as e:  # line:116:except Exception as e:
-        print("❌ 提取文章信息失败")  # line:118:print("❌ 提取文章信息失败")
-        return False  # line:119:return False
-
 
 def ts():  # line:122:def ts():
     return (
@@ -239,6 +211,37 @@ class HHYD:  # line:145:class HHYD:
         self.sec.headers = self.headers
         self.lastbiz = ""  # line:176:self.lastbiz = ""
 
+    def log(self, msg):
+        print(f"用户{self.index}【{self.name}】：{msg}")
+
+    def getinfo(self,link):
+        try:  # line:92:try:
+            r = requests.get(link, verify=False)
+            html = re.sub("\s", "", r.text)
+            biz = re.findall('varbiz="(.*?)"\|\|', html)
+            if biz != []:
+                biz = biz[0]
+            if biz == "" or biz == []:
+                if "__biz" in link:
+                    biz = re.findall("__biz=(.*?)&", link)
+                    if biz != []:
+                        biz = biz[0]
+            nickname = re.findall('varnickname=htmlDecode\("(.*?)"\);', html)
+            if nickname != []:
+                nickname = nickname[0]
+            user_name = re.findall('varuser_name="(.*?)";', html)
+            if user_name != []:
+                user_name = user_name[0]
+            msg_title = re.findall("varmsg_title='(.*?)'\.html\(", html)
+            if msg_title != []:
+                msg_title = msg_title[0]
+            text = f"公众号唯一标识：{biz}|文章:{msg_title}|作者:{nickname}|账号:{user_name}"
+            self.log(text)
+            return nickname, user_name, msg_title, text, biz
+        except Exception as e:  # line:116:except Exception as e:
+            self.log("❌ 提取文章信息失败")  # line:118:print("❌ 提取文章信息失败")
+            return False  # line:119:return False
+
     def user_info(self):  # line:178:def user_info(self):
         u = f"http://{self.domnainHost}/yunonline/v1/sign_info?time={ts()}&unionid={self.unionId}"
         r = ""
@@ -246,16 +249,14 @@ class HHYD:  # line:145:class HHYD:
             r = self.sec.get(u)
             rj = r.json()
             if rj.get("errcode") == 0:
-                print(
-                    f"账号[{self.name}]获取信息成功，当前阅读文章每篇奖励 {r.json()['data']['award']}个金币"
-                )  # line:187:)
+                self.log( f"获取信息成功，当前阅读文章每篇奖励 {r.json()['data']['award']}个金币")  # line:187:)
                 return True
             else:
-                print(f"账号[{self.name}]获取用户信息失败，账号异常 或者 ysm_uid无效，请检测ysm_uid是否正确")
+                self.log(f"获取用户信息失败，账号异常 或者 ysm_uid无效，请检测ysm_uid是否正确")
                 return False
         except:
             print(r.text)
-            print(f"账号[{self.name}]获取用户信息失败,ysm_uid无效，请检测ysm_uid是否正确")
+            self.log(f"获取用户信息失败,ysm_uid无效，请检测ysm_uid是否正确")
             return False
 
     def hasWechat(self):
@@ -263,9 +264,9 @@ class HHYD:  # line:145:class HHYD:
         try:
             u = f"http://{self.domnainHost}/yunonline/v1/hasWechat?unionid={self.unionId}"
             r = self.sec.get(u)
-            print(f"账号[{self.name}]判断公众号任务数量：{r.json()['data']['has']}")
+            self.log(f"判断公众号任务数量：{r.json()['data']['has']}")
         except:  # line:203:except:
-            print(f"账号[{self.name}]判断是否有公众号任务失败：{r.text}")
+            self.log(f"判断是否有公众号任务失败：{r.text}")
             return False
 
     def gold(self):
@@ -276,11 +277,10 @@ class HHYD:  # line:145:class HHYD:
             rj = r.json()
             self.remain = math.floor(int(rj.get("data").get("last_gold")))
             content = f'【账号】：{self.name} \n今日阅读：{rj.get("data").get("dayreads")}篇｜当前金币：{rj.get("data").get("remain_gold")}个｜当前余额：{self.remain}元'
-            print(
-                f'账号[{self.name}]今日已经阅读了{rj.get("data").get("day_read")}篇文章,剩余{rj.get("data").get("remain_read")}未阅读，今日获取金币{rj.get("data").get("day_gold")}，剩余{self.remain}')
+            self.log(f'今日已经阅读了{rj.get("data").get("day_read")}篇文章,剩余{rj.get("data").get("remain_read")}未阅读，今日获取金币{rj.get("data").get("day_gold")}，剩余{self.remain}')
             return content
         except:
-            print(f"账号[{self.name}]获取金币失败")
+            self.log(f"账号[{self.name}]获取金币失败")
             return False
 
     def getKey(self):
@@ -299,7 +299,7 @@ class HHYD:  # line:145:class HHYD:
             if uk:
                 break
         if uk == "":
-            print(f"账号[{self.name}]获取uk失败，返回错误：{ukRes}")
+            self.log(f"获取uk失败，返回错误：{ukRes}")
             return
         time.sleep(8)  # line:243:time.sleep(8)
         r = requests.get(
@@ -319,7 +319,7 @@ class HHYD:  # line:145:class HHYD:
             },
             verify=False,
         )  # line:260:)
-        print(f"账号[{self.name}] 阅读准备成功 即将开始阅读 ✅ ，阅读参数为：{uk}")
+        self.log(f" 阅读准备成功 即将开始阅读 ✅ ，阅读参数为：{uk}")
         h = {
             "Accept": "application/json, text/javascript, */*; q=0.01",
             "Accept-Encoding": "gzip, deflate, br",
@@ -362,21 +362,18 @@ class HHYD:  # line:145:class HHYD:
                 r = requests.get(u, headers=info[1], params=self.params, verify=False, timeout=60, )
                 if r.text and r.json()["errcode"] == 0:
                     res = r.json()
-                    print(
-                        f"账号[{self.name}]第[{refreshTime + 1}]次获取第[{arctileTime}]篇阅读文章，跳转链接成功")
+                    self.log(f"第[{refreshTime + 1}]次获取第[{arctileTime}]篇阅读文章，跳转链接成功")
                 else:
                     decoded_str = json.loads(r.text)
                     if decoded_str["msg"]:
-                        print(
-                            f"账号[{self.name}]第[{refreshTime + 1}]次获取第[{arctileTime}]篇阅读文章，跳转链接失败：{decoded_str['msg']}")
+                        self.log(f"第[{refreshTime + 1}]次获取第[{arctileTime}]篇阅读文章，跳转链接失败：{decoded_str['msg']}")
                         return False
                     else:
-                        print(
-                            f"账号[{self.name}]第[{refreshTime + 1}]次获取第[{arctileTime}]篇阅读文章，跳转链接失败：{r.text}")
+                        self.log(f"第[{refreshTime + 1}]次获取第[{arctileTime}]篇阅读文章，跳转链接失败：{r.text}")
                 time.sleep(1.5)
                 refreshTime = refreshTime + 1
                 if refreshTime >= 5:
-                    print(f"⚠️ 账号[{self.name}]获取阅读第[{arctileTime}]篇文章，超时……")
+                    self.log(f" 获取阅读第[{arctileTime}]篇文章，超时……⚠️")
                     return
             wechatPostLink = ""
             if res.get("errcode") == 0:
@@ -384,28 +381,23 @@ class HHYD:  # line:145:class HHYD:
                 try:
                     returnLink = res.get("data").get("link")
                 except Exception as e:
-                    print(
-                        f"⚠️ 账号[{self.name}]获取阅读第[{arctileTime}]篇文章，链接失败，疑似台子接口太垃圾，崩了，返回数据为：",
-                        res.get("data"))  # line:339:)
+                    self.log(f"获取阅读第[{arctileTime}]篇文章，链接失败，疑似台子接口太垃圾，崩了⚠️，返回数据为：{res.get('data')}")
                     continue  # line:340:continue
                 if "mp.weixin.qq.com" in returnLink:
-                    print(f"账号[{self.name}] 阅读第[{arctileTime}]篇微信文章")
+                    self.log(f" 阅读第[{arctileTime}]篇微信文章")
                     wechatPostLink = returnLink
                 else:
                     wechatPostLink = self.jump(returnLink)
-                    print(f"账号[{self.name}] 阅读第[{arctileTime}]篇微信文章")
-                print(f"账号[{self.name}] 阅读第[{arctileTime}]篇文章")
-                a = getinfo(wechatPostLink)
+                self.log(f"阅读第[{arctileTime}]篇文章")
+                a = self.getinfo(wechatPostLink)
                 if not a:
-                    print(
-                        f"⚠️ 账号[{self.name}]因 获取公众号文章信息不成功，导致阅读第[{arctileTime}]篇文章， 失败……")  # line:353:)
+                    self.log(f"因 获取公众号文章信息不成功，导致阅读第[{arctileTime}]篇文章， ⚠️ 失败……")  # line:353:)
                     return False
                 sleepTime = random.randint(7, 10)
                 if checkDict.get(a[4]) is not None or (lastestArcticleId == wechatPostLink) or (
                         "&chksm=" in wechatPostLink):
                     sleepTime = random.randint(15, 20)
-                    print(
-                        f"⚠️ 账号[{self.name}]阅读第[{arctileTime}]篇文章， 检测到疑似检测文章，正在推送，等待过检测，等待时间：{sleepTime}秒。。。")
+                    self.log(f"阅读第[{arctileTime}]篇文章， 检测到疑似检测文章⚠️ ，正在推送，等待过检测，等待时间：{sleepTime}秒。。。")
                     pushWechatBussiness(wechatPostLink)
                     pushAutMan('阅读检测推送【小阅阅】',
                                f"快点下方链接\n{wechatPostLink}\n等待时间：{sleepTime}秒 ,别耽搁时间了")
@@ -419,8 +411,7 @@ class HHYD:  # line:145:class HHYD:
                             2,
                         )
                 else:
-                    print(
-                        f"✅ 账号[{self.name}]阅读第[{arctileTime}]篇文章， 非检测文章，模拟读{sleepTime}秒")
+                    self.log(f"阅读第[{arctileTime}]篇文章， 非检测文章✅，模拟读{sleepTime}秒")
                 lastestArcticleId = wechatPostLink
                 self.lastbiz = a[4]
                 time.sleep(random.randint(15, 30))
@@ -428,31 +419,29 @@ class HHYD:  # line:145:class HHYD:
                 r1 = requests.get(u1, headers=info[1], verify=False)
                 if r1.text and r1.json():
                     try:  # line:392:try:
-                        print(
-                            f"✅ 账号[{self.name}]阅读第[{arctileTime}]篇文章，所得金币：{r1.json()['data']['gold']}个，账户当前金币：{r1.json()['data']['last_gold']}个，今日已读：{r1.json()['data']['day_read']}次，今日未读 {r1.json()['data']['remain_read']}篇文章")  # line:395:)
+                        self.log(f"阅读第[{arctileTime}]篇文章，所得金币✅ ：{r1.json()['data']['gold']}个，账户当前金币：{r1.json()['data']['last_gold']}个，今日已读：{r1.json()['data']['day_read']}次，今日未读 {r1.json()['data']['remain_read']}篇文章")  # line:395:)
                     except Exception as e:  # line:396:except Exception as e:
-                        print(
-                            f"❌ 账号[{self.name}]阅读第[{arctileTime}]篇文章，异常：{r1.json().get('msg')}")  # line:399:)
+                        self.log(f"阅读第[{arctileTime}]篇文章，异常❌ ：{r1.json().get('msg')}")  # line:399:)
                         if "本次阅读无效" in r1.json().get("msg"):
                             continue  # line:401:continue
                         else:  # line:402:else:
                             break  # line:403:break
                 else:  # line:404:else:
-                    print(f"❌ 账号[{self.name}]阅读第[{arctileTime}]篇文章，失败：{r1.text}")  # line:407:)
+                    self.log(f"阅读第[{arctileTime}]篇文章，失败❌ ：{r1.text}")  # line:407:)
                     break  # line:408:break
             elif res.get("errcode") == 405:
-                print(f"⚠️ 账号[{self.name}]阅读第[{arctileTime}]篇文章，阅读重复")
+                self.log(f"阅读第[{arctileTime}]篇文章，阅读重复⚠️ ")
                 time.sleep(1.5)  # line:411:time.sleep(1.5)
             elif res.get("errcode") == 407:
-                print(f"⚠️ 账号[{self.name}]阅读第[{arctileTime}]篇文章，阅读结束")
+                self.log(f"阅读第[{arctileTime}]篇文章，阅读结束⚠️ ")
                 return True  # line:414:return True
             else:  # line:415:else:
-                print(f"⚠️ 账号[{self.name}]阅读第[{arctileTime}]篇文章，未知情况")
+                self.log(f"阅读第[{arctileTime}]篇文章，未知情况⚠️")
                 time.sleep(1.5)  # line:417:time.sleep(1.5)
             arctileTime = arctileTime + 1
 
     def jump(self, link):  # line:420:def jump(self, link):
-        print(f"账号[{self.name}]开始本次阅读……")
+        self.log(f"开始本次阅读……")
         hn = urlparse(link).netloc
         h = {
             "Host": hn,
@@ -466,15 +455,15 @@ class HHYD:  # line:145:class HHYD:
         }  # line:432:}
         r = requests.get(link, headers=h, allow_redirects=False, verify=False)
         Location = r.headers.get("Location")
-        print(f"账号[{self.name}]开始阅读文章 - {Location}")  # line:436:print(f"账号[{self.name}]开始阅读文章 - {Location}")
+        self.log(f"开始阅读文章 - {Location}")  # line:436:print(f"账号[{self.name}]开始阅读文章 - {Location}")
         return Location  # line:437:return Location
 
     def withdraw(self):  # line:439:def withdraw(self):
         if int(self.remain) < int(self.txbz):
-            print(f"❌账号[{self.name}]没有达到提现标准:余额{self.remain},提现门槛：{self.txbz}")
+            self.log(f"没有达到提现标准❌:余额{self.remain},提现门槛：{self.txbz}")
             return False  # line:442:return False
         gold = int(int(self.remain) / 1000) * 1000
-        print(f"账号[{self.name}]本次提现金币", gold)
+        self.log(f"本次提现金币", gold)
         if gold:
             query = urlsplit(self.exchangeParams).query
             exchangeParams = parse_qs(query)  # line:447:
@@ -503,7 +492,7 @@ class HHYD:  # line:145:class HHYD:
             try:  # line:472:try:
                 res = r.json()  # line:473:res = r.json()
                 if res.get("errcode") == 0:
-                    print(f"✅ 账号[{self.name}]提现成功")  # line:475:print(f"✅ 账号[{self.name}]提现成功")
+                    self.log(f"提现成功")  # line:475:print(f"✅ 账号[{self.name}]提现成功")
                     u = f"http://{self.domnainHost}/yunonline/v1/withdraw"  # line:476:u = f"http://{self.domnainHost}/yunonline/v1/withdraw"
                     p = f"unionid={exchangeParams['unionid']}&signid={exchangeParams['request_id']}&ua=0&ptype=0&paccount=&pname="  # line:477:p = f"unionid={exchangeParams['unionid']}&signid={exchangeParams['request_id']}&ua=0&ptype=0&paccount=&pname="
                     if self.aliAccount and self.aliName:
@@ -526,11 +515,11 @@ class HHYD:  # line:145:class HHYD:
                         data=p,
                         verify=False,
                     )  # line:497:)
-                    print(f"❌账号[{self.name}]提现结果", r.json())
+                    self.log(f"提现结果❌{r.json()}")
                 else:  # line:499:else:
-                    print(f"❌账号[{self.name}]提现失败：", r.text, " 提现地址：", u1, " 提现参数：", p1)
+                    self.log(f"提现失败❌：{r.text}")
             except Exception as e:  # line:501:except Exception as e:
-                print(f"❌账号[{self.name}]提现失败：", r.text, " 提现地址：", u1, " 提现参数：", p1)
+                self.log(f"提现失败❌：{r.text}")
 
     def init(self):  # line:505:def init(self):
         try:  # line:506:try:
@@ -539,7 +528,7 @@ class HHYD:  # line:145:class HHYD:
                 verify=False,
             )  # line:510:)
             self.domnainHost = res.json()["data"]["luodi"].split("/")[2]
-            print(f"账号[{self.name}]提取到的域名：{self.domnainHost}")
+            self.log(f"提取到的域名：{self.domnainHost}")
             self.headers = {
                 "Connection": "keep-alive",
                 "Accept": "application/json, text/javascript, */*; q=0.01",
@@ -577,7 +566,7 @@ class HHYD:  # line:145:class HHYD:
                     ]  # line:549:self.signid = signidl[0]
                     break  # line:550:break
             if self.signid == "":  # line:551:if self.signid == "":
-                print(f"账号[{self.name}]初始化 requestId 失败,账号异常")
+                self.log(f"初始化 requestId 失败,账号异常❌")
                 return False  # line:553:return False
             res = requests.get(
                 f"http://{self.domnainHost}/?cate=0",
@@ -595,13 +584,13 @@ class HHYD:  # line:145:class HHYD:
             res1 = re.sub("\s", "", htmltext)
             signidl = re.findall('/yunonline/v1/exchange(.*?)"', res1)
             if not signidl:
-                print(f"账号[{self.name}]初始化 提现参数 失败,账号异常")
+                self.log(f"初始化 提现参数 失败,账号异常")
                 return False  # line:573:return False
             else:  # line:574:else:
                 self.exchangeParams = signidl[0]
             return True  # line:576:return True
         except Exception as e:  # line:577:except Exception as e:
-            print(f"账号[{self.name}]初始化失败,请检查你的ck:{e}")
+            self.log(f"初始化失败,请检查你的ck:{e}")
             return False  # line:580:return False
 
     def run(self):
