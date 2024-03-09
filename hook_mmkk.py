@@ -452,7 +452,7 @@ class HHYD:
             p = f"signid={self.request_id}&ua=2&ptype=1&paccount={quote(self.aliAccount)}&pname={quote(self.aliName)}"
         r = requests.post(u, headers=header, data=p, verify=False)
         if r.json()['errcode'] == 0:
-            self.log(f"✅ 提现结果：", r.json()['msg'])
+            self.log(f"✅ 提现结果：{r.json()['msg']}", )
         elif "上限" in r.json()['msg']:
             self.log(f"⚠️ 默认提现方式达到上限，一分钟后自动切换第二种提现方式")
             time.sleep(60)
@@ -461,7 +461,7 @@ class HHYD:
             self.init()
             self.withdrawPost()
         else:
-            self.log(f"❌ 提现失败：", r.json()['msg'])
+            self.log(f"❌ 提现失败：{r.json()['msg']}", )
 
     def goldCharge(self):
         gold = int(int(self.remain_gold) / 1000) * 1000
