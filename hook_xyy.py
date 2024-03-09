@@ -384,7 +384,7 @@ class HHYD:  # line:145:class HHYD:
                     self.log(f"获取阅读第[{arctileTime}]篇文章，链接失败，疑似台子接口太垃圾，崩了⚠️，返回数据为：{res.get('data')}")
                     continue  # line:340:continue
                 if "mp.weixin.qq.com" in returnLink:
-                    self.log(f" 阅读第[{arctileTime}]篇微信文章")
+                    self.log(f"阅读第[{arctileTime}]篇微信文章")
                     wechatPostLink = returnLink
                 else:
                     wechatPostLink = self.jump(returnLink)
