@@ -33,7 +33,6 @@ import os
 import random
 import time
 from datetime import datetime
-from typing import Optional, Dict
 from urllib.parse import urlparse, parse_qs, quote
 
 import requests
@@ -187,7 +186,7 @@ class TASK:
 
         }
         res = requests.get(url1, headers=headers)
-        # print(f"doread::: {res.text}")
+        print(f"doread::: {res.text}")
         if not res or not res.json()['url']:
             self.log(f"第{self.read_count}次阅读失败,请稍后再试试")
             return
@@ -203,7 +202,7 @@ class TASK:
             time.sleep(random.randint(6, 12))
             self.do_read(url, iu, referer, res.json()['jkey'])
         else:
-            self.log(f"{res}")
+            self.log(f"{res.text}")
 
     def verify_status(self, url):
         if 'chksm' in url:
@@ -275,7 +274,7 @@ class TASK:
         content = content.replace('link', url)
         wxpuser_url = f'https://wxpusher.zjiecode.com/demo/send/custom/{self.wxpusher_uid}?content={content}'
         res = requests.get(wxpuser_url, headers={"Content-Type": "application/json"})
-        if res['success']:
+        if res.json()['success']:
             self.log(f"第{self.read_count}次，[通知]--->检测发送成功！✅")
         else:
             self.log(f"第{self.read_count}次，[通知]====>发送失败❌")
@@ -300,7 +299,7 @@ class TASK:
         try:
 
             p = requests.post(config['url'], data=json.dumps(datapust), headers=headers)
-            if p["ok"]:
+            if p.json()["ok"]:
                 self.log(f"第{self.read_count}次，推送文章到autman成功✅")
             else:
                 self.log(f"第{self.read_count}次，推送文章到autman失败😭😭😭")
@@ -336,8 +335,49 @@ def getEnv(key):  # line:343`
 
 if __name__ == '__main__':
     print("【可乐】推荐阅读(入口)->http://44521803081319.cfgwozp.cn/r?upuid=445218")
-    accounts = getEnv("hook_klyd")
-
+    # accounts = getEnv("hook_klyd")
+    accounts = [
+    {
+        'name': '不能',
+        'cookie': 'PHPSESSID=s7icv23bskcdqb175vb47ca9af; udtauth3=83dftG0lf3y%2F7TIzjWImkEIFDUqhiX2pRIewS%2BrBrPhcPtlm6iO%2BWxeaDql0WmEsqdX8BalGIYWc70iVmezDLYeXlq3yivWQhRakvP0oEGPGzmtGX1HiPrKhG6te6jAzcbFhNDPy99joVQgTcO3asRLurce6UENbPgAob2lpleM',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
+        'wxpusher_token': 'AT_9QMHP2jfb733ObTbxXFA3ZsrFTz0xtPR',
+        'wxpusher_uid': 'UID_rDaUycMDJ7RZJaPEnpJdhXMcI2yl'
+    },{
+        'name': 'shao',
+        'cookie': 'PHPSESSID=919pu86a2h20milvh9l0ps7veh; udtauth3=8a51OhwEqEhSEBuHwbvDc%2BSfkSI5i6%2FUwrybkJY%2B%2B6QIWPHisxbIdzK8hCqysVDw5clwd1nKqcl1QEnIKYzapLMDNNfRS%2BX1lThPFuqgGFDp3VqHkGbgp3ItIC2xIeut7D0AtHvWxYkSBbzdIOAO03jswJV5PSp8JhYBQIRR%2BP0',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
+        'wxpusher_token': 'AT_9QMHP2jfb733ObTbxXFA3ZsrFTz0xtPR',
+        'wxpusher_uid': 'UID_rDaUycMDJ7RZJaPEnpJdhXMcI2yl'
+    },{
+        'name': 'xuer',
+        'cookie': 'udtauth3=3848lGMk1vMicRL9pTlsc0CW0mBQTYBxNlZdwIgJTYfNYPv5Rvd%2F0J9Sz913J%2FpZtEdoYRWip8tYq0iIpLMgDHbJQGw4gBbqwhidlJ6q18%2B0XnGE0M4QZiCBbx60FH%2FCXzf%2BIoAEuGPtqwwy%2FIMse5CJOlIeQpm2Ln2%2BqS3FwEo; PHPSESSID=lh0u0it9d171d9ealeg8rm59g7',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
+        'wxpusher_token': 'AT_9QMHP2jfb733ObTbxXFA3ZsrFTz0xtPR',
+        'wxpusher_uid': 'UID_rDaUycMDJ7RZJaPEnpJdhXMcI2yl'
+    },
+    {
+        'name': 'v-java',
+        'cookie': 'udtauth3=6b32fe6%2FFQfBcUOe4wreZ3jJAw5ygdbJQW02ygjYtYc1G%2BNODvQ5u6p7hfkXA1ZNkUCQMPSSnMBWqZDkFbTWF6ILsUefb%2BBHoV9uLJbaib2P4LnI1QYasCiACbgBNbNyXzf0gOZ3xYzbByK2h1xUp%2FuZh%2FD90Z2wCbgrVEWCKF8; PHPSESSID=1igh43o10retmsq3lkkjqnmd4t',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
+        'wxpusher_token': 'AT_9QMHP2jfb733ObTbxXFA3ZsrFTz0xtPR',
+        'wxpusher_uid': 'UID_rDaUycMDJ7RZJaPEnpJdhXMcI2yl'
+    },
+    {
+        'name': 'vx-635623451',
+        'cookie': 'udtauth3=9f40uGY1Q9d0me7wkq6hfGEmGQE9Bf%2B9ZgcYrs9IQ2gx81bB7LvwPgg9iTSoZ4CATa1lVv3mp2L3YolsVnuFHixNn4LfX92PaDZPl8samq17su5Pafdsorb4qYe%2FwcOj04o5G7jCSRcn76iKUsgpsqtHbOzbLMIjycKZabaJEEc; PHPSESSID=qongcrkqssjg6rlbrl0eu9phd9',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
+        'wxpusher_token': 'AT_9QMHP2jfb733ObTbxXFA3ZsrFTz0xtPR',
+        'wxpusher_uid': 'UID_rDaUycMDJ7RZJaPEnpJdhXMcI2yl'
+    },
+    {
+        'name': 'v-181209',
+        'cookie': 'udtauth3=0a3b9%2FcVi%2B3x5%2BE%2F4ngzSp5XDMlb5cdzQPyeg7mgpiio%2FkhptOIXv5MekXjxmpBc%2BTIv1wUodfqfrg81%2BAywAcOx9UB5d2%2BnQzPneVxT3aiQNdUw48VMwQufOmXuzfblC1wQW7DhbOUxgZpknoN%2Fu6jHHB5FN9gnVQxUOFFKk%2F4; PHPSESSID=dlp8lh5oud44t91el2vk4rs7nk',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
+        'wxpusher_token': 'AT_9QMHP2jfb733ObTbxXFA3ZsrFTz0xtPR',
+        'wxpusher_uid': 'UID_rDaUycMDJ7RZJaPEnpJdhXMcI2yl'
+    }
+]
     for index, ck in enumerate(accounts):
         abc = TASK(index + 1, ck)
         abc.run()
