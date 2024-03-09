@@ -333,14 +333,8 @@ def getEnv(key):  # line:343`
 
 if __name__ == '__main__':
     print("【可乐】推荐阅读(入口)->http://44521803081319.cfgwozp.cn/r?upuid=445218")
-    # accounts = getEnv("hook_klyd")
-    accounts = [{
-        'name': 'shao',
-        'cookie': 'PHPSESSID=919pu86a2h20milvh9l0ps7veh; udtauth3=8a51OhwEqEhSEBuHwbvDc%2BSfkSI5i6%2FUwrybkJY%2B%2B6QIWPHisxbIdzK8hCqysVDw5clwd1nKqcl1QEnIKYzapLMDNNfRS%2BX1lThPFuqgGFDp3VqHkGbgp3ItIC2xIeut7D0AtHvWxYkSBbzdIOAO03jswJV5PSp8JhYBQIRR%2BP0',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
-        'wxpusher_token': 'AT_9QMHP2jfb733ObTbxXFA3ZsrFTz0xtPR',
-        'wxpusher_uid': 'UID_rDaUycMDJ7RZJaPEnpJdhXMcI2yl'
-    }]
+    accounts = getEnv("hook_klyd")
+
     for index, ck in enumerate(accounts):
         abc = TASK(index + 1, ck)
         abc.run()
