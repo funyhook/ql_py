@@ -83,34 +83,38 @@ class TASK:
                 self.url = 'http://m224482.ww1112017.cn'
 
     def user_info(self):
-        url = self.url + '/tuijian'
-        host = urlparse(url).netloc
-        headers = {
-            "Referer": self.url + "/new",
-            "Host": host,
-            "User-Agent": self.ua,
-            "Cookie": self.cookie,
-            "Accept": "application/json, text/plain, */*",
-            "Accept-Encoding": "gzip, deflate",
-            "Accept-Language": "zh-CN,zh;q=0.9",
-            "X-Requested-With": "com.tencent.mm",
-        }
-        res = requests.get(url, headers=headers)
-        if not res:
-            self.log("获取用户信息失败")
-            return
-        rj = res.json()
-        if rj['code'] == 0:
-            self.log(
-                f"{rj['data']['user']['username']} uid:{rj['data']['user']['uid']}, 积分{rj['data']['user']['score']},已阅读{rj['data']['infoView']['num']}篇")
-            if 'msg' in rj['data']['infoView']:
-                self.log(f"提示：{rj['data']['infoView']['msg']}")
-                return False
-            self.read_num = int(rj['data']['infoView']['num'])
+        try:
+            url = self.url + '/tuijian'
+            host = urlparse(url).netloc
+            headers = {
+                "Referer": self.url + "/new",
+                "Host": host,
+                "User-Agent": self.ua,
+                "Cookie": self.cookie,
+                "Accept": "application/json, text/plain, */*",
+                "Accept-Encoding": "gzip, deflate",
+                "Accept-Language": "zh-CN,zh;q=0.9",
+                "X-Requested-With": "com.tencent.mm",
+            }
+            res = requests.get(url, headers=headers)
+            if not res:
+                self.log("获取用户信息失败")
+                return
+            rj = res.json()
+            if rj['code'] == 0:
+                self.log(
+                    f"{rj['data']['user']['username']} uid:{rj['data']['user']['uid']}, 积分{rj['data']['user']['score']},已阅读{rj['data']['infoView']['num']}篇")
+                if 'msg' in rj['data']['infoView']:
+                    self.log(f"提示：{rj['data']['infoView']['msg']}")
+                    return False
+                self.read_num = int(rj['data']['infoView']['num'])
 
-            return True
-        else:
-            self.log(f"获取用户信息失败：{res}")
+                return True
+            else:
+                self.log(f"获取用户信息失败：{res}")
+        except Exception as e:
+            self.log(f"获取用户信息失败：")
+            return False
 
     def get_article(self):
         url = self.url + '/new/get_read_url'
@@ -311,9 +315,8 @@ class TASK:
         self.log(f"{'=' * 13}开始运行{'=' * 13}")
         if self.user_info():
             self.get_article()
-        self.with_draw()
+            self.with_draw()
         self.log(f"{'=' * 13}运行结束{'=' * 13}")
-        self.close()
 
 
 def getEnv(key):  # line:343`
