@@ -51,9 +51,6 @@ import notify
 
 urllib3.disable_warnings()
 
-wxpusherAppToken = os.getenv("wxpusherAppToken") or ""
-wxpusherTopicId = os.getenv("wxpusherTopicId") or ""
-
 
 def push(appToken, topicIds, title, link, text, type):
     datapust = {

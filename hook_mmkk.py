@@ -53,8 +53,6 @@ import urllib3
 import notify
 
 urllib3.disable_warnings()
-wxpusherAppToken = os.getenv("wxpusherAppToken") or ""
-wxpusherTopicId = os.getenv("wxpusherTopicId") or ""
 
 
 def push(appToken, topicIds, title, link, text, type):
@@ -144,7 +142,6 @@ checkDict = {
     "Mzg5ODUyMzYzMQ==": ["789也不行", "gh_b3d79cd1e1b5"],
     "MzU0NzI5Mjc4OQ==": ["皮蛋瘦肉猪", "gh_58d7ee593b86"],
     "Mzg5MDgxODAzMg==": ["北北小助手", "gh_58d7ee593b86"],
-    "MzIzMDczODg4Mw==": ["有故事的同学Y", "gh_b8b92934da5f"],
     "MzkxNDU1NDEzNw==": ["猫猫看看服务", "gh_e50cfefef9e5"],
 }
 
