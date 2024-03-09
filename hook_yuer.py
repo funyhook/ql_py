@@ -300,14 +300,28 @@ class TASK:
             self.log(f"提现失败：{res}")
 
     def wxpuser(self, url):
-        content = "检测文章-鱼儿%0A请在90秒内完成验证!%0A%3Cbody+onload%3D%22window.location.href%3D%27link%27%22%3E"
-        content = content.replace('link', url)
-        wxpuser_url = f'https://wxpusher.zjiecode.com/demo/send/custom/{self.wxpusher_uid}?content={content}'
-        res = requests.get(wxpuser_url, headers={"Content-Type": "application/json"})
-        if res.json()['success']:
-            self.log(f"[通知]--->检测发送成功✅")
-        else:
-            self.log(f"[通知]====>发送失败！！！！！")
+        datapust = {
+            "appToken": self.wxpusher_token,
+            "content": f"""<body onload="window.location.href='{url}'">出现检测文章！！！\n<a style='padding:10px;color:red;font-size:20px;' href='{url}'>点击我打开待检测文章</a>\n请尽快点击链接完成阅读\n</body>""",
+            "summary": "文章检测【鱼儿】",
+            "contentType": 2,
+            "topicIds": [],
+            "uids":[self.wxpusher_uid],
+            "url": url,
+        }
+        urlpust = "http://wxpusher.zjiecode.com/api/send/message"
+        try:
+            p = requests.post(url=urlpust, json=datapust, verify=False)
+            if p.json()["code"] == 1000:
+                self.log("✅ 推送文章到微信成功，请尽快前往点击文章，不然就黑号啦！")
+                return True
+            else:
+                self.log("❌ 推送文章到微信失败，完犊子，要黑号了！")
+                return False
+        except:
+            self.log("❌ 推送文章到微信失败，完犊子，要黑号了！")
+            return False
+
 
     def pushAutMan(self, title, msg):
         autman_push_config = os.getenv("autman_push_config") or ""
@@ -333,18 +347,19 @@ class TASK:
             self.log(f"❌ 推送文章到autman异常！！！！{e}")
 
     def run(self, ):
-        sleepTime = random.randint(3, 5)
-        print(f"降低封控，休息{sleepTime}秒")
-        time.sleep(sleepTime)
-        self.log(f"{'=' * 13}开始运行{'=' * 13}")
-        self.get_base_url()
-        self.user_info()
-        if self.limitTip:
-            self.log(self.limitTip)
-        else:
-            self.get_article()
-        self.with_draw()
-        self.log(f"{'=' * 13}运行结束{'=' * 13}")
+        self.wxpuser("https://jdpro.birdbls.cn")
+        # sleepTime = random.randint(3, 5)
+        # print(f"降低封控，休息{sleepTime}秒")
+        # time.sleep(sleepTime)
+        # self.log(f"{'=' * 13}开始运行{'=' * 13}")
+        # self.get_base_url()
+        # self.user_info()
+        # if self.limitTip:
+        #     self.log(self.limitTip)
+        # else:
+        #     self.get_article()
+        # self.with_draw()
+        # self.log(f"{'=' * 13}运行结束{'=' * 13}")
 
 
 def getEnv(key):  # line:343
