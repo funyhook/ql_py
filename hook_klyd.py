@@ -27,7 +27,6 @@ export autman_push_config='{
 }'
 """
 
-import asyncio
 import json
 import logging
 import os
@@ -89,10 +88,10 @@ class TASK:
                 else:
                     self.log(f"请求失败状态码：{response.status_code}")
                     # 可以选择休眠一段时间再重试，以避免频繁请求
-                    asyncio.sleep(random.randint(3, 5))  # 休眠1秒钟
+                    time.sleep(random.randint(3, 5))  # 休眠1秒钟
         except Exception as e:
             self.log(f"请求出现错误：{e}")
-            asyncio.sleep(random.randint(3, 5))  # 休眠1秒钟
+            time.sleep(random.randint(3, 5))  # 休眠1秒钟
 
     def get_base_url(self):
         url = 'http://44521803071743.emoxtvg.cn/r?upuid=445218'
@@ -164,7 +163,7 @@ class TASK:
             self.log("加载阅读文章中")
             # 获取url的iu参数
             if iu is not None:
-                asyncio.sleep(random.randint(2, 3))
+                time.sleep(random.randint(2, 3))
                 self.do_read(url1, iu, url)
             else:
                 self.log("获取url参数失败")
@@ -196,7 +195,7 @@ class TASK:
                 pass
             else:
                 return
-            asyncio.sleep(random.randint(6, 12))
+            time.sleep(random.randint(6, 12))
             self.do_read(url, iu, referer, res['jkey'])
         else:
             self.log(f"{res}")
