@@ -208,7 +208,7 @@ class TASK:
         if 'chksm' in url:
             self.log(f"第{self.read_count}次️出现检测文章了❗️❗️❗️❗")
             encoded_url = quote(url)
-            self.wxpuser(encoded_url)
+            self.wxpuser(url)
             self.pushAutMan("微信阅读检测【可乐】\n请20秒内点击下方链接", url)
             self.log(f"第{self.read_count}次️ ️请20秒内点击阅读啦❗️❗️❗")
             time.sleep(20)
