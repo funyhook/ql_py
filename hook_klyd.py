@@ -186,7 +186,7 @@ class TASK:
 
         }
         res = requests.get(url1, headers=headers)
-        print(f"doread::: {res.text}")
+        # print(f"doread::: {res.text}")
         if not res or not res.json()['url']:
             self.log(f"第{self.read_count}次阅读失败,请稍后再试试")
             return
