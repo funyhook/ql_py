@@ -294,7 +294,7 @@ class TASK:
     def pushAutMan(self, title, msg):
         autman_push_config = os.getenv("autman_push_config") or ""
         if not autman_push_config or autman_push_config == "":
-            self.log(f"第{self.read_count}次，推送文章到autman失败！")
+            self.log(f"第{self.read_count}次，未配置autman推送，跳过推送至autman！")
             return
         config = json.loads(autman_push_config)
         datapust = {
