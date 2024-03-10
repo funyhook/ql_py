@@ -273,7 +273,7 @@ class TASK:
         datapust = {
             "appToken": self.wxpusher_token,
             "content": f"""<body onload="window.location.href='{url}'">出现检测文章！！！\n<a style='padding:10px;color:red;font-size:20px;' href='{url}'>点击我打开待检测文章</a>\n请尽快点击链接完成阅读\n</body>""",
-            "summary": "文章检测【鱼儿】",
+            "summary": "文章检测【可乐】",
             "contentType": 2,
             "topicIds": [],
             "uids": [self.wxpusher_uid],
