@@ -243,6 +243,8 @@ class TASK:
             if float(rj['data']['user']['score']) > tag:
                 draw_money = int(float(rj['data']['user']['score']))
                 self.do_withdraw(draw_money)
+            else:
+                self.log(f"未达到体现门槛{tag/100}元，跳过体现")
         else:
             self.log(f"获取提现信息失败：{res.text}")
             return
@@ -262,6 +264,7 @@ class TASK:
             "User-Agent": self.ua,
             "Cookie": self.cookie,
             "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json",
             "Accept-Encoding": "gzip, deflate",
             "Accept-Language": "zh-CN,zh;q=0.9",
             "X-Requested-With": "XMLHttpRequest"
@@ -354,58 +357,8 @@ def getEnv(key):  # line:343`
 
 if __name__ == '__main__':
     print("【可乐】推荐阅读(入口)->http://44521803081319.cfgwozp.cn/r?upuid=445218")
-    # accounts = getEnv("hook_klyd")
-    accounts=[
-    {
-        'name': 'NO1',
-        'cookie': 'PHPSESSID=ilmqin47ok45ood8b5209kep3b; udtauth3=5af0e7vmN6jFTYv36KucxFLBjMKFwWO5%2Fnts%2B2aeAzNKhmYraK78ve9bn9fUTDXpLwj5pvtu8Sfdrn4d0VA3D7YXahKRB9cieOfVh7ZjmMMUWphlGEbaByDXQ3o6JBc9IoR6JeMOsPerUhJTAr95dvkpekumkd2ZVC%2FM%2BmwPFmY',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
-        'wxpusher_token': 'AT_7hdc7iGQe2AMMo5rWY8Hbc5nvVtvz81y',
-        'wxpusher_uid': 'UID_MtdXVwIx91mFMiwqCE8ERXWc0by5'
-    },
-    {
-        'name': 'NO2',
-        'cookie': 'PHPSESSID=qgo7esqvh5s60p3878gc958hmo; udtauth3=7d65L%2BrhHQCvaaXJd03C1wFitEiJyUfR2ZI54fAU7102gtG8EfxkcUu%2FvNGRctoaR3bf6rqVmmYsjn9O6qe8hKWsZ1rv4mRvQ81lt8o5HcI%2F9FVWpS1Lub8aAB%2BVEnG3OrHAOuZ8HthHW62sCGrhb33IyVwhmFZqSyKvubrAfAY',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
-        'wxpusher_token': 'AT_7hdc7iGQe2AMMo5rWY8Hbc5nvVtvz81y',
-        'wxpusher_uid': 'UID_5SkxGQfmA6YUY2YDvqhEXC2Q2yFj'
-    },
-    {
-        'name': 'NO3',
-        'cookie': 'PHPSESSID=2snr91srqr5b82gddf50flf2s5; udtauth3=7673UQP8q7D3lLa7weRFniZqgclgmuA3JqpRgaqPiXr5eDkTPq6%2Bd2c1ONx%2BIIMeKwXFNU2tuOAvhA0ozHNy8A96he3Xg%2B9GzWW%2B7JcWZ2NWutpfzVzc0czRZd%2BCKrMpvHPyvTkxvhZ1bKpDcC9j8bgtWPV5OH3jN3B7%2BW7alyo',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
-        'wxpusher_token': 'AT_7hdc7iGQe2AMMo5rWY8Hbc5nvVtvz81y',
-        'wxpusher_uid': 'UID_jrTSZJoCAbetfQjAwQe6sAqm93U9'
-    },
-    {
-        'name': 'NO4',
-        'cookie': 'PHPSESSID=1qj1qq2dgtq55ht3939jcs6s38; udtauth3=8b2e740D27o09w2ft127OafI9pRcsaqsyNzmJNws2z%2B6DRNqg0WeAm5l6EaybAxubsWsEInlskxnIfkOjF%2B%2FoKSZyaaAjWZO8z1wY6CDda6%2FgHA%2Bs1x3rnv%2B%2FKIIUBuOwWkERpeAFPuHBPKKidzeJcsPdCRrhPx65TcpJLVIrfg',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
-        'wxpusher_token': 'AT_7hdc7iGQe2AMMo5rWY8Hbc5nvVtvz81y',
-        'wxpusher_uid': 'UID_MtdXVwIx91mFMiwqCE8ERXWc0by5'
-    },
-    {
-        'name': 'NO5',
-        'cookie': 'PHPSESSID=4qehkad75u4vdpv91b37g1ma4n; udtauth3=8b12mcta97Tpir%2F8jpBvgSba1MWNiHoS%2FShE0%2BlMczJYoh7AVZpE55%2BdteEnkVJkueoasfsFMna2ZJJyqPaAzu1zonuceqRRGPXXSHi2nOLV%2F79buzOPc4ziGrfV%2FSaYL5Vznnk5uy%2FvCsyi7O4n%2BSXnsgPnieb%2B5ptGigbNMSc',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
-        'wxpusher_token': 'AT_7hdc7iGQe2AMMo5rWY8Hbc5nvVtvz81y',
-        'wxpusher_uid': 'UID_5SkxGQfmA6YUY2YDvqhEXC2Q2yFj'
-    },
-    {
-        'name': 'NO6',
-        'cookie': 'udtauth3=271fvWLcQnwZw9wHrDuqMf6%2FmV7ONmOF%2BrikPPtUFUVKRFzQhWTYASqNEMTW8I%2FV643mwQUa53a5%2F%2FcHUO6isDow12kvouPkyea5AJQPI9rFkSe4zf%2BjwEEpk1jvQKnnio4FgU47DYwFjtZFVOAJfsPJ%2FoR8Dna35nuFKwGaA8s; PHPSESSID=kq8i5dkulqbkr4s1hdi9q7tjm1',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
-        'wxpusher_token': 'AT_7hdc7iGQe2AMMo5rWY8Hbc5nvVtvz81y',
-        'wxpusher_uid': 'UID_jrTSZJoCAbetfQjAwQe6sAqm93U9'
-    },
-    {
-        'name': 'NO7',
-        'cookie': 'udtauth3=2ec5UxJbKjSGEo6cjHPyYt35DlnJozUBIDFtA7YjQInO3uZyfNRCEGdkoqyHwVcNKfdyPVQsMU2NXUftgXPniPXXdY%2B26WA%2F9pBBHgMM27gBiKENZqvnjMYxkQhuZq6OhW8HIiq0jOJLfJkl8%2BjMytAPjhfyraF6DYgpUnaA2AI; PHPSESSID=mpm61hhfk6iumpk4if50as63k6',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
-        'wxpusher_token': 'AT_7hdc7iGQe2AMMo5rWY8Hbc5nvVtvz81y',
-        'wxpusher_uid': 'UID_MtdXVwIx91mFMiwqCE8ERXWc0by5'
-    }
-]
+    accounts = getEnv("hook_klyd")
+
     for index, ck in enumerate(accounts):
         abc = TASK(index + 1, ck)
         abc.run()
