@@ -313,6 +313,7 @@ class TASK:
             config = json.loads(wxpusher_config)
             self.wxpusher_token = config['token']
             self.wxpusher_uid = random.choice(config['uids'])
+            self.log(f"本次检测推送至：{self.wxpusher_uid}")
 
         datapust = {
             "appToken": self.wxpusher_token,
