@@ -316,7 +316,7 @@ class HHYD:  # line:145:class HHYD:
             },
             verify=False,
         )  # line:260:)
-        self.log(f" 阅读准备成功 即将开始阅读 ✅ ，阅读参数为：{uk}")
+        self.log(f"阅读准备成功 即将开始阅读 ✅ ，阅读参数为：{uk}")
         h = {
             "Accept": "application/json, text/javascript, */*; q=0.01",
             "Accept-Encoding": "gzip, deflate, br",
@@ -492,7 +492,7 @@ class HHYD:  # line:145:class HHYD:
         if do_tixian:
             self.do_withDraw()
         else:
-            self.log(f"未达到提现门槛{int(self.txbz) / 10000}元，跳过提现")
+            self.log(f"❗️未达到提现门槛{int(self.txbz) / 10000}元，跳过提现")
 
     def do_withDraw(self):
         query = urlsplit(self.exchangeParams).query
