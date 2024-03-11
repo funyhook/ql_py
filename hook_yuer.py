@@ -25,6 +25,12 @@ export autman_push_config='{
     "userId":"用户ID",
     "groupCode":"群号"
 }'
+wxpusher推送配置
+export wxpusher_config='{
+    "wxpusher_token":"",
+    "uids":["","",""],#推送到个人需要和账号数量匹配
+    "topicIds":[121212,121212,121212] #推送到主题
+}'
 """
 
 import json
@@ -272,7 +278,7 @@ class TASK:
         tag = self.txbz
         self.log(f"当前积分{money}=={balance}元")
         if float(money) > tag:
-            self.log(f"满足提现门槛0.3元，开始提现")
+            self.log(f"满足提现门槛{tag/10}元，开始提现")
             draw_money = round(float(money), 2)
             self.do_withdraw(draw_money)
         else:
@@ -303,6 +309,12 @@ class TASK:
             self.log(f"提现失败：{res}")
 
     def wxpuser(self, url):
+        wxpusher_config = os.getenv("wxpusher_config") or ""
+        if wxpusher_config and wxpusher_config != "":
+            config = json.loads(wxpusher_config)
+            self.wxpusher_token=config['wxpusher_token']
+            self.wxpusher_uid = config['wxpusher_uid'][self.index-1]
+
         datapust = {
             "appToken": self.wxpusher_token,
             "content": f"""<body onload="window.location.href='{url}'">出现检测文章！！！\n<a style='padding:10px;color:red;font-size:20px;' href='{url}'>点击我打开待检测文章</a>\n请尽快点击链接完成阅读\n</body>""",
