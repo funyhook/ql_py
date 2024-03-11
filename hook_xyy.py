@@ -583,7 +583,7 @@ class HHYD:  # line:145:class HHYD:
     def run(self):
         run_msg = ''
         sleepTime = random.randint(3, 5)
-        print(f"降低封控，休息{sleepTime}秒")
+        print(f"降低封号风险，随机休息{sleepTime}秒")
         time.sleep(sleepTime)
         print(f"{'+' * 20}开始第{self.index}个账号{'+' * 20}")
         if self.init():
