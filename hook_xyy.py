@@ -65,8 +65,6 @@ def push(appToken, topicIds, title, link, text, type):
     urlpust = "http://wxpusher.zjiecode.com/api/send/message"
     try:  # line:59:try:
         p = requests.post(url=urlpust, json=datapust, verify=False)
-        print(datapust)
-        print(p.text)
         if p.json()["code"] == 1000:
             print("✅ 推送文章到微信成功，请尽快前往点击文章，不然就黑号啦！")
             return True  # line:64:return True
