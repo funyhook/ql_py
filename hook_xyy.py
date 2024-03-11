@@ -150,7 +150,6 @@ def getEnv(key):  # line:343
         print(f"活动入口：{inviteUrl}")
 
 
-
 def ts():  # line:122:def ts():
     return (
             str(int(time.time())) + "000"
@@ -209,7 +208,7 @@ class HHYD:  # line:145:class HHYD:
     def log(self, msg):
         print(f"用户{self.index}【{self.name}】：{msg}")
 
-    def getinfo(self,link):
+    def getinfo(self, link):
         try:  # line:92:try:
             r = requests.get(link, verify=False)
             html = re.sub("\s", "", r.text)
@@ -244,7 +243,7 @@ class HHYD:  # line:145:class HHYD:
             r = self.sec.get(u)
             rj = r.json()
             if rj.get("errcode") == 0:
-                self.log( f"获取信息成功，当前阅读文章每篇奖励 {r.json()['data']['award']}个金币")  # line:187:)
+                self.log(f"获取信息成功，当前阅读文章每篇奖励 {r.json()['data']['award']}个金币")  # line:187:)
                 return True
             else:
                 self.log(f"获取用户信息失败，账号异常 或者 ysm_uid无效，请检测ysm_uid是否正确")
@@ -272,7 +271,8 @@ class HHYD:  # line:145:class HHYD:
             rj = r.json()
             self.remain = math.floor(int(rj.get("data").get("last_gold")))
             content = f'【账号】：{self.name} \n今日阅读：{rj.get("data").get("dayreads")}篇｜当前金币：{rj.get("data").get("remain_gold")}个｜当前余额：{self.remain}元'
-            self.log(f'今日已经阅读了{rj.get("data").get("day_read")}篇文章,剩余{rj.get("data").get("remain_read")}未阅读，今日获取金币{rj.get("data").get("day_gold")}，剩余{self.remain}')
+            self.log(
+                f'今日已经阅读了{rj.get("data").get("day_read")}篇文章,剩余{rj.get("data").get("remain_read")}未阅读，今日获取金币{rj.get("data").get("day_gold")}，剩余{self.remain}')
             return content
         except:
             self.log(f"账号[{self.name}]获取金币失败")
@@ -361,7 +361,8 @@ class HHYD:  # line:145:class HHYD:
                 else:
                     decoded_str = json.loads(r.text)
                     if decoded_str["msg"]:
-                        self.log(f"第[{refreshTime + 1}]次获取第[{arctileTime}]篇阅读文章，跳转链接失败：{decoded_str['msg']}")
+                        self.log(
+                            f"第[{refreshTime + 1}]次获取第[{arctileTime}]篇阅读文章，跳转链接失败：{decoded_str['msg']}")
                         return False
                     else:
                         self.log(f"第[{refreshTime + 1}]次获取第[{arctileTime}]篇阅读文章，跳转链接失败：{r.text}")
@@ -376,7 +377,8 @@ class HHYD:  # line:145:class HHYD:
                 try:
                     returnLink = res.get("data").get("link")
                 except Exception as e:
-                    self.log(f"获取阅读第[{arctileTime}]篇文章，链接失败，疑似台子接口太垃圾，崩了⚠️，返回数据为：{res.get('data')}")
+                    self.log(
+                        f"获取阅读第[{arctileTime}]篇文章，链接失败，疑似台子接口太垃圾，崩了⚠️，返回数据为：{res.get('data')}")
                     continue  # line:340:continue
                 if "mp.weixin.qq.com" in returnLink:
                     self.log(f"阅读第[{arctileTime}]篇微信文章")
@@ -392,10 +394,12 @@ class HHYD:  # line:145:class HHYD:
                 if checkDict.get(a[4]) is not None or (lastestArcticleId == wechatPostLink) or (
                         "&chksm=" in wechatPostLink):
                     sleepTime = random.randint(15, 20)
-                    self.log(f"阅读第[{arctileTime}]篇文章， 检测到疑似检测文章⚠️ ，正在推送，等待过检测，等待时间：{sleepTime}秒。。。")
+                    self.log(
+                        f"阅读第[{arctileTime}]篇文章， 检测到疑似检测文章⚠️ ，正在推送，等待过检测，等待时间：{sleepTime}秒。。。")
                     pushWechatBussiness(wechatPostLink)
                     self.pushAutMan('阅读检测【小阅阅】',
-                               f"快点下方链接\n{wechatPostLink}\n等待时间：{sleepTime}秒 ,别耽搁时间了")
+                                    f"快点下方链接\n{wechatPostLink}\n等待时间：{sleepTime}秒 ,别耽搁时间了")
+                    self.wxpuser(wechatPostLink)
                     if self.appToken:
                         push(
                             self.appToken,
@@ -414,28 +418,29 @@ class HHYD:  # line:145:class HHYD:
                 r1 = requests.get(u1, headers=info[1], verify=False)
                 if r1.text and r1.json():
                     try:  # line:392:try:
-                        self.log(f"阅读第[{arctileTime}]篇文章，所得金币✅ ：{r1.json()['data']['gold']}个，账户当前金币：{r1.json()['data']['last_gold']}个，今日已读：{r1.json()['data']['day_read']}次，今日未读 {r1.json()['data']['remain_read']}篇文章")  # line:395:)
-                    except Exception as e:  # line:396:except Exception as e:
-                        self.log(f"阅读第[{arctileTime}]篇文章，异常❌ ：{r1.json().get('msg')}")  # line:399:)
+                        self.log(
+                            f"阅读第[{arctileTime}]篇文章，所得金币✅ ：{r1.json()['data']['gold']}个，账户当前金币：{r1.json()['data']['last_gold']}个，今日已读：{r1.json()['data']['day_read']}次，今日未读 {r1.json()['data']['remain_read']}篇文章")  # line:395:)
+                    except Exception as e:
+                        self.log(f"阅读第[{arctileTime}]篇文章，异常❌ ：{r1.json().get('msg')}")
                         if "本次阅读无效" in r1.json().get("msg"):
-                            continue  # line:401:continue
-                        else:  # line:402:else:
-                            break  # line:403:break
-                else:  # line:404:else:
-                    self.log(f"阅读第[{arctileTime}]篇文章，失败❌ ：{r1.text}")  # line:407:)
-                    break  # line:408:break
+                            continue
+                        else:
+                            break
+                else:
+                    self.log(f"阅读第[{arctileTime}]篇文章，失败❌ ：{r1.text}")
+                    break
             elif res.get("errcode") == 405:
                 self.log(f"阅读第[{arctileTime}]篇文章，阅读重复⚠️ ")
-                time.sleep(1.5)  # line:411:time.sleep(1.5)
+                time.sleep(1.5)
             elif res.get("errcode") == 407:
                 self.log(f"阅读第[{arctileTime}]篇文章，阅读结束⚠️ ")
-                return True  # line:414:return True
-            else:  # line:415:else:
+                return True
+            else:
                 self.log(f"阅读第[{arctileTime}]篇文章，未知情况⚠️")
-                time.sleep(1.5)  # line:417:time.sleep(1.5)
+                time.sleep(1.5)
             arctileTime = arctileTime + 1
 
-    def jump(self, link):  # line:420:def jump(self, link):
+    def jump(self, link):
         self.log(f"开始本次阅读……")
         hn = urlparse(link).netloc
         h = {
@@ -655,7 +660,8 @@ def process_account(index, account, msg):
 
 
 if __name__ == "__main__":
-    print("【小阅阅】 推荐阅读(入口)->https://osl4.f4135.shop/yunonline/v1/auth/c5c3f97ce3894f1c08593c4a6c54dbfe?codeurl=osl4.f4135.shop&codeuserid=2&time=1709089052")
+    print(
+        "【小阅阅】 推荐阅读(入口)->https://osl4.f4135.shop/yunonline/v1/auth/c5c3f97ce3894f1c08593c4a6c54dbfe?codeurl=osl4.f4135.shop&codeuserid=2&time=1709089052")
     accounts = getEnv("hook_xyy")
     print(f'******共获取到{len(accounts)}个账号******')
     # 获取CPU核心数量
