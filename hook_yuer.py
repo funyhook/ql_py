@@ -11,6 +11,7 @@ export hook_yuer="[
         'name': '不能',
         'cookie': 'PHPSESSID=',
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
+        'txbz':'3000',
         'wxpusher_token': '',
         'wxpusher_uid': ''
     }
@@ -46,11 +47,13 @@ logging.basicConfig(level=logging.INFO)
 
 class TASK:
     def __init__(self, index, ck):
+
         self.url = None
         self.host = None
         self.index = index
         self.cookie = ck['cookie']
         self.name = ck['name']
+        self.txbz = ck['txbz']
         self.wxpusher_token = ck['wxpusher_token']
         self.wxpusher_uid = ck['wxpusher_uid']
         self.ua = 'Mozilla/5.0 (Linux; Android 13; M2012K11AC Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/117.0.0.0 Mobile Safari/537.36 MMWEBID/2651 MicroMessenger/8.0.42.2460(0x28002A58) WeChat/arm64 Weixin NetType/WIFI Language/en ABI/arm64'
@@ -266,7 +269,7 @@ class TASK:
             return
         money = re.findall(r'<span>(.*?)</span>', res.text)[0]
         balance = round(float(money) / 100, 2)
-        tag = 30
+        tag = self.txbz
         self.log(f"当前积分{money}=={balance}元")
         if float(money) > tag:
             self.log(f"满足提现门槛0.3元，开始提现")
