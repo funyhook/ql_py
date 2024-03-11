@@ -492,7 +492,7 @@ class HHYD:  # line:145:class HHYD:
         if do_tixian:
             self.do_withDraw()
         else:
-            self.log(f"为达到提现门槛{int(self.txbz) / 10000}元，跳过提现")
+            self.log(f"未达到提现门槛{int(self.txbz) / 10000}元，跳过提现")
 
     def do_withDraw(self):
         query = urlsplit(self.exchangeParams).query
