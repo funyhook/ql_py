@@ -399,7 +399,6 @@ class HHYD:  # line:145:class HHYD:
                     pushWechatBussiness(wechatPostLink)
                     self.pushAutMan('阅读检测【小阅阅】',
                                     f"快点下方链接\n{wechatPostLink}\n等待时间：{sleepTime}秒 ,别耽搁时间了")
-                    self.wxpuser(wechatPostLink)
                     if self.appToken:
                         push(
                             self.appToken,
