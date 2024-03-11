@@ -274,7 +274,7 @@ class HHYD:  # line:145:class HHYD:
             r = self.sec.get(u)
             rj = r.json()
             self.remain = math.floor(int(rj.get("data").get("last_gold")))
-            content = f'【账号】：{self.name} \n今日阅读：{rj.get("data").get("dayreads")}篇｜当前金币：{rj.get("data").get("remain_gold")}个｜当前余额：{self.remain}元'
+            content = f'【账号】：{self.name} \n今日阅读：{rj.get("data").get("day_read")}篇｜当前金币：{rj.get("data").get("day_gold")}个'
             self.log(
                 f'今日已经阅读了{rj.get("data").get("day_read")}篇文章,剩余{rj.get("data").get("remain_read")}未阅读，今日获取金币{rj.get("data").get("day_gold")}，剩余{self.remain}')
             return content
