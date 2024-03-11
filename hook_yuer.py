@@ -173,7 +173,7 @@ class TASK:
             self.log("获取文章地址失败")
             return
         if 'jump' in res.json():
-            self.log(f"文章地址：{res.json()['jump']}")
+            self.log(f"✅获取文章地址成功")
             time.sleep(random.randint(3, 5))
             self.jump_location(res.json()['jump'])
         else:
