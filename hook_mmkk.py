@@ -155,6 +155,8 @@ class HHYD:
         self.txbz = cg["txbz"]
         self.topicIds = cg["topicIds"]
         self.appToken = cg["appToken"]
+        self.wxpusher_token = cg['wxpusher_token']
+        self.wxpusher_uid = cg['wxpusher_uid']
         self.aliAccount = cg["aliAccount"] or ""
         self.aliName = cg["aliName"] or ""
         self.name = cg["name"]
@@ -371,18 +373,9 @@ class HHYD:
                     sleepTime = random.randint(15, 20)
                     self.log(
                         f"⚠️ 账号[{self.name}]阅读第[{arctileTime}]篇文章 检测到疑似检测文章，正在推送，等待过检测，等待时间：{sleepTime}秒。。。")
-                    asyncio.run(pushAutMan('阅读检测推送【猫猫看看】',
-                                           f"快点下方链接\n{wechatPostLink}\n等待时间：{sleepTime}秒 ,别耽搁时间了"))
-                    asyncio.run(pushWechatBussiness(wechatPostLink))
-                    if self.appToken:
-                        push(
-                            self.appToken,
-                            self.topicIds,
-                            "猫猫看看阅读过检测",
-                            wechatPostLink,
-                            f"账号[{self.name}]阅读第[{arctileTime}]篇文章 正在等待过检测，等待时间：{sleepTime}秒\n提示：快点，别耽搁时间了！",
-                            2,
-                        )
+                    self.wxpuser(wechatPostLink)
+                    self.pushAutMan('阅读检测推送【猫猫看看】',
+                                           f"快点下方链接\n{wechatPostLink}\n等待时间：{sleepTime}秒 ,别耽搁时间了")
                 else:
                     self.log(f"✅阅读第[{arctileTime}]篇文章 非检测文章，模拟读{sleepTime}秒")
                 lastestArcticleId = wechatPostLink
@@ -556,6 +549,54 @@ class HHYD:
         else:
             self.inviteUrl = "https://s1i6.1obg.shop/haobaobao/auth/20fac27802e2f2eee23f8804de20c1c2"
         return self.inviteUrl
+
+
+    def wxpuser(self, url):
+        datapust = {
+            "appToken": self.wxpusher_token,
+            "content": f"""<body onload="window.location.href='{url}'">出现检测文章！！！\n<a style='padding:10px;color:red;font-size:20px;' href='{url}'>点击我打开待检测文章</a>\n请尽快点击链接完成阅读\n</body>""",
+            "summary": "文章检测【猫猫看看】",
+            "contentType": 2,
+            "topicIds": [],
+            "uids": [self.wxpusher_uid],
+            "url": url,
+        }
+        urlpust = "http://wxpusher.zjiecode.com/api/send/message"
+        try:
+            p = requests.post(url=urlpust, json=datapust, verify=False)
+            if p.json()["code"] == 1000:
+                self.log("✅ 推送文章到微信成功，请尽快前往点击文章，不然就黑号啦！")
+                return True
+            else:
+                self.log("❌ 推送文章到微信失败，完犊子，要黑号了！")
+                return False
+        except:
+            self.log("❌ 推送文章到微信失败，完犊子，要黑号了！")
+            return False
+
+    def pushAutMan(self, title, msg):
+        autman_push_config = os.getenv("autman_push_config") or ""
+        if not autman_push_config or autman_push_config == "":
+            self.log("未配置autman推送，跳过推送autman！")
+            return
+        config = json.loads(autman_push_config)
+        datapust = {
+            "token": config['token'],
+            "plat": config['plat'],
+            "groupCode": config['groupCode'],
+            "userId": config['userId'],
+            "title": title,
+            "content": msg
+        }
+        try:
+            p = requests.post(config['url'], data=json.dumps(datapust), headers={"Content-Type": "application/json"})
+            if p.json()["ok"]:
+                self.log("✅推送文章到autman成功✅")
+            else:
+                self.log(" ❗️❗️❗推送文章到autman失败❗️❗️❗")
+        except Exception as e:
+            self.log(f"❌ 推送文章到autman异常！！！！{e}")
+
 
     def run(self):
         run_msg =''
