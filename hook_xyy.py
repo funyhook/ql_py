@@ -32,7 +32,6 @@ export autman_push_config='{
 * 达到标准，自动提现
 
 """
-import concurrent.futures
 import hashlib
 import json
 import math
@@ -170,13 +169,13 @@ checkDict = {
     "Mzg5ODUyMzYzMQ==": ["789也不行", "gh_b3d79cd1e1b5"],
     "MzU0NzI5Mjc4OQ==": ["皮蛋瘦肉猪", "gh_58d7ee593b86"],
     "Mzg5MDgxODAzMg==": ["北北小助手", "gh_58d7ee593b86"],
-    "MzIzMDczODg4Mw==": ["有故事的同学Y", "gh_b8b92934da5f"],
     "MzkxNDU1NDEzNw==": ["小阅阅服务", "gh_e50cfefef9e5"],
 }  # line:142:}
 
 
 class HHYD:  # line:145:class HHYD:
     def __init__(self, i, cg):
+        self.shoutu_balance = 0
         self.unionId = cg["unionId"]
         self.ysm_uid = cg["ysm_uid"]
         self.index = i + 1
@@ -188,8 +187,9 @@ class HHYD:  # line:145:class HHYD:
         self.aliAccount = cg["aliAccount"] or ""
         self.aliName = cg["aliName"] or ""
         self.name = cg["name"]
-        self.domnainHost = "1698855139.hxiong.top"  # line:158:self.domnainHost = "1698855139.hxiong.top"
-        self.exchangeParams = ""  # line:159:self.exchangeParams = ""
+        self.domnainHost = "1698855139.hxiong.top"
+        self.exchangeParams = ""
+        self.ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/6.8.0(0x16080000) MacWechat/3.8.7(0x1308070c) XWEB/1191 Flue'
         self.headers = {
             "Connection": "keep-alive",
             "Accept": "application/json, text/javascript, */*; q=0.01",
@@ -451,19 +451,15 @@ class HHYD:  # line:145:class HHYD:
         self.log(f"开始阅读文章 - {Location}")  # line:436:print(f"账号[{self.name}]开始阅读文章 - {Location}")
         return Location  # line:437:return Location
 
-    def withdraw(self):  # line:439:def withdraw(self):
-        if int(self.remain) < int(self.txbz):
-            self.log(f"没有达到提现标准❌:余额{self.remain},提现门槛：{self.txbz}")
-            return False  # line:442:return False
-        gold = int(int(self.remain) / 1000) * 1000
-        self.log(f"本次提现金币", gold)
-        if gold:
+    def withdraw(self):
+        if int(self.remain) > 0:
+            gold = int(int(self.remain) / 1000) * 1000
             query = urlsplit(self.exchangeParams).query
             exchangeParams = parse_qs(query)  # line:447:
             for key, value in exchangeParams.items():
                 exchangeParams[key] = value[0]
-            u1 = f"http://{self.domnainHost}/yunonline/v1/user_gold"  # line:452:u1 = f"http://{self.domnainHost}/yunonline/v1/user_gold"
-            p1 = f"unionid={exchangeParams['unionid']}&request_id={exchangeParams['request_id']}&gold={gold}"  # line:453:p1 = f"unionid={exchangeParams['unionid']}&request_id={exchangeParams['request_id']}&gold={gold}"
+            u1 = f"http://{self.domnainHost}/yunonline/v1/user_gold"
+            p1 = f"unionid={exchangeParams['unionid']}&request_id={exchangeParams['request_id']}&gold={gold}"
             r = requests.post(
                 u1,
                 data=p1,
@@ -477,49 +473,62 @@ class HHYD:  # line:145:class HHYD:
                     "Origin": f"http://{self.domnainHost}",
                     "Proxy-Connection": "keep-alive",
                     "Referer": f"http://{self.domnainHost}/yunonline/v1/exchange{self.exchangeParams}",
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x6309071d) XWEB/8461 Flue",
+                    "User-Agent": self.ua,
                     "X-Requested-With": "XMLHttpRequest",
                 },
                 verify=False,
-            )  # line:471:)
-            try:  # line:472:try:
-                res = r.json()  # line:473:res = r.json()
+            )
+            try:
+                res = r.json()
                 if res.get("errcode") == 0:
-                    self.log(f"提现成功")  # line:475:print(f"✅ 账号[{self.name}]提现成功")
-                    u = f"http://{self.domnainHost}/yunonline/v1/withdraw"  # line:476:u = f"http://{self.domnainHost}/yunonline/v1/withdraw"
-                    p = f"unionid={exchangeParams['unionid']}&signid={exchangeParams['request_id']}&ua=0&ptype=0&paccount=&pname="  # line:477:p = f"unionid={exchangeParams['unionid']}&signid={exchangeParams['request_id']}&ua=0&ptype=0&paccount=&pname="
-                    if self.aliAccount and self.aliName:
-                        p = f"unionid={exchangeParams['unionid']}&signid={exchangeParams['request_id']}&ua=0&ptype=1&paccount={quote(self.aliAccount)}&pname={quote(self.aliName)}"  # line:479:p = f"unionid={exchangeParams['unionid']}&signid={exchangeParams['request_id']}&ua=0&ptype=1&paccount={quote(self.aliAccount)}&pname={quote(self.aliName)}"
-                    r = requests.post(
-                        u,
-                        headers={
-                            "Accept": "application/json, text/javascript, */*; q=0.01",
-                            "Accept-Encoding": "gzip, deflate",
-                            "Accept-Language": "zh-CN,zh;q=0.9",
-                            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                            "Cookie": f"ysmuid={self.ysm_uid}; ejectCode=1",
-                            "Host": f"{self.domnainHost}",
-                            "Origin": f"http://{self.domnainHost}",
-                            "Proxy-Connection": "keep-alive",
-                            "Referer": f"http://{self.domnainHost}/yunonline/v1/exchange?unionid={self.unionId}&request_id={self.signid}&qrcode_number=16607864358145588",
-                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x6309071d) XWEB/8461 Flue",
-                            "X-Requested-With": "XMLHttpRequest",
-                        },
-                        data=p,
-                        verify=False,
-                    )  # line:497:)
-                    self.log(f"提现结果❌{r.json()}")
-                else:  # line:499:else:
-                    self.log(f"提现失败❌：{r.text}")
-            except Exception as e:  # line:501:except Exception as e:
+                    self.log(f"✅兑换金币成功")
+            except Exception as e:
                 self.log(f"提现失败❌：{r.text}")
+        do_tixian = False
+        if int(self.remain) < int(self.txbz):
+            do_tixian = False
+        if float(self.shoutu_balance)>0 and float(self.shoutu_balance) * 1000 < int(self.txbz):
+            do_tixian = True
+        if do_tixian:
+            self.do_withDraw()
+        else:
+            self.log(f"为达到提现门槛{int(self.txbz)/10000}元，跳过提现")
 
-    def init(self):  # line:505:def init(self):
-        try:  # line:506:try:
+    def do_withDraw(self):
+        query = urlsplit(self.exchangeParams).query
+        exchangeParams = parse_qs(query)
+        for key, value in exchangeParams.items():
+            exchangeParams[key] = value[0]
+        u = f"http://{self.domnainHost}/yunonline/v1/withdraw"
+        p = f"unionid={exchangeParams['unionid']}&signid={exchangeParams['request_id']}&ua=0&ptype=0&paccount=&pname="
+        if self.aliAccount and self.aliName:
+            p = f"unionid={exchangeParams['unionid']}&signid={exchangeParams['request_id']}&ua=0&ptype=1&paccount={quote(self.aliAccount)}&pname={quote(self.aliName)}"
+        headers = {
+            "Accept": "application/json, text/javascript, */*; q=0.01",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "zh-CN,zh;q=0.9",
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "Cookie": f"ysmuid={self.ysm_uid}",
+            "Host": f"{self.domnainHost}",
+            "Origin": f"http://{self.domnainHost}",
+            "Proxy-Connection": "keep-alive",
+            "Referer": f"http://{self.domnainHost}/yunonline/v1/exchange?{self.exchangeParams}",
+            "User-Agent": self.ua,
+            "X-Requested-With": "XMLHttpRequest"
+        }
+        r = requests.post(u, headers=headers, data=p, verify=False)
+        if r.status_code==200:
+            rj = r.json()
+            self.log(rj['msg'])
+        else:
+            self.log(f"提现结果❌{r.json()}")
+
+    def init(self):
+        try:
             res = requests.get(
                 "https://nsr.zsf2023e458.cloud/yunonline/v1/getchatsite?t=1709019551&cid=785d878cb1e76a31cc1b52224d935ab7&code=081ktRFa1TM60H0gr4Ga1U6Pc10ktRFX&state=1",
                 verify=False,
-            )  # line:510:)
+            )
             self.domnainHost = res.json()["data"]["luodi"].split("/")[2]
             self.log(f"提取到的域名：{self.domnainHost}")
             self.headers = {
@@ -533,9 +542,9 @@ class HHYD:  # line:145:class HHYD:
                 "Accept-Language": "zh-CN,zh",
                 "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
                 "Cookie": f"ysm_uid={self.ysm_uid};",
-            }  # line:526:}
-            self.signid = ""  # line:528:self.signid = ""
-            for index in range(10):  # line:529:for i in range(10):
+            }
+            self.signid = ""
+            for index in range(10):
                 res = requests.get(
                     f"http://{self.domnainHost}/",
                     headers={
@@ -547,18 +556,20 @@ class HHYD:  # line:145:class HHYD:
                         "Cookie": f"ysmuid={self.ysm_uid}",
                     },
                     verify=False,
-                )  # line:541:)
-                htmltext = res.text  # line:542:htmltext = r.text
+                )
+                htmltext = res.text
                 res1 = re.sub("\s", "", htmltext)
+                shoutu_balance_match = re.findall(r'<div class="num number rewardNum">(\d+\.\d+)</div>', htmltext)
+                if shoutu_balance_match:
+                    self.shoutu_balance = shoutu_balance_match[0]
+                self.log(f"收徒余额：{self.shoutu_balance}元")
                 signidl = re.findall('\)\|\|"(.*?)";', res1)
-                if signidl == []:  # line:546:if signidl == []:
-                    continue  # line:547:continue
-                else:  # line:548:else:
-                    self.signid = signidl[
-                        0
-                    ]  # line:549:self.signid = signidl[0]
-                    break  # line:550:break
-            if self.signid == "":  # line:551:if self.signid == "":
+                if not signidl:
+                    continue
+                else:
+                    self.signid = signidl[0]
+                    break
+            if self.signid == "":
                 self.log(f"初始化 requestId 失败,账号异常❌")
                 return False  # line:553:return False
             res = requests.get(
@@ -572,19 +583,19 @@ class HHYD:  # line:145:class HHYD:
                     "Cookie": f"ysmuid={self.ysm_uid}",
                 },
                 verify=False,
-            )  # line:566:)
+            )
             htmltext = res.text
             res1 = re.sub("\s", "", htmltext)
             signidl = re.findall('/yunonline/v1/exchange(.*?)"', res1)
             if not signidl:
                 self.log(f"初始化 提现参数 失败,账号异常")
-                return False  # line:573:return False
-            else:  # line:574:else:
+                return False
+            else:
                 self.exchangeParams = signidl[0]
-            return True  # line:576:return True
-        except Exception as e:  # line:577:except Exception as e:
+            return True
+        except Exception as e:
             self.log(f"初始化失败,请检查你的ck:{e}")
-            return False  # line:580:return False
+            return False
 
     def wxpuser(self, url):
         datapust = {
@@ -647,9 +658,9 @@ class HHYD:  # line:145:class HHYD:
         return run_msg
 
 
-def process_account(index, account, msg):
+def process_account(index, account):
     read = HHYD(index, account)
-    msg += read.run()
+    return read.run()
 
 
 if __name__ == "__main__":
@@ -664,10 +675,14 @@ if __name__ == "__main__":
     num_processes = num_cores
     push_msg = ''
     # 使用进程池执行
-    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-        # 将每个账号的处理作为一个任务提交给进程池
-        # 这将导致所有任务并行执行
-        futures = [executor.submit(process_account, index, account, push_msg) for index, account in enumerate(accounts)]
-        # 等待所有任务完成
-        concurrent.futures.wait(futures)
-        notify.send("[小阅阅推送]", push_msg)
+    # with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+    #     # 将每个账号的处理作为一个任务提交给进程池
+    #     # 这将导致所有任务并行执行
+    #     futures = [executor.submit(process_account, index, account, push_msg) for index, account in enumerate(accounts)]
+    #     # 等待所有任务完成
+    #     concurrent.futures.wait(futures)
+    #     notify.send("[小阅阅推送]", push_msg)
+    for index, account in enumerate(accounts):
+        push_msg += f"\n{'-' * 50}\n"
+        push_msg += process_account(index, account)
+    notify.send("[猫猫看看阅读推送]", push_msg)
