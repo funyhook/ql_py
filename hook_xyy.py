@@ -183,6 +183,8 @@ class HHYD:  # line:145:class HHYD:
         self.txbz = cg["txbz"]
         self.topicIds = cg["topicIds"]
         self.appToken = cg["appToken"]
+        self.wxpusher_token = cg['wxpusher_token']
+        self.wxpusher_uid = cg['wxpusher_uid']
         self.aliAccount = cg["aliAccount"] or ""
         self.aliName = cg["aliName"] or ""
         self.name = cg["name"]
@@ -396,18 +398,10 @@ class HHYD:  # line:145:class HHYD:
                     sleepTime = random.randint(15, 20)
                     self.log(
                         f"阅读第[{arctileTime}]篇文章， 检测到疑似检测文章⚠️ ，正在推送，等待过检测，等待时间：{sleepTime}秒。。。")
-                    pushWechatBussiness(wechatPostLink)
+                    self.wxpuser(wechatPostLink)
                     self.pushAutMan('阅读检测【小阅阅】',
                                     f"快点下方链接\n{wechatPostLink}\n等待时间：{sleepTime}秒 ,别耽搁时间了")
-                    if self.appToken:
-                        push(
-                            self.appToken,
-                            self.topicIds,
-                            "阅读检测【小阅阅】",
-                            wechatPostLink,
-                            f"账号[{self.name}]阅读第[{arctileTime}]篇文章， 正在等待过检测，等待时间：{sleepTime}秒\n提示：快点，别耽搁时间了！",
-                            2,
-                        )
+
                 else:
                     self.log(f"阅读第[{arctileTime}]篇文章， 非检测文章✅，模拟读{sleepTime}秒")
                 lastestArcticleId = wechatPostLink
