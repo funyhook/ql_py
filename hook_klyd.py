@@ -283,8 +283,8 @@ class TASK:
         wxpusher_config = os.getenv("wxpusher_config") or ""
         if wxpusher_config and wxpusher_config != "":
             config = json.loads(wxpusher_config)
-            self.wxpusher_token=config['wxpusher_token']
-            self.wxpusher_uid = random.choice(config['wxpusher_uid'])
+            self.wxpusher_token = config['token']
+            self.wxpusher_uid = random.choice(config['uids'])
 
         datapust = {
             "appToken": self.wxpusher_token,
@@ -307,6 +307,7 @@ class TASK:
         except:
             self.log("❌ 推送文章到微信失败，完犊子，要黑号了！")
             return False
+
     def pushAutMan(self, title, msg):
         autman_push_config = os.getenv("autman_push_config") or ""
         if not autman_push_config or autman_push_config == "":

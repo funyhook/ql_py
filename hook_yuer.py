@@ -311,8 +311,8 @@ class TASK:
         wxpusher_config = os.getenv("wxpusher_config") or ""
         if wxpusher_config and wxpusher_config != "":
             config = json.loads(wxpusher_config)
-            self.wxpusher_token = config['wxpusher_token']
-            self.wxpusher_uid = random.choice(config['wxpusher_uid'])
+            self.wxpusher_token = config['token']
+            self.wxpusher_uid = random.choice(config['uids'])
 
         datapust = {
             "appToken": self.wxpusher_token,
