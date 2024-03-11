@@ -521,7 +521,7 @@ class HHYD:  # line:145:class HHYD:
             rj = r.json()
             self.log(f"✅提现成功:{rj.json()}")
         else:
-            self.log(f"提现结果❌{r.json()}")
+            self.log(f"提现结果❌{r.text}")
 
     def init(self):
         try:
