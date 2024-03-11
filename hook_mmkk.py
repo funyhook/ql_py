@@ -34,7 +34,6 @@ export autman_push_config='{
 cron: 0 */25 8-22 * * *
 new Env('猫猫看看');
 """
-import asyncio
 import hashlib
 import json
 import math
@@ -53,80 +52,6 @@ import urllib3
 import notify
 
 urllib3.disable_warnings()
-
-
-def push(appToken, topicIds, title, link, text, type):
-    datapust = {
-        "appToken": appToken,
-        "content": f"""<body onload="window.location.href='{link}'">出现检测文章！！！\n<a style='padding:10px;color:red;font-size:20px;' href='{link}'>点击我打开待检测文章</a>\n请尽快点击链接完成阅读\n备注：{text}</body>""",
-        "summary": title or "猫猫看看阅读",
-        "contentType": type,
-        "topicIds": [int(topicIds)],
-        "url": link,
-    }
-
-    urlpust = "http://wxpusher.zjiecode.com/api/send/message"
-    try:
-        p = requests.post(url=urlpust, json=datapust, verify=False)
-        if p.json()["code"] == 1000:
-            print("✅ 推送文章到微信成功，请尽快前往点击文章，不然就黑号啦！")
-            return True
-        else:
-            print("❌ 推送文章到微信失败，完犊子，要黑号了！")
-            return False
-    except:
-        print("❌ 推送文章到微信失败，完犊子，要黑号了！")
-        return False
-
-
-async def pushWechatBussiness(link):
-    wechatBussinessKey = os.getenv("wechatBussinessKey") or ""
-    if not wechatBussinessKey:
-        return
-    datapust = {"msgtype": "text", "text": {"content": link}}
-    urlpust = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=" + wechatBussinessKey
-    try:
-        p = requests.post(url=urlpust, json=datapust, verify=False)
-        if p.json()["errcode"] == 0:
-            print("✅ 推送文章到企业微信成功！")
-            return True
-        else:  # line:83:else:
-            print("❌ 推送文章到企业微信失败！")
-            return False
-    except:
-        print("❌ 推送文章到企业微信失败！")
-        return False
-
-
-async def pushAutMan(title, msg):
-    autman_push_config = os.getenv("autman_push_config") or ""
-    if not autman_push_config or autman_push_config == "":
-        print("❌ 推送文章到autman失败！")
-        return
-    config = json.loads(autman_push_config)
-    datapust = {
-        "token": config['token'],
-        "plat": config['plat'],
-        "groupCode": config['groupCode'],
-        "userId": config['userId'],
-        "title": title,
-        "content": msg
-    }
-    try:
-        p = requests.post(url=config['url'], json=datapust, verify=False)
-        if p.json()["ok"]:
-            print("✅ ⚠️推送文章到autman成功！⚠️")
-            return True
-        else:
-            print("❌ 推送文章到autman失败！")
-            return False
-    except:
-        print("❌ 推送文章到autman失败！")
-        return False
-
-
-
-
 
 checkDict = {
     "MzkxNTE3MzQ4MQ==": ["香姐爱旅行", "gh_54a65dc60039"],
@@ -160,12 +85,15 @@ class HHYD:
         self.aliAccount = cg["aliAccount"] or ""
         self.aliName = cg["aliName"] or ""
         self.name = cg["name"]
+        self.ua = 'Mozilla/5.0 (Linux; Android 13; M2012K11AC Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/117.0.0.0 Mobile Safari/537.36 MMWEBID/2651 MicroMessenger/8.0.42.2460(0x28002A58) WeChat/arm64 Weixin NetType/WIFI Language/en ABI/arm64'
+        if hasattr(cg, "User-Agent") and cg['User-Agent'] != "":
+            self.ua = cg['User-Agent']
         self.domnainHost = "1698855139.hxiong.top"
         self.request_id = ""
         self.headers = {
             "Connection": "keep-alive",
             "Accept": "application/json, text/javascript, */*; q=0.01",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x63090621) XWEB/8351 Flue",
+            "User-Agent": self.ua,
             "X-Requested-With": "XMLHttpRequest",
             "Referer": f"http://{self.domnainHost}/",
             "Origin": f"http://{self.domnainHost}",
@@ -192,7 +120,6 @@ class HHYD:
 
     def user_info(self):
         u = f"http://{self.domnainHost}/haobaobao/user"
-        r = ""
         try:
             r = self.sec.get(u)
             rj = r.json()
@@ -259,7 +186,7 @@ class HHYD:
                 "Sec-Fetch-Site": "none",
                 "Sec-Fetch-User": "?1",
                 "Upgrade-Insecure-Requests": "1",
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x6309071d) XWEB/8461 Flue",
+                "User-Agent": self.ua,
             },
             verify=False,
         )
@@ -274,7 +201,7 @@ class HHYD:
             "Sec-Fetch-Dest": "empty",
             "Sec-Fetch-Mode": "cors",
             "Sec-Fetch-Site": "cross-site",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x6309071d) XWEB/8461 Flue",
+            "User-Agent": self.ua,
         }
         return uk, h
 
@@ -414,7 +341,7 @@ class HHYD:
             "Host": hn,
             "Connection": "keep-alive",
             "Upgrade-Insecure-Requests": "1",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x63090621) XWEB/8351 Flue",
+            "User-Agent": self.ua,
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
             "Accept-Encoding": "gzip, deflate",
             "Accept-Language": "zh-CN,zh",
@@ -440,6 +367,7 @@ class HHYD:
             "Proxy-Connection": "keep-alive",
             "Referer": f"http://{self.domnainHost}/haobaobao/withdraw",
             "X-Requested-With": "XMLHttpRequest",
+            "User-Agent": self.ua,
         }
         if self.aliAccount and self.aliName:
             p = f"signid={self.request_id}&ua=2&ptype=1&paccount={quote(self.aliAccount)}&pname={quote(self.aliName)}"
@@ -468,7 +396,7 @@ class HHYD:
             "Origin": f"http://{self.domnainHost}",
             "Proxy-Connection": "keep-alive",
             "Referer": f"http://{self.domnainHost}/haobaobao/withdraw",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x6309071d) XWEB/8461 Flue",
+            "User-Agent": self.ua,
             "X-Requested-With": "XMLHttpRequest",
         }
         if gold:
@@ -501,7 +429,7 @@ class HHYD:
     def init(self):
         headers = {
             "Upgrade-Insecure-Requests": "1",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x6309071d) XWEB/8461 Flue",
+            "User-Agent": self.ua,
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
             "Accept-Encoding": "gzip, deflate",
             "Accept-Language": "zh-CN,zh;q=0.9",
