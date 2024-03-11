@@ -452,7 +452,7 @@ class HHYD:  # line:145:class HHYD:
         return Location  # line:437:return Location
 
     def withdraw(self):
-        if int(self.remain) > 0:
+        if int(self.remain) >= 3000:
             gold = int(int(self.remain) / 1000) * 1000
             query = urlsplit(self.exchangeParams).query
             exchangeParams = parse_qs(query)  # line:447:
