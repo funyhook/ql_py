@@ -190,10 +190,12 @@ class HHYD:  # line:145:class HHYD:
         self.domnainHost = "1698855139.hxiong.top"
         self.exchangeParams = ""
         self.ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/6.8.0(0x16080000) MacWechat/3.8.7(0x1308070c) XWEB/1191 Flue'
+        if hasattr(cg, "User-Agent") and cg['User-Agent'] != "":
+            self.ua = cg['User-Agent']
         self.headers = {
             "Connection": "keep-alive",
             "Accept": "application/json, text/javascript, */*; q=0.01",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x63090621) XWEB/8351 Flue",
+            "User-Agent": self.ua,
             "X-Requested-With": "XMLHttpRequest",
             "Referer": f"http://{self.domnainHost}/",
             "Origin": f"http://{self.domnainHost}",
@@ -440,7 +442,7 @@ class HHYD:  # line:145:class HHYD:
             "Host": hn,
             "Connection": "keep-alive",
             "Upgrade-Insecure-Requests": "1",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x63090621) XWEB/8351 Flue",
+            "User-Agent": self.ua,
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
             "Accept-Encoding": "gzip, deflate",
             "Accept-Language": "zh-CN,zh",
@@ -534,7 +536,7 @@ class HHYD:  # line:145:class HHYD:
             self.headers = {
                 "Connection": "keep-alive",
                 "Accept": "application/json, text/javascript, */*; q=0.01",
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x63090621) XWEB/8351 Flue",
+                "User-Agent": self.ua,
                 "X-Requested-With": "XMLHttpRequest",
                 "Referer": f"http://{self.domnainHost}/",
                 "Origin": f"http://{self.domnainHost}",
