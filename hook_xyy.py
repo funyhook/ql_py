@@ -685,6 +685,6 @@ if __name__ == "__main__":
     #     concurrent.futures.wait(futures)
     #     notify.send("[小阅阅推送]", push_msg)
     for index, account in enumerate(accounts):
-        push_msg += f"\n{'-' * 50}\n"
+        # push_msg += f"\n{'-' * 50}\n"
         push_msg += process_account(index, account)
     notify.send("[小阅阅阅读推送]", push_msg)
