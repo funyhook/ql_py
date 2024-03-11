@@ -216,24 +216,24 @@ class HHYD:  # line:145:class HHYD:
             r = requests.get(link, verify=False)
             html = re.sub("\s", "", r.text)
             biz = re.findall('varbiz="(.*?)"\|\|', html)
-            if biz != []:
+            if biz:
                 biz = biz[0]
             if biz == "" or biz == []:
                 if "__biz" in link:
                     biz = re.findall("__biz=(.*?)&", link)
-                    if biz != []:
+                    if biz:
                         biz = biz[0]
             nickname = re.findall('varnickname=htmlDecode\("(.*?)"\);', html)
-            if nickname != []:
+            if nickname:
                 nickname = nickname[0]
             user_name = re.findall('varuser_name="(.*?)";', html)
-            if user_name != []:
+            if user_name:
                 user_name = user_name[0]
             msg_title = re.findall("varmsg_title='(.*?)'\.html\(", html)
-            if msg_title != []:
+            if msg_title:
                 msg_title = msg_title[0]
             text = f"公众号唯一标识：{biz}|文章:{msg_title}|作者:{nickname}|账号:{user_name}"
-            self.log(text)
+            # self.log(text)
             return nickname, user_name, msg_title, text, biz
         except Exception as e:  # line:116:except Exception as e:
             self.log("❌ 提取文章信息失败")  # line:118:print("❌ 提取文章信息失败")
@@ -396,13 +396,13 @@ class HHYD:  # line:145:class HHYD:
                     sleepTime = random.randint(15, 20)
                     self.log(f"阅读第[{arctileTime}]篇文章， 检测到疑似检测文章⚠️ ，正在推送，等待过检测，等待时间：{sleepTime}秒。。。")
                     pushWechatBussiness(wechatPostLink)
-                    pushAutMan('阅读检测推送【小阅阅】',
+                    self.pushAutMan('阅读检测【小阅阅】',
                                f"快点下方链接\n{wechatPostLink}\n等待时间：{sleepTime}秒 ,别耽搁时间了")
                     if self.appToken:
                         push(
                             self.appToken,
                             self.topicIds,
-                            "小阅阅阅读过检测",
+                            "阅读检测【小阅阅】",
                             wechatPostLink,
                             f"账号[{self.name}]阅读第[{arctileTime}]篇文章， 正在等待过检测，等待时间：{sleepTime}秒\n提示：快点，别耽搁时间了！",
                             2,
@@ -589,6 +589,52 @@ class HHYD:  # line:145:class HHYD:
         except Exception as e:  # line:577:except Exception as e:
             self.log(f"初始化失败,请检查你的ck:{e}")
             return False  # line:580:return False
+
+    def wxpuser(self, url):
+        datapust = {
+            "appToken": self.wxpusher_token,
+            "content": f"""<body onload="window.location.href='{url}'">出现检测文章！！！\n<a style='padding:10px;color:red;font-size:20px;' href='{url}'>点击我打开待检测文章</a>\n请尽快点击链接完成阅读\n</body>""",
+            "summary": "文章检测【可乐】",
+            "contentType": 2,
+            "topicIds": [],
+            "uids": [self.wxpusher_uid],
+            "url": url,
+        }
+        urlpust = "http://wxpusher.zjiecode.com/api/send/message"
+        try:
+            p = requests.post(url=urlpust, json=datapust, verify=False)
+            if p.json()["code"] == 1000:
+                self.log("✅ 推送文章到微信成功，请尽快前往点击文章，不然就黑号啦！")
+                return True
+            else:
+                self.log("❌ 推送文章到微信失败，完犊子，要黑号了！")
+                return False
+        except:
+            self.log("❌ 推送文章到微信失败，完犊子，要黑号了！")
+            return False
+
+    def pushAutMan(self, title, msg):
+        autman_push_config = os.getenv("autman_push_config") or ""
+        if not autman_push_config or autman_push_config == "":
+            self.log("未配置autman推送，跳过推送autman！")
+            return
+        config = json.loads(autman_push_config)
+        datapust = {
+            "token": config['token'],
+            "plat": config['plat'],
+            "groupCode": config['groupCode'],
+            "userId": config['userId'],
+            "title": title,
+            "content": msg
+        }
+        try:
+            p = requests.post(config['url'], data=json.dumps(datapust), headers={"Content-Type": "application/json"})
+            if p.json()["ok"]:
+                self.log("✅推送文章到autman成功✅")
+            else:
+                self.log(" ❗️❗️❗推送文章到autman失败❗️❗️❗")
+        except Exception as e:
+            self.log(f"❌ 推送文章到autman异常！！！！{e}")
 
     def run(self):
         run_msg = ''
