@@ -562,7 +562,7 @@ class HHYD:  # line:145:class HHYD:
                 shoutu_balance_match = re.findall(r'<div class="num number rewardNum">(\d+\.\d+)</div>', htmltext)
                 if shoutu_balance_match:
                     self.shoutu_balance = shoutu_balance_match[0]
-                self.log(f"收徒余额：{self.shoutu_balance}元")
+                self.log(f"账户余额：{self.shoutu_balance}元")
                 signidl = re.findall('\)\|\|"(.*?)";', res1)
                 if not signidl:
                     continue
