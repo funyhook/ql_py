@@ -481,7 +481,7 @@ class HHYD:  # line:145:class HHYD:
             try:
                 res = r.json()
                 if res.get("errcode") == 0:
-                    self.log(f"✅兑换金币成功")
+                    self.log(f"✅兑换金币成功=>{gold}={int(self.remain)/10000}元")
             except Exception as e:
                 self.log(f"提现失败❌：{r.text}")
         do_tixian = False
@@ -519,7 +519,7 @@ class HHYD:  # line:145:class HHYD:
         r = requests.post(u, headers=headers, data=p, verify=False)
         if r.status_code==200:
             rj = r.json()
-            self.log(rj['msg'])
+            self.log(f"✅提现成功:{rj.json()}")
         else:
             self.log(f"提现结果❌{r.json()}")
 
