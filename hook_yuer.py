@@ -275,14 +275,13 @@ class TASK:
             return
         money = re.findall(r'<span>(.*?)</span>', res.text)[0]
         balance = round(float(money) / 100, 2)
-        tag = self.txbz
         self.log(f"当前积分{money}=={balance}元")
-        if float(money) > tag:
-            self.log(f"满足提现门槛{tag/10}元，开始提现")
+        if float(money) > int(self.txbz):
+            self.log(f"满足提现门槛{int(self.txbz) / 10}元，开始提现")
             draw_money = round(float(money), 2)
             self.do_withdraw(draw_money)
         else:
-            self.log(f"小于提现门槛0.3元，跳过提现")
+            self.log(f"小于提现门槛{int(self.txbz) / 10}元，跳过提现")
 
     def do_withdraw(self, amount):
         url = self.url + '/withdrawal/submit_withdraw'
@@ -312,7 +311,7 @@ class TASK:
         wxpusher_config = os.getenv("wxpusher_config") or ""
         if wxpusher_config and wxpusher_config != "":
             config = json.loads(wxpusher_config)
-            self.wxpusher_token=config['wxpusher_token']
+            self.wxpusher_token = config['wxpusher_token']
             self.wxpusher_uid = random.choice(config['wxpusher_uid'])
 
         datapust = {
@@ -321,7 +320,7 @@ class TASK:
             "summary": "文章检测【鱼儿】",
             "contentType": 2,
             "topicIds": [],
-            "uids":[self.wxpusher_uid],
+            "uids": [self.wxpusher_uid],
             "url": url,
         }
         urlpust = "http://wxpusher.zjiecode.com/api/send/message"
@@ -336,7 +335,6 @@ class TASK:
         except:
             self.log("❌ 推送文章到微信失败，完犊子，要黑号了！")
             return False
-
 
     def pushAutMan(self, title, msg):
         autman_push_config = os.getenv("autman_push_config") or ""
