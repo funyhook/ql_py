@@ -669,13 +669,13 @@ if __name__ == "__main__":
     print(
         "【小阅阅】 推荐阅读(入口)->https://osl4.f4135.shop/yunonline/v1/auth/c5c3f97ce3894f1c08593c4a6c54dbfe?codeurl=osl4.f4135.shop&codeuserid=2&time=1709089052")
     accounts = getEnv("hook_xyy")
+    push_msg = ''
     print(f'******共获取到{len(accounts)}个账号******')
     # 获取CPU核心数量
-    num_cores = multiprocessing.cpu_count()
-    print(f'系统CPU核心数量为: {num_cores},开始并发任务！')
+    # num_cores = multiprocessing.cpu_count()
+    # print(f'系统CPU核心数量为: {num_cores},开始并发任务！')
     # 根据CPU核心数量设置进程数量
-    num_processes = num_cores
-    push_msg = ''
+    # num_processes = num_cores
     # 使用进程池执行
     # with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
     #     # 将每个账号的处理作为一个任务提交给进程池
@@ -684,6 +684,7 @@ if __name__ == "__main__":
     #     # 等待所有任务完成
     #     concurrent.futures.wait(futures)
     #     notify.send("[小阅阅推送]", push_msg)
+
     for index, account in enumerate(accounts):
         # push_msg += f"\n{'-' * 50}\n"
         push_msg += process_account(index, account)
