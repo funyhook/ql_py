@@ -276,7 +276,7 @@ class TASK:
         money = re.findall(r'<span>(.*?)</span>', res.text)[0]
         balance = round(float(money) / 100, 2)
         self.log(f"当前积分{money}=={balance}元")
-        if float(money) > int(self.txbz)/100:
+        if float(money) > int(self.txbz):
             self.log(f"满足提现门槛{int(self.txbz) / 100}元，开始提现")
             draw_money = round(float(money), 2)
             self.do_withdraw(draw_money)
