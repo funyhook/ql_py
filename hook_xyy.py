@@ -51,76 +51,6 @@ import notify
 urllib3.disable_warnings()
 
 
-def push(appToken, topicIds, title, link, text, type):
-    datapust = {
-        "appToken": appToken,
-        "content": f"""<body onload="window.location.href='{link}'">出现检测文章！！！\n<a style='padding:10px;color:red;font-size:20px;' href='{link}'>点击我打开待检测文章</a>\n请尽快点击链接完成阅读\n备注：{text}</body>""",
-        "summary": title or "小阅阅阅读",
-        "contentType": type,
-        "topicIds": [int(topicIds)],
-        "url": link,
-    }
-
-    urlpust = "http://wxpusher.zjiecode.com/api/send/message"
-    try:  # line:59:try:
-        p = requests.post(url=urlpust, json=datapust, verify=False)
-        if p.json()["code"] == 1000:
-            print("✅ 推送文章到微信成功，请尽快前往点击文章，不然就黑号啦！")
-            return True  # line:64:return True
-        else:  # line:65:else:
-            print("❌ 推送文章到微信失败，完犊子，要黑号了！")  # line:66:print("❌ 推送文章到微信失败，完犊子，要黑号了！")
-            return False  # line:67:return False
-    except:  # line:68:except:
-        print("❌ 推送文章到微信失败，完犊子，要黑号了！")  # line:69:print("❌ 推送文章到微信失败，完犊子，要黑号了！")
-        return False  # line:70:return False
-
-
-def pushWechatBussiness(link):
-    wechatBussinessKey = os.getenv("wechatBussinessKey") or ""
-    if not wechatBussinessKey:
-        return
-    datapust = {"msgtype": "text", "text": {"content": link}}
-    urlpust = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=" + wechatBussinessKey
-    try:
-        p = requests.post(url=urlpust, json=datapust, verify=False)
-        if p.json()["errcode"] == 0:
-            print("✅ 推送文章到企业微信成功！")
-            return True
-        else:  # line:83:else:
-            print("❌ 推送文章到企业微信失败！")
-            return False
-    except:
-        print("❌ 推送文章到企业微信失败！")
-        return False
-
-
-def pushAutMan(title, msg):
-    autman_push_config = os.getenv("autman_push_config") or ""
-    if not autman_push_config or autman_push_config == "":
-        print("❌ 推送文章到autman失败！")
-        return
-    config = json.loads(autman_push_config)
-    datapust = {
-        "token": config['token'],
-        "plat": config['plat'],
-        "groupCode": config['groupCode'],
-        "userId": config['userId'],
-        "title": title,
-        "content": msg
-    }
-    try:
-        p = requests.post(url=config['url'], json=datapust, verify=False)
-        if p.json()["ok"]:
-            print("✅ ⚠️推送文章到autman成功！⚠️")
-            return True
-        else:
-            print("❌ 推送文章到autman失败！")
-            return False
-    except:
-        print("❌ 推送文章到autman失败！")
-        return False
-
-
 def getNewInviteUrl():  # line:594:def getNewInviteUrl():
     r = requests.get("https://www.filesmej.cn/waidomain.php", verify=False).json()
     if r.get("code") == 0:  # line:596:if r.get("code") == 0:
@@ -600,6 +530,12 @@ class HHYD:  # line:145:class HHYD:
             return False
 
     def wxpuser(self, url):
+        wxpusher_config = os.getenv("wxpusher_config") or ""
+        if wxpusher_config and wxpusher_config != "":
+            config = json.loads(wxpusher_config)
+            self.wxpusher_token=config['wxpusher_token']
+            self.wxpusher_uid = random.choice(config['wxpusher_uid'])
+
         datapust = {
             "appToken": self.wxpusher_token,
             "content": f"""<body onload="window.location.href='{url}'">出现检测文章！！！\n<a style='padding:10px;color:red;font-size:20px;' href='{url}'>点击我打开待检测文章</a>\n请尽快点击链接完成阅读\n</body>""",

@@ -480,6 +480,12 @@ class HHYD:
 
 
     def wxpuser(self, url):
+        wxpusher_config = os.getenv("wxpusher_config") or ""
+        if wxpusher_config and wxpusher_config != "":
+            config = json.loads(wxpusher_config)
+            self.wxpusher_token=config['wxpusher_token']
+            self.wxpusher_uid = random.choice(config['wxpusher_uid'])
+
         datapust = {
             "appToken": self.wxpusher_token,
             "content": f"""<body onload="window.location.href='{url}'">出现检测文章！！！\n<a style='padding:10px;color:red;font-size:20px;' href='{url}'>点击我打开待检测文章</a>\n请尽快点击链接完成阅读\n</body>""",
