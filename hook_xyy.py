@@ -494,7 +494,6 @@ class HHYD:  # line:145:class HHYD:
                 shoutu_balance_match = re.findall(r'<div class="num number rewardNum">(\d+\.\d+)</div>', htmltext)
                 if shoutu_balance_match:
                     self.shoutu_balance = shoutu_balance_match[0]
-                self.log(f"账户余额：{self.shoutu_balance}元")
                 signidl = re.findall('\)\|\|"(.*?)";', res1)
                 if not signidl:
                     continue
@@ -588,6 +587,7 @@ class HHYD:  # line:145:class HHYD:
         time.sleep(sleepTime)
         print(f"{'+' * 20}开始第{self.index}个账号{'+' * 20}")
         if self.init():
+            self.log(f"账户余额：{self.shoutu_balance}元")
             self.user_info()
             self.hasWechat()
             self.gold()
@@ -610,19 +610,6 @@ if __name__ == "__main__":
     accounts = getEnv("hook_xyy")
     push_msg = ''
     print(f'******共获取到{len(accounts)}个账号******')
-    # 获取CPU核心数量
-    # num_cores = multiprocessing.cpu_count()
-    # print(f'系统CPU核心数量为: {num_cores},开始并发任务！')
-    # 根据CPU核心数量设置进程数量
-    # num_processes = num_cores
-    # 使用进程池执行
-    # with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-    #     # 将每个账号的处理作为一个任务提交给进程池
-    #     # 这将导致所有任务并行执行
-    #     futures = [executor.submit(process_account, index, account, push_msg) for index, account in enumerate(accounts)]
-    #     # 等待所有任务完成
-    #     concurrent.futures.wait(futures)
-    #     notify.send("[小阅阅推送]", push_msg)
 
     for index, account in enumerate(accounts):
         # push_msg += f"\n{'-' * 50}\n"
