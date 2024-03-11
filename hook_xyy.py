@@ -685,4 +685,4 @@ if __name__ == "__main__":
     for index, account in enumerate(accounts):
         push_msg += f"\n{'-' * 50}\n"
         push_msg += process_account(index, account)
-    notify.send("[猫猫看看阅读推送]", push_msg)
+    notify.send("[小阅阅阅读推送]", push_msg)
