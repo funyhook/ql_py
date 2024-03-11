@@ -481,18 +481,18 @@ class HHYD:  # line:145:class HHYD:
             try:
                 res = r.json()
                 if res.get("errcode") == 0:
-                    self.log(f"✅兑换金币成功=>{gold}={int(self.remain)/10000}元")
+                    self.log(f"✅兑换金币成功=>{gold}={int(self.remain) / 10000}元")
             except Exception as e:
                 self.log(f"提现失败❌：{r.text}")
         do_tixian = False
         if int(self.remain) < int(self.txbz):
             do_tixian = False
-        if float(self.shoutu_balance)>0 and float(self.shoutu_balance) * 1000 < int(self.txbz):
+        if float(self.shoutu_balance) > 0 and float(self.shoutu_balance) * 1000 < int(self.txbz):
             do_tixian = True
         if do_tixian:
             self.do_withDraw()
         else:
-            self.log(f"为达到提现门槛{int(self.txbz)/10000}元，跳过提现")
+            self.log(f"为达到提现门槛{int(self.txbz) / 10000}元，跳过提现")
 
     def do_withDraw(self):
         query = urlsplit(self.exchangeParams).query
@@ -517,7 +517,7 @@ class HHYD:  # line:145:class HHYD:
             "X-Requested-With": "XMLHttpRequest"
         }
         r = requests.post(u, headers=headers, data=p, verify=False)
-        if r.status_code==200:
+        if r.status_code == 200:
             rj = r.json()
             self.log(f"✅提现成功:{rj.json()}")
         else:
@@ -658,8 +658,8 @@ class HHYD:  # line:145:class HHYD:
         return run_msg
 
 
-def process_account(index, account):
-    read = HHYD(index, account)
+def process_account(i, ck):
+    read = HHYD(i, ck)
     return read.run()
 
 
