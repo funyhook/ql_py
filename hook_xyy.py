@@ -519,7 +519,7 @@ class HHYD:  # line:145:class HHYD:
         r = requests.post(u, headers=headers, data=p, verify=False)
         if r.status_code == 200:
             rj = r.json()
-            self.log(f"✅提现成功:{rj}")
+            self.log(f"✅提现成功:{rj['msg']}")
         else:
             self.log(f"提现结果❌{r.text}")
 
