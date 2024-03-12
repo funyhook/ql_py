@@ -122,7 +122,7 @@ def getEnv(key):  # line:343
     try:  # line:348
         env_str = json.loads(
             env_str.replace("'", '"').replace("\n", "").replace(" ", "").replace("\t", ""))  # line:349
-        print(f"共获取到{len(accounts)}个账号")
+        print(f"共获取到{len(env_str)}个账号")
         return env_str  # line:350
     except Exception as e:  # line:351
         print(f'请检查变量[{key}]参数是否填写正确：{e.with_traceback()}')  # line:354
