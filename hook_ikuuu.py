@@ -8,7 +8,7 @@ cron: 12 0 * * *
 export hook_ikuuu="[
     {
         'email': '邮箱',
-        'pwd':'密码',
+        'pwd':'密码'
     }
 ]"
 """
@@ -20,6 +20,8 @@ from datetime import datetime
 
 import urllib3
 from bs4 import BeautifulSoup
+
+from utils import common
 
 urllib3.disable_warnings()
 
@@ -117,7 +119,7 @@ def getEnv(key):  # line:343
     inviteUrl = 'https://ikuuu.pw/auth/register?code=xLmV'
     env_str = os.getenv(key)  # line:344
     if env_str is None:  # line:345
-        print(f'青龙变量【{key}】没有获取到!自动退出；\n注册入口：{inviteUrl}')  # line:346
+        print(f'青龙变量【{key}】没有获取到!自动退出')  # line:346
         exit()
     try:  # line:348
         env_str = json.loads(
@@ -125,12 +127,13 @@ def getEnv(key):  # line:343
         print(f"共获取到{len(env_str)}个账号")
         return env_str  # line:350
     except Exception as e:  # line:351
-        print(f'请检查变量[{key}]参数是否填写正确')  # line:354
+        print(f'请检查变量[{key}]参数是否填写正确'
+              f'')  # line:354
         print(f"活动入口：{inviteUrl}")
 
 
 if __name__ == '__main__':
-    print("ikuuu注册入口：https://ikuuu.pw/auth/register?code=xLmV")
+    common.check_cloud("hook_ikuuu", 1.0)
     accounts = getEnv("hook_ikuuu")
     for index, ck in enumerate(accounts):
         abc = ikuuu(index + 1, ck)

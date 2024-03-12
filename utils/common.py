@@ -20,17 +20,23 @@ def check_cloud(name, local_ver=1.0):
             r_tip = verRes['tip']
             r_open = verRes['open']
             r_tg = verRes['tg']
+            r_inviteUrl =  verRes['inviteUrl']
             if local_ver < r_ver:
                 content = "发现新版本:"
+                content += f"\n【反馈群】：{r_tg}"
                 content += f"\n【版本号】：V{r_ver}"
                 content += f"\n【更新内容】：{r_log}"
-                content += f"\n【反馈群】：{r_tg}"
+                if r_inviteUrl:
+                    content += f"\n【项目入口】：{r_inviteUrl}"
                 exit(content)
             if not r_open:
                 content = r_tip
                 content += f"【反馈群】：{r_tg}"
                 exit(content)
-            content = f"\n【当前版本】：V{local_ver}"
+            content = f"\n【反馈群】：{r_tg}"
+            content += f"\n【当前版本】：V{local_ver}"
             content += f"\n【更新内容】：{r_log}"
-            content += f"\n【反馈群】：{r_tg}"
+
+            if r_inviteUrl:
+                content += f"\n【项目入口】：{r_inviteUrl}"
             print(content)
