@@ -124,7 +124,6 @@ class TASK:
 
         r = requests.get(url, headers=add_headers)
         if r.status_code == 200:
-            self.log("✅获取最新地址成功")
             rj = r.json()
             self.url = 'http://' + urlparse(rj['jump']).netloc
             self.host = urlparse(rj['jump']).netloc
@@ -212,10 +211,15 @@ class TASK:
 
     def do_read(self, url, referer, jkey=None, retry=0):
         self.read_count += 1
-        if jkey is None:
-            url1 = url + f'&r={round(random.uniform(0, 1), 16)}'
+        if retry==1:
+            self.read_count = self.read_count-1
+        if retry ==0:
+            if jkey is None:
+                url1 = url + f'&r={round(random.uniform(0, 1), 16)}'
+            else:
+                url1 = url + f'&r={round(random.uniform(0, 1), 16)}&jkey={jkey}'
         else:
-            url1 = url + f'&r={round(random.uniform(0, 1), 16)}&jkey={jkey}'
+            url1 = url
         add_headers = {
             "Referer": referer + '/',
             "Origin": referer,
@@ -228,10 +232,11 @@ class TASK:
         }
         requests.options(url1, headers=add_headers, )
         res = requests.get(url1, headers=add_headers)
+        # self.log(f"url1：{url1},jkey：{jkey}，res：{res.text}")
         if res.status_code != 200:
             if retry ==0:
                 self.log(f"第{self.read_count}次阅读失败,重试一次！")
-                self.do_read(url, referer, jkey,1)
+                self.do_read(url1, referer, jkey,1)
             else:
                 self.log(f"第{self.read_count}次阅读失败")
                 return
@@ -262,7 +267,7 @@ class TASK:
             time.sleep(20)
             return True
         else:
-            self.log(f"✅✅✅这次阅读没有检测")
+            self.log(f"✅这次阅读没有检测")
             return True
 
     def with_draw(self):
@@ -366,17 +371,19 @@ class TASK:
                 self.log(f"❌ 推送文章到autman异常！！！！{e}")
 
     def run(self, ):
-        sleepTime = random.randint(3, 5)
-        self.log(f"😊😊😊降低封号风险，随机休息{sleepTime}秒")
-        time.sleep(sleepTime)
         self.log(f"{'=' * 13}开始运行{'=' * 13}")
+        sleepTime = random.randint(3, 5)
+        self.log(f"😊降低封号风险，随机休息{sleepTime}秒")
+        time.sleep(sleepTime)
+        if self.host:
+            self.log("✅获取最新地址成功")
         self.user_info()
         if self.limitTip:
             self.log(self.limitTip)
         else:
             self.get_article()
         self.with_draw()
-        self.log(f"{'=' * 13}运行结束{'=' * 13}")
+        self.log(f"{'=' * 13}运行结束{'=' * 13}\n")
 
 
 def getEnv(key):  # line:343
