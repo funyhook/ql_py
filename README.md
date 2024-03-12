@@ -1,6 +1,8 @@
 
 ![Visitor Count](https://profile-counter.glitch.me/birdbls/count.svg)
-
+```javascript
+ql repo https://github.com/funyhook/ql_py.git "" hook_ backup notify|utils
+```
 
 # 特别声明
 
