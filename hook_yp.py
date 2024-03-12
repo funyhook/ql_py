@@ -78,7 +78,7 @@ class YongPai:
         url = f'https://ypapp.cnnb.com.cn/yongpai-news/api/v2/news/list?channelId=0&currentPage=1&timestamp={int(time.time() * 1000)}'
         res = requests.get(url)
         for news in res.json()['data']['content']:
-            if '转盘' in news.get('title', ''):
+            if '转盘' in news.get('keywords', ''):
                 news_id = news['channel'][0]['newsId']
                 url = f'https://ypapp.cnnb.com.cn/yongpai-news/api/news/detail?newsId={news_id}&userId={self.user_id}'
                 res = requests.get(url)
@@ -256,6 +256,9 @@ def getEnv(key):  # line:343
 
 
 if __name__ == '__main__':
+    print("【版本】：20240312001")
+    print("【更新内容】：更新抽奖")
+    print("【TG群】：https://t.me/vhook_wool")
     accounts = getEnv("hook_yp")
     print(f"本次共发现{len(accounts)}个ck")
     push_msg = ""
