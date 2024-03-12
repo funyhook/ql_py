@@ -3,6 +3,7 @@
 * new Env("夸克签到")
 * cron: 12 0 * * *
 * 反馈群：https://t.me/vhook_wool
+抓包教程：浏览器打开 https://pan.quark.cn ，复制全部cookie
 export hook_kuaike="[
     {
         'name':'ls',
