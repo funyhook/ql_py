@@ -10,7 +10,7 @@ export hook_yuer="[
         'name': '不能',
         'cookie': 'PHPSESSID=',
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
-        'txbz':'3000',
+        'txbz':'30',
         'wxpusher_token': '',
         'wxpusher_uid': ''
     }
