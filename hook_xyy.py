@@ -51,6 +51,27 @@ import notify
 urllib3.disable_warnings()
 
 
+def extract_middle_text(source, before_text, after_text, all_matches=False):
+    results = []
+    start_index = source.find(before_text)
+
+    while start_index != -1:
+        source_after_before_text = source[start_index + len(before_text) :]
+        end_index = source_after_before_text.find(after_text)
+
+        if end_index == -1:
+            break
+
+        results.append(source_after_before_text[:end_index])
+        if not all_matches:
+            break
+
+        source = source_after_before_text[end_index + len(after_text) :]
+        start_index = source.find(before_text)
+
+    return results if all_matches else results[0] if results else ""
+
+
 def getNewInviteUrl():  # line:594:def getNewInviteUrl():
     r = requests.get("https://www.filesmej.cn/waidomain.php", verify=False).json()
     if r.get("code") == 0:  # line:596:if r.get("code") == 0:
@@ -279,14 +300,14 @@ class HHYD:  # line:145:class HHYD:
             ):  # line:289:while res["errcode"] != 0:
                 timeStamp = str(ts())  # line:290:timeStamp = str(ts())
                 psgn = hashlib.md5(
-                    (
-                            info[1]["Origin"].replace("https://", "")[:11]
-                            + info[0]
-                            + timeStamp
-                            + "A&I25LILIYDS$"
-                    ).encode()
+                    (info[1]["Host"] + info[0] + timeStamp + "A&I25LILIYDS$").encode()
                 ).hexdigest()
-                self.params = {"uk": info[0], "time": timeStamp, "psgn": psgn}
+                self.params = {
+                    "uk": info[0],
+                    "time": timeStamp,
+                    "psgn": psgn,
+                    "v": "4.0",
+                }
                 u = f"https://nsr.zsf2023e458.cloud/yunonline/v1/do_read"
                 r = requests.get(u, headers=info[1], params=self.params, verify=False, timeout=60, )
                 if r.text and r.json()["errcode"] == 0:
@@ -491,6 +512,9 @@ class HHYD:  # line:145:class HHYD:
                 )
                 htmltext = res.text
                 res1 = re.sub("\s", "", htmltext)
+                if "该账号存在违规操作，已被封禁" in htmltext:
+                    print(f"账号[{self.name}] 存在违规操作，已被封禁，凉凉，过两个月再看看解没解封吧~ ")
+                    return False
                 shoutu_balance_match = re.findall(r'<div class="num number rewardNum">(\d+\.\d+)</div>', htmltext)
                 if shoutu_balance_match:
                     self.shoutu_balance = shoutu_balance_match[0]
@@ -516,6 +540,31 @@ class HHYD:  # line:145:class HHYD:
                 verify=False,
             )
             htmltext = res.text
+            read_jump_read_text = extract_middle_text(
+                htmltext,
+                "function read_jump_read(type,time){",
+                "success: function(res) {",
+            )
+            if read_jump_read_text:
+                readJumpPath = extract_middle_text(
+                    read_jump_read_text, "url: domain+'", "',"
+                )
+                if readJumpPath:
+                    self.readJumpPath = readJumpPath
+                else:
+                    print(
+                        f"账号[{self.name}] 初始化失败，请手动访问下确认页面没崩溃 或者 稍后再试吧，一直不行，请前往TG群反馈~ "
+                    )
+                    return False
+            else:
+                if "存在违规操作" in htmltext:
+                    print(f"账号[{self.name}] 被检测到了，已经被封，终止任务，快去提醒大家吧~ ")
+                    exit(0)
+                else:
+                    print(
+                        f"账号[{self.name}] 初始化失败，请手动访问下确认页面没崩溃 或者 稍后再试吧，一直不行，请前往TG群反馈~ "
+                    )
+                    return False
             res1 = re.sub("\s", "", htmltext)
             signidl = re.findall('/yunonline/v1/exchange(.*?)"', res1)
             if not signidl:
