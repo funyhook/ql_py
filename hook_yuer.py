@@ -1,7 +1,6 @@
 """
 代码请勿用于非法盈利,一切与本人无关,该代码仅用于学习交流,请阅览下载24小时内删除代码
 # 反馈群：https://t.me/vhook_wool
-* 鱼儿阅读 版本：20240312001
 new Env("鱼儿阅读")
 cron: 9 9-21/2 * * *
 反馈群：https://t.me/vhook_wool
@@ -229,6 +228,7 @@ class TASK:
         res = requests.get(url1, headers=add_headers)
         if res.status_code != 200 and retry ==0:
             self.log(f"第{self.read_count}次阅读失败,重试一次！")
+            time.sleep(random.randint(3,6))
             self.do_read(url, referer, None,1)
             return
         rj = res.json()
@@ -391,6 +391,8 @@ def getEnv(key):  # line:343
 
 
 if __name__ == '__main__':
+    print("【版本】：20240312001")
+    print("【更新内容】：增加阅读失败，重试一次机制！")
     print("【鱼儿】推荐阅读(入口)->http://h5.alswywo.cn/pipa_read?upuid=1601717")
     accounts = getEnv("hook_yuer")
     for index, ck in enumerate(accounts):
