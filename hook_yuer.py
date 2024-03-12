@@ -111,7 +111,7 @@ class TASK:
 
     def get_base_url(self):
         referer = self.get_other_url()
-        url = 'https://h5.127-server.xyz/entry/pp'
+        url = 'https://h5.127-server.xyz/entry/lg'
         add_headers = {
             "Referer": referer + "/",
             "Origin": referer,
