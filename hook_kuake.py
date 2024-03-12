@@ -94,7 +94,6 @@ def getEnv(key):  # line:343
         return env_str  # line:350
     except Exception as e:  # line:351
         print(f'请检查变量[{key}]参数是否填写正确')  # line:354
-        print(f"活动入口：{inviteUrl}")
 
 
 if __name__ == '__main__':
