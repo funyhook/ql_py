@@ -196,7 +196,7 @@ class TASK:
         parsed_url = urlparse(url)
         query_parameters = parse_qs(parsed_url.query)
         iu = query_parameters['iu'][0]
-        url1 = f'https://h5.127-server.xyz/read_task/do_read?iu={iu}&type=7&pageshow'
+        url1 = f'https://{host}/read_task/do_read?iu={iu}&type=7&pageshow'
         if '加载中' in r.text:
             self.log("加载阅读文章中")
             # 获取url的iu参数
@@ -229,7 +229,7 @@ class TASK:
         if res.status_code != 200 and retry ==0:
             self.log(f"第{self.read_count}次阅读失败,重试一次！")
             time.sleep(random.randint(3,6))
-            self.do_read(url, referer, None,1)
+            self.do_read(url, referer, jkey,1)
             return
         rj = res.json()
         if 'jkey' in rj:
