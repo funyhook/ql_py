@@ -1,7 +1,7 @@
 """
 代码请勿用于非法盈利,一切与本人无关,该代码仅用于学习交流,请阅览下载24小时内删除代码
 # 反馈群：https://t.me/vhook_wool
-阅读：鱼儿阅读
+* 鱼儿阅读 版本：20240312001
 new Env("鱼儿阅读")
 cron: 9 9-21/2 * * *
 反馈群：https://t.me/vhook_wool
@@ -209,7 +209,7 @@ class TASK:
             self.log(f"加载不了")
             return
 
-    def do_read(self, url, referer, jkey=None, ):
+    def do_read(self, url, referer, jkey=None, retry=0):
         self.read_count += 1
         if jkey is None:
             url1 = url + f'&r={round(random.uniform(0, 1), 16)}'
@@ -227,8 +227,9 @@ class TASK:
         }
         requests.options(url1, headers=add_headers, )
         res = requests.get(url1, headers=add_headers)
-        if res.status_code != 200:
-            self.log(f"第{self.read_count}次阅读失败")
+        if res.status_code != 200 and retry ==0:
+            self.log(f"第{self.read_count}次阅读失败,重试一次！")
+            self.do_read(url, referer, None,1)
             return
         rj = res.json()
         if 'jkey' in rj:
