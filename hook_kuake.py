@@ -46,14 +46,14 @@ class KUAKE:
             data = response.get("data")
             if data['cap_sign']['sign_daily']:
                 self.log(
-                    f"📅 今日已签到+{int(data['cap_sign']['sign_daily_reward'] / 1024 / 1024)}MB，连签进度({data['cap_sign']['sign_progress']}/{data['cap_sign']['sign_target']})✅")
+                    f"【签到】：今日已签到+{int(data['cap_sign']['sign_daily_reward'] / 1024 / 1024)}MB，📅 连签进度({data['cap_sign']['sign_progress']}/{data['cap_sign']['sign_target']})✅")
             else:
                 sign, sign_return = self.get_growth_sign()
                 if sign:
-                    message = f"📅 执行签到: 今日签到+{int(sign_return / 1024 / 1024)}MB，连签进度({data['cap_sign']['sign_progress'] + 1}/{data['cap_sign']['sign_target']})✅"
+                    message = f"【签到】：执行签到: 今日签到+{int(sign_return / 1024 / 1024)}MB，📅 连签进度({data['cap_sign']['sign_progress'] + 1}/{data['cap_sign']['sign_target']})✅"
                     self.log(message)
                 else:
-                    self.log(f"📅 执行签到: {sign_return}")
+                    self.log(f"【签到】：执行签到: {sign_return}")
             return response["data"]
         else:
             return False
