@@ -314,7 +314,7 @@ class TASK:
             self.wxpusher_token = config['token']
             self.wxpusher_uid = random.choice(config['uids'])
             self.log(f"本次检测推送至：{self.wxpusher_uid}")
-
+        self.log("➡️➡️➡️开启推送至wxpusher--->")
         datapust = {
             "appToken": self.wxpusher_token,
             "content": f"""<body onload="window.location.href='{url}'">出现检测文章！！！\n<a style='padding:10px;color:red;font-size:20px;' href='{url}'>点击我打开待检测文章</a>\n请尽快点击链接完成阅读\n</body>""",
@@ -339,26 +339,25 @@ class TASK:
 
     def pushAutMan(self, title, msg):
         autman_push_config = os.getenv("autman_push_config") or ""
-        if not autman_push_config or autman_push_config == "":
-            self.log("❌ 推送文章到autman失败！")
-            return
-        config = json.loads(autman_push_config)
-        datapust = {
-            "token": config['token'],
-            "plat": config['plat'],
-            "groupCode": config['groupCode'],
-            "userId": config['userId'],
-            "title": title,
-            "content": msg
-        }
-        try:
-            p = requests.post(config['url'], data=json.dumps(datapust), headers={"Content-Type": "application/json"})
-            if p.json()["ok"]:
-                self.log("✅推送文章到autman成功✅")
-            else:
-                self.log(" ❗️❗️❗推送文章到autman失败❗️❗️❗")
-        except Exception as e:
-            self.log(f"❌ 推送文章到autman异常！！！！{e}")
+        if  autman_push_config and autman_push_config == "":
+            self.log("➡️➡️➡️开启推送至autman--->")
+            config = json.loads(autman_push_config)
+            datapust = {
+                "token": config['token'],
+                "plat": config['plat'],
+                "groupCode": config['groupCode'],
+                "userId": config['userId'],
+                "title": title,
+                "content": msg
+            }
+            try:
+                p = requests.post(config['url'], data=json.dumps(datapust), headers={"Content-Type": "application/json"})
+                if p.json()["ok"]:
+                    self.log("✅推送文章到autman成功✅")
+                else:
+                    self.log(" ❗️❗️❗推送文章到autman失败❗️❗️❗")
+            except Exception as e:
+                self.log(f"❌ 推送文章到autman异常！！！！{e}")
 
     def run(self, ):
         sleepTime = random.randint(3, 5)
