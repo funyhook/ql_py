@@ -123,6 +123,7 @@ class TASK:
 
         r = requests.get(url, headers=add_headers)
         if r.status_code == 200:
+            self.log("✅获取最新地址成功")
             rj = r.json()
             self.url = 'http://' + urlparse(rj['jump']).netloc
             self.host = urlparse(rj['jump']).netloc
