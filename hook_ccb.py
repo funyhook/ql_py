@@ -1,4 +1,3 @@
-
 """
 软件:建行生活
 # 反馈群：https://t.me/vhook_wool
@@ -28,6 +27,7 @@ import re
 import time
 from datetime import datetime
 from urllib.parse import quote
+from utils import common
 
 import requests
 
@@ -228,7 +228,7 @@ class CCD:
                 else:
                     print(return_data)
         except Exception as e:
-            print(e)
+            print(f"get_token err {e.with_traceback()}")
 
     def extract_token(self, redirect_url):
         start_token_index = redirect_url.find("__dmsp_token=") + len("__dmsp_token=")
@@ -255,7 +255,6 @@ class CCD:
     def user_info(self):
         url = f'https://m3.dmsp.ccb.com/api/businessCenter/mainVenue/getUserState?zhc_token={self.zhc_token}'
         return_data = self.send_request(url, headers=self.base_header, method='POST')
-
         if return_data['code'] != 200:
             print(return_data['message'])
         else:
@@ -263,12 +262,15 @@ class CCD:
             need_exp = return_data['data'].get('nextMonthProtectLevelNeedGrowthExp') - return_data['data'].get(
                 'growthExp')
             level = return_data['data'].get('currentProtectLevel')
-            reward_id = return_data['data'].get('zhcRewardInfo').get('id')
-            reward_type = return_data['data'].get('zhcRewardInfo').get('rewardType')
-            reward_value = return_data['data'].get('zhcRewardInfo').get('rewardValue')
-            print(f"当前用户等级{current_level}级")
-            print(f"距下一级还需{need_exp}成长值")
-            self.income(level, reward_id, reward_type, reward_value)
+            if return_data['data'].get('zhcRewardInfo'):
+                reward_id = return_data['data'].get('zhcRewardInfo').get('id')
+                reward_type = return_data['data'].get('zhcRewardInfo').get('rewardType')
+                reward_value = return_data['data'].get('zhcRewardInfo').get('rewardValue')
+                print(f"当前用户等级{current_level}级")
+                print(f"距下一级还需{need_exp}成长值")
+                self.income(level, reward_id, reward_type, reward_value)
+            else:
+                print("查询收入明细出现错误！")
 
     # 每日营收
     def income(self, level, reward_id, reward_type, reward_value):
@@ -435,6 +437,7 @@ class CCD:
         }
 
         return_data = requests.post(refresh_url, headers=self.token_headers, data=payload).json()
+        print(return_data)
         if return_data['code'] != 200:
             print(return_data['message'])
 
@@ -449,6 +452,7 @@ class CCD:
                 try:
                     url2 = f'https://fission-events.ccbft.com/a/224/1m0xM2mx?CCB_Chnl=6000117&__dmsp_st={dmsp_st_value}'
                     res = requests.get(url=url2, headers=headers)
+                    print(res.text)
                     data = res.text
                     csrf_token, authorization = self.extract_csrf_and_auth(data)
 
@@ -838,26 +842,29 @@ class CCD:
             print(f'\n当前cc豆: {current_count}，有 {expired_count} cc豆将于 {formatted_date} 过期。')
 
 
-def get_env(key):
-    if os.environ.get(key) is None:
-        print(f"未填写环境变量{key}")
-        return os.environ.get(key)
-    else:
-        return os.environ.get(key)
-
+def getEnv(key):  # line:343
+    env_str = os.getenv(key)  # line:344
+    if env_str is None:  # line:345
+        print(f'青龙变量【{key}】没有获取到!自动退出')  # line:346
+        exit()
+    try:  # line:348
+        env_str = json.loads(
+            env_str.replace("'", '"').replace("\n", "").replace(" ", "").replace("\t", ""))  # line:349
+        return env_str  # line:350
+    except Exception as e:  # line:351
+        print(f'请检查变量[{key}]参数是否填写正确')  # line:354
 
 if __name__ == "__main__":
-    print("【版本】：20240312001")
-    print("【更新内容】：优化")
-    print("【TG群】：https://t.me/vhook_wool")
-    cookies = get_env("hook_ccb")
-    if not cookies:
-        print(f"未填写环境变量:hook_ccb")
-        exit()
-    cookies = json.loads(cookies)
-    msg = f"建行cc豆共获取到{len(cookies)}个账号"
-    print(msg)
-
+    common.check_cloud("hook_ccb",1.0)
+    # cookies = getEnv("hook_ccb")
+    cookies = [{
+        "deviceid": "7F94989D-1081-4307-A5BE-9312D947EC03",
+        "meb_id": "YSM202205192855618",
+        "phone": "13183087668",
+        "token": "MnFLQjFtTE5renBIMm10WmRlbVpoOW53S25qUTRrR2hjd3ZxTEpYUjU5byUzRDp5UThhVW9vY1B3YkFrZ01jSWV1MG41OFNCckp4Z3FGREF4VDVlMUxOd0h3JTNE",
+        "cookie": "XSRF-TOKEN=eyJpdiI6ImI5MXo5RXhvcldRcjF2S21wMVVqSFE9PSIsInZhbHVlIjoiVjZlVXFMZ1l5VVlrT2dEbnZyb2J2L1Zid1l0ZVUwN05CREdUYnBicFNJNUl5cDRJMDB1SXd5UnA0ODRQSFBqYzgwaG9IdCt3S2d1enoraHozQUMrbkQxVXE5ZFBmNHYvTEMvQnNpL2UrSkwxRUFuVW9NOHRlUVI2NUtTNWFaczYiLCJtYWMiOiJlZjMwNmE4ZWNhYmI0MTlhNTAyNGEzOTIxMGU0ZDRlMjYyZmQ4M2E2NjY2MmZkOTk3OTQwYjY3ZjExMjI2Zjc0IiwidGFnIjoiIn0%3D; _ck_bbq_224=eyJpdiI6IjhuYW1SUnp3YXorT0ZKbnh4VXAvc1E9PSIsInZhbHVlIjoiSDFxRmU4RjBmY25RdncwMGZzb1NvK1Q3TXR6dFRER085aDBQRU9BTWNSYlJmSnFscFVZaFkwRlZic2xxWlNDSVFIL3pHNWdPbklaUnA5NVFFZytzYVJxaVZVZ2owQ04xUytwdExsY290aExGRjljckduWk5yaFNwUFNDWW5iZk4iLCJtYWMiOiIxODhhMzlhM2E3MzUyNDk4M2ZiNjk4NDc2ODZhYjQ5ODNlNzEyZTE1ODY1NWY3M2JjNGE3YjVkNjYxMWM0ZTgxIiwidGFnIjoiIn0%3D; _session=eyJpdiI6Ik1oRDYwM3lUOXd5c0ZobEgrRmtDL2c9PSIsInZhbHVlIjoiVy9IQUwxWk8wNEI5Qm9JUW43WTdWbnFvZVBNTkk5ZUtvaGRwbTlwblNjVFVzNHlCSDFCVEovb2tnR01uaG1lbS8yMm5jSVpRcWF2S2dtZjBySG5oU1dNa3Uyd2RkeWxhYld4YlF3RE93cnFJeVNKckJKZm15YndQb0JqM1Z1M2EiLCJtYWMiOiI4MjE2ZDM0MDI2M2MyYWFjZWY0MjE1MjEyM2MyMmFiYmY0MGI0NTVhZjFmNjE3YTBlZjYwNzY4OGM2MWNkNzhlIiwidGFnIjoiIn0%3D; uid=CgIAAmWOZh6YBwQSV+kiAg==; zc_mcpcxkuz9d3f6bey=%7B%22sid%22%3A%20%221703830500383_531711810951041%22%2C%22updated%22%3A%201703831068965%2C%22info%22%3A%201703632055674%2C%22superProperty%22%3A%20%22%7B%5C%22app_id%5C%22%3A%20%5C%22mcpcxkuz9d3f6bey%5C%22%2C%5C%22CmAvy_ID%5C%22%3A%20%5C%22AP010202208051029712%5C%22%2C%5C%22DEVICE_MODEL%5C%22%3A%20%5C%22ca0e16bf-f170-4c54-a809-053628fa2a87%5C%22%2C%5C%22USER_AGENT%5C%22%3A%20%5C%22Mozilla%2F5.0%20(iPhone%3B%20CPU%20iPhone%20OS%2015_4_1%20like%20Mac%20OS%20X)%20AppleWebKit%2F605.1.15%20(KHTML%2C%20like%20Gecko)%20Mobile%2F15E148%20CCBSDK%2F2.4.0%2FCloudMercWebView%2FUnionPay%2F1.0%20CCBLoongPay%5C%22%2C%5C%22Ext_Ad_Mpng_Id%5C%22%3A%20%5C%220000000000000009%5C%22%2C%5C%22SHARE_USER_ID%5C%22%3A%20%5C%22%5C%22%2C%5C%22SHARE_DEPTH%5C%22%3A%20%5C%22%5C%22%2C%5C%22OS%5C%22%3A%20%5C%22jhsh%5C%22%2C%5C%22screen_orientation%5C%22%3A%20%5C%22%5C%22%2C%5C%22CmAvy_EmpID%5C%22%3A%20%5C%22%5C%22%7D%22%2C%22platform%22%3A%20%22%7B%7D%22%2C%22utm%22%3A%20%22%7B%7D%22%2C%22referrerDomain%22%3A%20%22event.ccbft.com%22%7D; zc_did=%7B%22did%22%3A%20%2218c6fc954b11e7d-0bfece4fb0934c8-15194719-505c8-18c6fc954b21d68%22%7D"
+    }]
+    print(f"建行cc豆共获取到{len(cookies)}个账号")
     for i, cookie in enumerate(cookies, start=1):
         print(f"\n======== ▷ 第 {i} 个账号 ◁ ========")
         CCD(cookie).auto_login()
