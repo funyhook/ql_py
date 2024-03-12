@@ -43,6 +43,8 @@ from urllib.parse import urlparse, parse_qs, quote
 
 import urllib3
 
+from utils import common
+
 urllib3.disable_warnings()
 
 import requests
@@ -226,25 +228,29 @@ class TASK:
         }
         requests.options(url1, headers=add_headers, )
         res = requests.get(url1, headers=add_headers)
-        if res.status_code != 200 and retry ==0:
-            self.log(f"第{self.read_count}次阅读失败,重试一次！")
-            self.do_read(url, referer, jkey,1)
-            return
-        rj = res.json()
-        if 'jkey' in rj:
-            if self.verify_status(rj['url']):
-                pass
+        if res.status_code != 200:
+            if retry ==0:
+                self.log(f"第{self.read_count}次阅读失败,重试一次！")
+                self.do_read(url, referer, jkey,1)
             else:
+                self.log(f"第{self.read_count}次阅读失败")
                 return
-            if 'success_msg' in res:
-                self.log(f"第{self.read_count}次{rj['success_msg']}")
-            else:
-
-                self.log(f"第{self.read_count}次阅读成功")
-            time.sleep(random.randint(7, 15))
-            self.do_read(url, referer, rj['jkey'])
         else:
-            self.log(f"本次阅读已完成,等等再来吧")
+            rj = res.json()
+            if 'jkey' in rj:
+                if self.verify_status(rj['url']):
+                    pass
+                else:
+                    return
+                if 'success_msg' in res:
+                    self.log(f"第{self.read_count}次{rj['success_msg']}")
+                else:
+
+                    self.log(f"第{self.read_count}次阅读成功")
+                time.sleep(random.randint(7, 15))
+                self.do_read(url, referer, rj['jkey'])
+            else:
+                self.log(f"本次阅读已完成,等等再来吧")
 
     def verify_status(self, url):
         if 'chksm=' in url:
@@ -374,10 +380,9 @@ class TASK:
 
 
 def getEnv(key):  # line:343
-    inviteUrl = 'http://h5.alswywo.cn/pipa_read?upuid=1601717'
     env_str = os.getenv(key)  # line:344
     if env_str is None:  # line:345
-        print(f'青龙变量【{key}】没有获取到!自动退出；入口{inviteUrl}')  # line:346
+        print(f'青龙变量【{key}】没有获取到!自动退出')  # line:346
         exit()
     try:  # line:348
         env_str = json.loads(
@@ -385,14 +390,10 @@ def getEnv(key):  # line:343
         return env_str  # line:350
     except Exception as e:  # line:351
         print(f'请检查变量[{key}]参数是否填写正确')  # line:354
-        print(f"活动入口：{inviteUrl}")
 
 
 if __name__ == '__main__':
-    print("【版本】：20240312001")
-    print("【更新内容】：增加阅读失败，重试一次机制！")
-    print("【TG群】：https://t.me/vhook_wool")
-    print("【鱼儿】推荐阅读(入口)->http://h5.alswywo.cn/pipa_read?upuid=1601717")
+    common.check_cloud("hook_yuer", 1.1)
     accounts = getEnv("hook_yuer")
     for index, ck in enumerate(accounts):
         abc = TASK(index + 1, ck)
