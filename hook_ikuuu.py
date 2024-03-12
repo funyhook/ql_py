@@ -114,14 +114,15 @@ class ikuuu():
         return self.sign()
 
 def getEnv(key):  # line:343
-    inviteUrl = 'http://h5.alswywo.cn/pipa_read?upuid=1601717'
+    inviteUrl = 'https://ikuuu.pw/auth/register?code=xLmV'
     env_str = os.getenv(key)  # line:344
     if env_str is None:  # line:345
-        print(f'青龙变量【{key}】没有获取到!自动退出；入口{inviteUrl}')  # line:346
+        print(f'青龙变量【{key}】没有获取到!自动退出；\n注册入口：{inviteUrl}')  # line:346
         exit()
     try:  # line:348
         env_str = json.loads(
             env_str.replace("'", '"').replace("\n", "").replace(" ", "").replace("\t", ""))  # line:349
+        print(f"共获取到{len(accounts)}个账号")
         return env_str  # line:350
     except Exception as e:  # line:351
         print(f'请检查变量[{key}]参数是否填写正确')  # line:354
@@ -131,7 +132,6 @@ def getEnv(key):  # line:343
 if __name__ == '__main__':
     print("ikuuu注册入口：https://ikuuu.pw/auth/register?code=xLmV")
     accounts = getEnv("hook_ikuuu")
-    print(f"共获取到{len(accounts)}个账号")
     for index, ck in enumerate(accounts):
         abc = ikuuu(index + 1, ck)
         abc.run()
