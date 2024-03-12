@@ -4,7 +4,7 @@
 * cron: 12 0 * * *
 * 反馈群：https://t.me/vhook_wool
 抓包教程：浏览器打开 https://pan.quark.cn ，复制全部cookie
-export hook_kuaike="[
+export hook_kuake="[
     {
         'name':'ls',
         'cookie': 'cookie'
@@ -106,6 +106,7 @@ class KUAKE:
 
     def run(self):
         self.log(f"{'=' * 13}{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}开始运行{'=' * 13}")
+        self.msg += "\n\n"
         self.get_info()
         self.get_member_info()
         self.get_growth_info()
