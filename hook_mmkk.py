@@ -51,7 +51,7 @@ from urllib.parse import quote, urlparse
 import requests
 import urllib3
 
-import notify
+from utils import notify
 
 urllib3.disable_warnings()
 

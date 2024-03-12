@@ -18,8 +18,7 @@ import time
 import requests
 from datetime import datetime
 
-from utils import common
-import notify
+from utils import common, notify
 
 logging.basicConfig(level=logging.INFO)
 
