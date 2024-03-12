@@ -274,13 +274,10 @@ def getEnv(key):  # line:343
 
 
 if __name__ == '__main__':
+    print("【版本】：20240312001")
+    print("【更新内容】：优化")
+    print("【TG群】：https://t.me/vhook_wool")
     accounts = getEnv("hook_hfhx")
-    # accounts = [
-    #     {
-    #         "token": "13f7d9fcec0984a469a8c336b21654639",
-    #         "name": "ls"
-    #     },
-    # ]
     for i, env in enumerate(accounts):
         task = TASK(i, env)
         task.run()

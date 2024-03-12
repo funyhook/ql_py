@@ -200,6 +200,9 @@ def get_env(key: str) -> str:
 
 
 if __name__ == '__main__':
+    print("【版本】：20240312001")
+    print("【更新内容】：优化")
+    print("【TG群】：https://t.me/vhook_wool")
     env_str = get_env("hook_cbd")
     # env_str = '[{"token":"1709019526|1LcPxFSNaEbMNK0L.i1StrV1w0z+mOtfzBMU5QhWX0Rr7m4aXYlKZGNXoEEumYDF5mB5+mu295rTCr6YrWTuOnZSZbInE3UYsGbLmGQ==.967f25638dcb9cff","ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181","name":"ls"}]'
     if not env_str:

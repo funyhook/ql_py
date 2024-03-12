@@ -847,6 +847,9 @@ def get_env(key):
 
 
 if __name__ == "__main__":
+    print("【版本】：20240312001")
+    print("【更新内容】：优化")
+    print("【TG群】：https://t.me/vhook_wool")
     cookies = get_env("hook_ccb")
     if not cookies:
         print(f"未填写环境变量:hook_ccb")

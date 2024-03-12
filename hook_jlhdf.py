@@ -187,14 +187,10 @@ def getEnv(key):  # line:343
 
 
 if __name__ == '__main__':
+    print("【版本】：20240312001")
+    print("【更新内容】：优化")
+    print("【TG群】：https://t.me/vhook_wool")
     accounts = getEnv("hook_yp")
-    # accounts = [
-    #     {
-    #         "accessToken": "10265ac0-c82a-46d5-8aaf-accb712568c4",
-    #         "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x1308070a) XWEB/1181",
-    #         "name": "ls",
-    #     }
-    # ]
     print(f"本次共发现{len(accounts)}个ck")
     push_msg = ""
     for index, env in enumerate(accounts):

@@ -363,6 +363,9 @@ def getEnv(key):  # line:343`
 
 
 if __name__ == '__main__':
+    print("【版本】：20240312001")
+    print("【更新内容】：优化")
+    print("【TG群】：https://t.me/vhook_wool")
     print("【可乐】推荐阅读(入口)->http://44521803081319.cfgwozp.cn/r?upuid=445218")
     accounts = getEnv("hook_klyd")
 

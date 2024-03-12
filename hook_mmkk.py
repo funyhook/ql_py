@@ -687,6 +687,9 @@ def process_account(i, ck):
 
 
 if __name__ == "__main__":
+    print("【版本】：20240312001")
+    print("【更新内容】：优化")
+    print("【TG群】：https://t.me/vhook_wool")
     print("【猫猫看看】阅读入口：https://osk17500.vsdfrgj0986.top:10252/haobaobao/auth/20fac27802e2f2eee23f8804de20c1c2")
     accounts = getEnv("hook_mmkk")
 

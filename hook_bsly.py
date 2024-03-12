@@ -112,6 +112,9 @@ def get_env(key):
 
 
 if __name__ == '__main__':
+    print("【版本】：20240312001")
+    print("【更新内容】：优化")
+    print("【TG群】：https://t.me/vhook_wool")
     env_str = get_env("hook_bsly")
     if not env_str:
         print("未填写环境变量:export hook_bsly=token@token")
