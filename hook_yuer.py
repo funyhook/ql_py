@@ -367,7 +367,7 @@ class TASK:
 
     def run(self, ):
         sleepTime = random.randint(3, 5)
-        self.log(f"降低封号风险，随机休息{sleepTime}秒")
+        self.log(f"😊😊😊降低封号风险，随机休息{sleepTime}秒")
         time.sleep(sleepTime)
         self.log(f"{'=' * 13}开始运行{'=' * 13}")
         self.user_info()
