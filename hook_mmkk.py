@@ -1,9 +1,11 @@
 """
-# 仅供学习交流，请在下载后的24小时内完全删除 请勿将任何内容用于商业或非法目的，否则后果自负。
-# 反馈群：https://t.me/vhook_wool
+* 仅供学习交流，请在下载后的24小时内完全删除 请勿将任何内容用于商业或非法目的，否则后果自负。
+* 反馈群：https://t.me/vhook_wool
+* 版本：2024-03-12（更新算法）
 * 活动入口,微信打开：
 * 如果连接过期了运行一下就出来了最新的入口！
 * https://osk17500.vsdfrgj0986.top:10252/haobaobao/auth/20fac27802e2f2eee23f8804de20c1c2
+*
 * 打开活动入口，抓包的任意接口cookies中的Cookie参数
 
 * 变量
@@ -71,8 +73,36 @@ checkDict = {
 }
 
 
+mykkydDetectingSealStatus = True
+mykkydDisabledDetectingSealSetting = os.getenv("mykkydDisabledDetectingSeal")
+if mykkydDisabledDetectingSealSetting not in ["", None]:
+    if mykkydDisabledDetectingSealSetting in ["1", "true", True]:
+        mykkydDetectingSealStatus = False
+def extract_middle_text(source, before_text, after_text, all_matches=False):
+    results = []
+    start_index = source.find(before_text)
+
+    while start_index != -1:
+        source_after_before_text = source[start_index + len(before_text) :]
+        end_index = source_after_before_text.find(after_text)
+
+        if end_index == -1:
+            break
+
+        results.append(source_after_before_text[:end_index])
+        if not all_matches:
+            break
+
+        source = source_after_before_text[end_index + len(after_text) :]
+        start_index = source.find(before_text)
+
+    return results if all_matches else results[0] if results else ""
+
+
+
 class HHYD:
     def __init__(self, i, cg):
+        self.readJumpPath = None
         self.inviteUrl = None
         self.remain = None
         self.Cookie = cg["Cookie"]
@@ -247,13 +277,14 @@ class HHYD:
             refreshTime = 0
             while res["errcode"] != 0:
                 timeStamp = str(self.ts())
-                mysign = hashlib.md5((info[1]["Origin"].replace("https://", "").replace("/",
-                                                                                        "") + timeStamp + "Lj*?Q3#pOviW").encode()).hexdigest()
+                mysign = hashlib.md5(
+                    (info[1]["Host"] + timeStamp + "Lj*?Q3#pOviW").encode()
+                ).hexdigest()
                 self.params = {
                     "uk": info[0],
                     "time": timeStamp,
                     "mysign": mysign,
-                    "v": "3.0",
+                    "v": "4.0",
                 }
                 u = f"https://nsr.zsf2023e458.cloud/haobaobao/getread2"
                 r = requests.get(u, headers=info[1], params=self.params, verify=False, timeout=60)
@@ -427,33 +458,116 @@ class HHYD:
             self.log(f"❌没有达到提现标准 {withdrawBalance} 元")
 
     def init(self):
-        headers = {
-            "Upgrade-Insecure-Requests": "1",
-            "User-Agent": self.ua,
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "Accept-Encoding": "gzip, deflate",
-            "Accept-Language": "zh-CN,zh;q=0.9",
-            "Cookie": self.Cookie,
-        }
         try:
-            r = requests.get(self.getNewInviteUrl(), headers=headers, verify=False, allow_redirects=False)
+            r = requests.get(
+                self.getNewInviteUrl(),
+                headers={
+                    "Upgrade-Insecure-Requests": "1",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x6309071d) XWEB/8461 Flue",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                    "Accept-Encoding": "gzip, deflate",
+                    "Accept-Language": "zh-CN,zh;q=0.9",
+                    "Cookie": self.Cookie,
+                },
+                verify=False,
+                # 禁止重定向
+                allow_redirects=False,
+            )
             self.domnainHost = r.headers.get("Location").split("/")[2]
             # print(r.text)
             self.log(f"提取到的域名：{self.domnainHost}")
-            # 获取提现页面地址
-            r = requests.get(f"http://{self.domnainHost}/haobaobao/withdraw", headers=headers, verify=False, )
+            # self.headers = {
+            #     "Connection": "keep-alive",
+            #     "Accept": "application/json, text/javascript, */*; q=0.01",
+            #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x63090621) XWEB/8351 Flue",
+            #     "X-Requested-With": "XMLHttpRequest",
+            #     "Referer": f"http://{self.domnainHost}/",
+            #     "Origin": f"http://{self.domnainHost}",
+            #     # "Host": f"{self.domnainHost}",
+            #     "Accept-Encoding": "gzip, deflate",
+            #     "Accept-Language": "zh-CN,zh",
+            #     "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            #     "Cookie": self.Cookie,
+            # }
+            # # 获取requestId
+            self.readJumpPath = ""
+            if mykkydDetectingSealStatus:
+                r = requests.get(
+                    f"http://{self.domnainHost}/haobaobao/home",
+                    headers={
+                        "Upgrade-Insecure-Requests": "1",
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x6309071d) XWEB/8461 Flue",
+                        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                        "Accept-Encoding": "gzip, deflate",
+                        "Accept-Language": "zh-CN,zh;q=0.9",
+                        "Cookie": self.Cookie,
+                    },
+                    verify=False,
+                )
+                htmltext = r.text
+                read_jump_read_text = extract_middle_text(
+                    htmltext, "function read_jump_read(){", "success: function"
+                )
+                if read_jump_read_text:
+                    readJumpPath = extract_middle_text(
+                        read_jump_read_text, "url: domain+'", "',"
+                    )
+                    if readJumpPath:
+                        self.readJumpPath = readJumpPath
+                    else:
+                        self.log(f"初始化失败，请手动访问下确认页面没崩溃 或者 稍后再试吧，一直不行，请前往TG群反馈~ ")
+                        return False
+                else:
+                    if "存在违规操作" in htmltext:
+                        self.log(f"被检测到了，已经被封，终止任务，快去提醒大家吧~ ")
+                        exit(0)
+                    else:
+                        self.log(f"初始化失败，请手动访问下确认页面没崩溃 或者 稍后再试吧，一直不行，请前往TG群反馈~ ")
+                        return False
+            else:
+                self.readJumpPath = "/haobaobao/wtmpdomain2"
+            # # 获取提现页面地址
+            r = requests.get(
+                f"http://{self.domnainHost}/haobaobao/withdraw",
+                headers={
+                    "Upgrade-Insecure-Requests": "1",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x6309071d) XWEB/8461 Flue",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                    "Accept-Encoding": "gzip, deflate",
+                    "Accept-Language": "zh-CN,zh;q=0.9",
+                    "Cookie": self.Cookie,
+                },
+                verify=False,
+            )
             htmltext = r.text
             signidl = re.search('request_id = "(.*?)"', htmltext)
             if signidl == []:
-                self.log("初始化 提现参数 失败，尝试另一种初始化 >>> ")
-                r = requests.get(f"https://code.sywjmlou.com.cn/baobaocode.php", verify=False)
+                self.log(f"初始化 提现参数 失败，尝试另一种初始化 >>> ")
+                r = requests.get(
+                    f"https://code.sywjmlou.com.cn/baobaocode.php",
+                    verify=False,
+                )
                 domnainHost = r.json()["data"]["luodi"].split("/")[2]
-                r = requests.get(f"http://{domnainHost}/haobaobao/withdraw", headers=headers, verify=False)
+                r = requests.get(
+                    f"http://{domnainHost}/haobaobao/withdraw",
+                    headers={
+                        "Upgrade-Insecure-Requests": "1",
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x6309071d) XWEB/8461 Flue",
+                        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                        "Accept-Encoding": "gzip, deflate",
+                        "Accept-Language": "zh-CN,zh;q=0.9",
+                        "Cookie": self.Cookie,
+                    },
+                    verify=False,
+                )
                 htmltext = r.text
                 signidl = re.search('request_id = "(.*?)"', htmltext)
-                if not signidl:
-                    self.log(" 多次初始化 提现参数 失败, 账号异常，请检查Cookie！")
-                    r = requests.get(f"https://code.sywjmlou.com.cn/baobaocode.php", verify=False, )
+                if signidl == []:
+                    self.log(f"多次初始化 提现参数 失败, 账号异常，请检查Cookie！")
+                    r = requests.get(
+                        f"https://code.sywjmlou.com.cn/baobaocode.php",
+                        verify=False,
+                    )
                     self.domnainHost = r.json()["data"]["luodi"].split("/")[2]
                     return False
                 else:
@@ -463,8 +577,9 @@ class HHYD:
             return True
         except Exception as e:
             # raise e
-            self.log("初始化失败,请检查你的ck")
+            self.log(f"初始化失败,请检查你的ck")
             return False
+
 
     def getNewInviteUrl(self):
         r = requests.get("https://code.sywjmlou.com.cn/baobaocode.php", verify=False).json()
