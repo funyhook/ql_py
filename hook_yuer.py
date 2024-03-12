@@ -196,7 +196,7 @@ class TASK:
         parsed_url = urlparse(url)
         query_parameters = parse_qs(parsed_url.query)
         iu = query_parameters['iu'][0]
-        url1 = f'https://{host}/read_task/do_read?iu={iu}&type=7&pageshow'
+        url1 = f'http://{host}/read_task/do_read?iu={iu}&type=7&pageshow'
         if '加载中' in r.text:
             self.log("加载阅读文章中")
             # 获取url的iu参数
