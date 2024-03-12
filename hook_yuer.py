@@ -228,7 +228,6 @@ class TASK:
         res = requests.get(url1, headers=add_headers)
         if res.status_code != 200 and retry ==0:
             self.log(f"第{self.read_count}次阅读失败,重试一次！")
-            time.sleep(random.randint(3,6))
             self.do_read(url, referer, jkey,1)
             return
         rj = res.json()
