@@ -394,6 +394,7 @@ def getEnv(key):  # line:343
 if __name__ == '__main__':
     print("【版本】：20240312001")
     print("【更新内容】：增加阅读失败，重试一次机制！")
+    print("【TG群】：https://t.me/vhook_wool")
     print("【鱼儿】推荐阅读(入口)->http://h5.alswywo.cn/pipa_read?upuid=1601717")
     accounts = getEnv("hook_yuer")
     for index, ck in enumerate(accounts):
