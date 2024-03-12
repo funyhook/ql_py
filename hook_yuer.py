@@ -365,7 +365,6 @@ class TASK:
         print(f"降低封号风险，随机休息{sleepTime}秒")
         time.sleep(sleepTime)
         self.log(f"{'=' * 13}开始运行{'=' * 13}")
-        self.get_base_url()
         self.user_info()
         if self.limitTip:
             self.log(self.limitTip)
