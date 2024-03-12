@@ -14,6 +14,7 @@ export hook_kuaike="[
 import json
 import logging
 import os
+import time
 from datetime import datetime
 
 import urllib3
@@ -110,8 +111,7 @@ class KUAKE:
 def getEnv(key):  # line:343
     env_str = os.getenv(key)  # line:344
     if env_str is None:  # line:345
-        print(f'青龙变量【{key}】没有获取到!自动退出')  # line:346
-        exit()
+        exit(f'青龙变量【{key}】没有获取到!自动退出')
     try:  # line:348
         env_str = json.loads(
             env_str.replace("'", '"').replace("\n", "").replace(" ", "").replace("\t", ""))  # line:349
@@ -123,6 +123,7 @@ def getEnv(key):  # line:343
 
 if __name__ == '__main__':
     common.check_cloud("hook_kuake", 1.1)
+    time.sleep(1)
     accounts = getEnv("hook_kuake")
     for index, ck in enumerate(accounts):
         abc = KUAKE(index + 1, ck)
