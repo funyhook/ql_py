@@ -58,6 +58,28 @@ class KUAKE:
         else:
             return False
 
+    def get_info(self):
+        url = "https://pan.quark.cn/account/info?fr=pc&platform=pc"
+        querystring = {"fr": "pc", "platform": "pc"}
+        headers = {
+            "cookie": self.cookie,
+            "content-type": "application/json",
+        }
+        response = requests.request("GET", url, headers=headers, params=querystring).json()
+        self.log(f"【昵称】：{response['data']['nickname']}")
+
+    def get_member_info(self):
+        url = "https://drive-pc.quark.cn/1/clouddrive/member?pr=ucpro&fr=pc&uc_param_str=&fetch_subscribe=true&_ch=home&fetch_identity=true"
+        headers = {
+            "cookie": self.cookie,
+            "content-type": "application/json",
+        }
+        response = requests.request("GET", url, headers=headers, ).json()
+        if response['data']:
+            data = response['data']
+
+            self.log(f"【空间】：{int(data['use_capacity']/ 1024 / 1024)}MB/{int(data['total_capacity']/ 1024 / 1024/1024)}GB")
+
     def get_growth_sign(self):
         url = "https://drive-m.quark.cn/1/clouddrive/capacity/growth/sign"
         querystring = {"pr": "ucpro", "fr": "pc", "uc_param_str": ""}
@@ -79,6 +101,8 @@ class KUAKE:
 
     def run(self):
         self.log(f"{'=' * 13}{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}开始运行{'=' * 13}")
+        self.get_info()
+        self.get_member_info()
         self.get_growth_info()
 
 
@@ -97,7 +121,7 @@ def getEnv(key):  # line:343
 
 
 if __name__ == '__main__':
-    common.check_cloud("hook_kuake", 1.0)
+    common.check_cloud("hook_kuake", 1.1)
     accounts = getEnv("hook_kuake")
     for index, ck in enumerate(accounts):
         abc = KUAKE(index + 1, ck)
