@@ -105,12 +105,12 @@ class KUAKE:
         print(f"用户{self.index}【{self.name}】：{msg}")
 
     def run(self):
-        print("\n")
         self.log(f"{'=' * 13}{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}开始运行{'=' * 13}")
-        self.msg += "\n\n"
+        self.msg += "\n"
         self.get_info()
         self.get_member_info()
         self.get_growth_info()
+        print("\n")
         return self.msg
 
 
