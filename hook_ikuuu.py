@@ -116,7 +116,6 @@ class ikuuu():
         return self.sign()
 
 def getEnv(key):  # line:343
-    inviteUrl = 'https://ikuuu.pw/auth/register?code=xLmV'
     env_str = os.getenv(key)  # line:344
     if env_str is None:  # line:345
         print(f'\n青龙变量【{key}】没有获取到!自动退出')  # line:346
@@ -127,9 +126,7 @@ def getEnv(key):  # line:343
         print(f"\n----------共获取到{len(env_str)}个账号----------\n")
         return env_str  # line:350
     except Exception as e:  # line:351
-        print(f'请检查变量[{key}]参数是否填写正确'
-              f'')  # line:354
-        print(f"活动入口：{inviteUrl}")
+        print(f'请检查变量[{key}]参数是否填写正确')
 
 
 if __name__ == '__main__':
