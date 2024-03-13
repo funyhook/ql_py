@@ -314,13 +314,11 @@ class HHYD:
                         f"⚠️ 获取阅读第[{arctileTime}]篇文章链接失败，疑似台子接口太垃圾，崩了，返回数据为：{res.get('data')}")
                     continue
                 if "mp.weixin.qq.com" in returnLink:
-                    self.log(f" 阅读第[{arctileTime}]篇微信文章")
                     wechatPostLink = returnLink
                 else:
-                    # self.log(" 阅读第[{arctileTime}]篇文章准备跳转：{link}")
+                    # self.log("阅读第[{arctileTime}]篇文章准备跳转：{link}")
                     wechatPostLink = self.jump(returnLink)
-                    self.log(f"阅读第[{arctileTime}]篇微信文章")
-                self.log(f"阅读第[{arctileTime}]篇文章")
+                self.log(f"阅读第[{arctileTime}]篇微信文章")
                 a = self.getinfo(wechatPostLink)
                 if not a:
                     self.log(f"⚠️ 因获取公众号文章信息不成功，导致阅读第[{arctileTime}]篇文章 失败……")
