@@ -116,10 +116,12 @@ class TASK:
         add_headers = {
             "Referer": referer + "/",
             "Origin": referer,
+            "User-Agent":"python-requests/2.31.0",
             "sec-ch-ua": '"Android WebView";v="117", "Not;A=Brand";v="8", "Chromium";v="117"',
             "sec-ch-ua-platform": '"Android"',
             "sec-fetch-dest": "empty",
             "sec-fetch-mode": "cors",
+            "Accept":"*/*"
         }
 
         r = requests.get(url, headers=add_headers)
@@ -192,8 +194,9 @@ class TASK:
         urls = url + '&type=7'
 
         r = requests.get(urls, headers=headers)
-        if r.status_code == 200:
-            res = r.text
+        if r.status_code != 200:
+            self.log(f"加载阅读文章失败：{r.text}")
+            return
         parsed_url = urlparse(url)
         query_parameters = parse_qs(parsed_url.query)
         iu = query_parameters['iu'][0]
@@ -232,7 +235,7 @@ class TASK:
         }
         requests.options(url1, headers=add_headers, )
         res = requests.get(url1, headers=add_headers)
-        # self.log(f"url1：{url1},jkey：{jkey}，res：{res.text}")
+        # self.log(f"url1：{url1}, jkey：{jkey}， res：{res.text}")
         if res.status_code != 200:
             if retry ==0:
                 self.log(f"第{self.read_count}次阅读失败,重试一次！")
@@ -254,6 +257,8 @@ class TASK:
                     self.log(f"第{self.read_count}次阅读成功")
                 time.sleep(random.randint(7, 15))
                 self.do_read(url, referer, rj['jkey'])
+            elif "限制" in rj['url']:
+                self.log("❗️当前已经被限制，请明天再来!")
             else:
                 self.log(f"本次阅读已完成,等等再来吧")
 
@@ -376,7 +381,7 @@ class TASK:
         self.log(f"😊降低封号风险，随机休息{sleepTime}秒")
         time.sleep(sleepTime)
         if self.host:
-            self.log("✅获取最新地址成功")
+            self.log(f"✅获取最新地址成功：{self.url}")
         self.user_info()
         if self.limitTip:
             self.log(self.limitTip)
@@ -402,7 +407,17 @@ def getEnv(key):  # line:343
 
 if __name__ == '__main__':
     common.check_cloud("hook_yuer", 1.1)
-    accounts = getEnv("hook_yuer")
+    # accounts = getEnv("hook_yuer")
+    accounts = [{
+            'name': '不能',
+            'cookie': 'PHPSESSID=pf39atvk43b9n8m22u0adro30k',
+            'txbz': '30',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/6.8.0(0x16080000) MacWechat/3.8.7(0x1308070c) XWEB/1191 Flue',
+            'wxpusher_token': 'AT_9QMHP2jfb733ObTbxXFA3ZsrFTz0xtPR',
+            'wxpusher_uid': 'UID_5vHye3PboLGAYPOZrB1hRpPhRqA0',
+            'topicIds': '24413'
+
+        }]
     for index, ck in enumerate(accounts):
         abc = TASK(index + 1, ck)
         abc.run()
