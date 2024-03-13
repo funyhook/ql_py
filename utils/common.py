@@ -1,12 +1,5 @@
-"""
-@FileName：common.py.py\n
-@Description：\n
-@Author：Jalone\n
-@Time：2024/3/12 14:10\n
-@Department：研发部\n
-@Website：www.xxx.com\n
-@Copyright：©2019-2024 xxx信息科技有限公司
-"""
+#!/usr/bin/env python3
+# _*_ coding:utf-8 _*_
 import requests
 
 

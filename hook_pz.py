@@ -12,7 +12,6 @@ import os
 import random
 
 import requests
-import notify
 
 
 def utf16_to_utf8(s):

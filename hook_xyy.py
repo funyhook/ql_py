@@ -35,7 +35,6 @@ export autman_push_config='{
 import hashlib
 import json
 import math
-import multiprocessing
 import os
 import random
 import re
@@ -46,7 +45,7 @@ from urllib.parse import quote, urlparse
 import requests
 import urllib3
 
-import notify
+from utils import notify
 
 urllib3.disable_warnings()
 

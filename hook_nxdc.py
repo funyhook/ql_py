@@ -29,7 +29,7 @@ from hashlib import sha1
 
 import requests
 
-import notify
+from utils import notify
 
 
 class TASK:

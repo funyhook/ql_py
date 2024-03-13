@@ -4,7 +4,7 @@
 * cron: 12 0 * * *
 * 反馈群：https://t.me/vhook_wool
 抓包教程：浏览器打开 https://pan.quark.cn ，复制全部cookie
-export hook_kuaike="[
+export hook_kuake="[
     {
         'name':'ls',
         'cookie': 'cookie'
@@ -15,15 +15,10 @@ import json
 import logging
 import os
 import time
+import requests
 from datetime import datetime
 
-import urllib3
-
-from utils import common
-
-urllib3.disable_warnings()
-
-import requests
+from utils import common, notify
 
 logging.basicConfig(level=logging.INFO)
 
@@ -47,15 +42,19 @@ class KUAKE:
         if response.get("data"):
             data = response.get("data")
             if data['cap_sign']['sign_daily']:
-                self.log(
-                    f"【签到】：今日已签到+{int(data['cap_sign']['sign_daily_reward'] / 1024 / 1024)}MB，📅 连签进度({data['cap_sign']['sign_progress']}/{data['cap_sign']['sign_target']})✅")
+                msg = f"【签到】：今日已签到+{int(data['cap_sign']['sign_daily_reward'] / 1024 / 1024)}MB，📅 连签进度({data['cap_sign']['sign_progress']}/{data['cap_sign']['sign_target']})✅"
+                self.msg += f"\n{msg}"
+                self.log(msg)
             else:
                 sign, sign_return = self.get_growth_sign()
                 if sign:
-                    message = f"【签到】：执行签到: 今日签到+{int(sign_return / 1024 / 1024)}MB，📅 连签进度({data['cap_sign']['sign_progress'] + 1}/{data['cap_sign']['sign_target']})✅"
-                    self.log(message)
+                    msg = f"【签到】：执行签到: 今日签到+{int(sign_return / 1024 / 1024)}MB，📅 连签进度({data['cap_sign']['sign_progress'] + 1}/{data['cap_sign']['sign_target']})✅"
+                    self.msg += f"\n{msg}"
+                    self.log(msg)
                 else:
-                    self.log(f"【签到】：执行签到: {sign_return}")
+                    msg = f"【签到】：执行签到: {sign_return}"
+                    self.msg += f"\n{msg}"
+                    self.log(msg)
             return response["data"]
         else:
             return False
@@ -68,7 +67,9 @@ class KUAKE:
             "content-type": "application/json",
         }
         response = requests.request("GET", url, headers=headers, params=querystring).json()
-        self.log(f"【昵称】：{response['data']['nickname']}")
+        msg = f"【昵称】：{response['data']['nickname']}"
+        self.msg += msg
+        self.log(msg)
 
     def get_member_info(self):
         url = "https://drive-pc.quark.cn/1/clouddrive/member?pr=ucpro&fr=pc&uc_param_str=&fetch_subscribe=true&_ch=home&fetch_identity=true"
@@ -79,8 +80,9 @@ class KUAKE:
         response = requests.request("GET", url, headers=headers, ).json()
         if response['data']:
             data = response['data']
-
-            self.log(f"【空间】：{int(data['use_capacity']/ 1024 / 1024)}MB/{int(data['total_capacity']/ 1024 / 1024/1024)}GB")
+            msg = f"【空间】：{int(data['use_capacity'] / 1024 / 1024)}MB/{int(data['total_capacity'] / 1024 / 1024 / 1024)}GB"
+            self.msg += f"\n{msg}"
+            self.log(msg)
 
     def get_growth_sign(self):
         url = "https://drive-m.quark.cn/1/clouddrive/capacity/growth/sign"
@@ -103,9 +105,12 @@ class KUAKE:
 
     def run(self):
         self.log(f"{'=' * 13}{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}开始运行{'=' * 13}")
+        self.msg += "\n"
         self.get_info()
         self.get_member_info()
         self.get_growth_info()
+        print("\n")
+        return self.msg
 
 
 def getEnv(key):  # line:343
@@ -125,6 +130,8 @@ if __name__ == '__main__':
     common.check_cloud("hook_kuake", 1.1)
     time.sleep(1)
     accounts = getEnv("hook_kuake")
+    push_msg = ''
     for index, ck in enumerate(accounts):
         abc = KUAKE(index + 1, ck)
-        abc.run()
+        push_msg += abc.run()
+    notify.send("夸克网盘", push_msg)

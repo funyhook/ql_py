@@ -25,7 +25,7 @@ from datetime import datetime
 
 import requests
 
-import notify
+from utils import notify
 
 
 class TASK:
