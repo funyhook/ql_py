@@ -39,7 +39,6 @@ new Env('猫猫看看阅读');
 import hashlib
 import json
 import math
-import multiprocessing
 import os
 import random
 import re
@@ -72,18 +71,19 @@ checkDict = {
     "MzkxNDU1NDEzNw==": ["猫猫看看服务", "gh_e50cfefef9e5"],
 }
 
-
 mykkydDetectingSealStatus = True
 mykkydDisabledDetectingSealSetting = os.getenv("mykkydDisabledDetectingSeal")
 if mykkydDisabledDetectingSealSetting not in ["", None]:
     if mykkydDisabledDetectingSealSetting in ["1", "true", True]:
         mykkydDetectingSealStatus = False
+
+
 def extract_middle_text(source, before_text, after_text, all_matches=False):
     results = []
     start_index = source.find(before_text)
 
     while start_index != -1:
-        source_after_before_text = source[start_index + len(before_text) :]
+        source_after_before_text = source[start_index + len(before_text):]
         end_index = source_after_before_text.find(after_text)
 
         if end_index == -1:
@@ -93,11 +93,10 @@ def extract_middle_text(source, before_text, after_text, all_matches=False):
         if not all_matches:
             break
 
-        source = source_after_before_text[end_index + len(after_text) :]
+        source = source_after_before_text[end_index + len(after_text):]
         start_index = source.find(before_text)
 
     return results if all_matches else results[0] if results else ""
-
 
 
 class HHYD:
@@ -107,17 +106,16 @@ class HHYD:
         self.remain = None
         self.Cookie = cg["Cookie"]
         self.index = i + 1
-        self.txbz = cg["txbz"]
-        self.topicIds = cg["topicIds"]
-        self.appToken = cg["appToken"]
+        self.txbz = cg.get("txbz", 30)
+        self.topicIds = cg.get("topicIds", "")
+        self.appToken = cg.get("appToken", "")
         self.wxpusher_token = cg['wxpusher_token']
         self.wxpusher_uid = cg['wxpusher_uid']
-        self.aliAccount = cg.get("aliAccount",None)
-        self.aliName = cg.get("aliName",None)
+        self.aliAccount = cg.get("aliAccount", None)
+        self.aliName = cg.get("aliName", None)
         self.name = cg["name"]
-        self.ua = 'Mozilla/5.0 (Linux; Android 13; M2012K11AC Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/117.0.0.0 Mobile Safari/537.36 MMWEBID/2651 MicroMessenger/8.0.42.2460(0x28002A58) WeChat/arm64 Weixin NetType/WIFI Language/en ABI/arm64'
-        if hasattr(cg, "User-Agent") and cg['User-Agent'] != "":
-            self.ua = cg['User-Agent']
+        self.ua = cg.get("User-Agent",
+                         "Mozilla/5.0 (Linux; Android 13; M2012K11AC Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/117.0.0.0 Mobile Safari/537.36 MMWEBID/2651 MicroMessenger/8.0.42.2460(0x28002A58) WeChat/arm64 Weixin NetType/WIFI Language/en ABI/arm64")
         self.domnainHost = "1698855139.hxiong.top"
         self.request_id = ""
         self.headers = {
@@ -235,7 +233,7 @@ class HHYD:
         }
         return uk, h
 
-    def getinfo(self,link):
+    def getinfo(self, link):
         try:
             r = requests.get(link, verify=False)
             html = re.sub("\s", "", r.text)
@@ -331,7 +329,7 @@ class HHYD:
                         f"⚠️ 账号[{self.name}]阅读第[{arctileTime}]篇文章 检测到疑似检测文章，正在推送，等待过检测，等待时间：{sleepTime}秒。。。")
                     self.wxpuser(wechatPostLink)
                     self.pushAutMan('阅读检测推送【猫猫看看】',
-                                           f"快点下方链接\n{wechatPostLink}\n等待时间：{sleepTime}秒 ,别耽搁时间了")
+                                    f"快点下方链接\n{wechatPostLink}\n等待时间：{sleepTime}秒 ,别耽搁时间了")
                 else:
                     self.log(f"✅阅读第[{arctileTime}]篇文章 非检测文章，模拟读{sleepTime}秒")
                 lastestArcticleId = wechatPostLink
@@ -578,7 +576,6 @@ class HHYD:
             self.log(f"初始化失败,请检查你的ck")
             return False
 
-
     def getNewInviteUrl(self):
         r = requests.get("https://code.sywjmlou.com.cn/baobaocode.php", verify=False).json()
         if r.get("code") == 0:
@@ -590,7 +587,6 @@ class HHYD:
         else:
             self.inviteUrl = "https://s1i6.1obg.shop/haobaobao/auth/20fac27802e2f2eee23f8804de20c1c2"
         return self.inviteUrl
-
 
     def wxpuser(self, url):
         wxpusher_config = os.getenv("wxpusher_config") or ""
@@ -645,9 +641,8 @@ class HHYD:
         except Exception as e:
             self.log(f"❌ 推送文章到autman异常！！！！{e}")
 
-
     def run(self):
-        run_msg =''
+        run_msg = ''
         sleepTime = random.randint(3, 5)
         print(f"降低封号风险，随机休息{sleepTime}秒")
         time.sleep(sleepTime)
@@ -668,6 +663,7 @@ def process_account(i, ck):
     read = HHYD(i, ck)
     return read.run()
 
+
 def getEnv(key):  # line:343
     env_str = os.getenv(key)  # line:344
     if env_str is None:  # line:345
@@ -680,8 +676,6 @@ def getEnv(key):  # line:343
         return env_str  # line:350
     except Exception as e:  # line:351
         print(f'请检查变量[{key}]参数是否填写正确')  # line:354
-
-
 
 
 if __name__ == "__main__":
