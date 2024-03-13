@@ -34,7 +34,7 @@ export autman_push_config='{
 * 达到标准，自动提现
 
 cron: 0 */25 8-22 * * *
-new Env('猫猫看看');
+new Env('猫猫看看阅读');
 """
 import hashlib
 import json

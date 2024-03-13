@@ -206,7 +206,7 @@ class TASK:
             time.sleep(random.randint(6, 12))
             self.do_read(url, iu, referer, res.json()['jkey'])
         else:
-            self.log(f"{res.text}")
+            self.log(f"阅读失败！{res.text}")
 
     def verify_status(self, url):
         if 'chksm' in url:
@@ -363,6 +363,7 @@ def getEnv(key):  # line:343`
 if __name__ == '__main__':
     common.check_cloud("hook_klyd", 1.2)
     accounts = getEnv("hook_klyd")
+
     for index, ck in enumerate(accounts):
         abc = TASK(index + 1, ck)
         abc.run()
