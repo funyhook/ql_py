@@ -688,20 +688,8 @@ def getEnv(key):  # line:343
 
 if __name__ == "__main__":
     common.check_cloud("hook_mmkk", 1.1)
-    # accounts = getEnv("hook_mmkk")
-    accounts = [
-    {
-        "name": "vx-635623451",
-        "Cookie": "bbus=eyJpdiI6IisxYUg1Tjkxak1paUFxNDBcL0l4bTdnPT0iLCJ2YWx1ZSI6IlN6VVJ2VzBvWTQ4MzRRZnRtTmhcL0ZvQUhhVGRQeHEzV0xrZzZ2dnRhMlBnMlFmTjNNY0lSaXB2UlVEQjlzMTVkRjVcL2hPRlIyWWNrMmRFd2h3NHV2a1FadHNtVDYxbWlXMzAraGhMdXJKd080YXJBUEVaNFlCMU5tNzVWNXYreGR6d0dlWDhYYThhR3lEcmlLXC9ib2F5QnFhZ2RiZEdrdmpXNU1EakkySlEwMHZCOUFxbmMzYjhJQ1FkWUJkcm1pYUVvZjhPRGdWK0NUYjU0Vzh2SU9tZ3E4bndxZDBwdmQ2WDd0Y3NQekIrYTF0TGdwalwvanBhSkJRcVB6TkJNVXFZTTcrZjRwamZ2MkxuK2FjTm83bjR5ZFVEVWpra1VlM0lrNkp3TTdjazQrNEdNMTdlVjk3NGpcL0tOT1FKcUt0RWFEUERPenRmemtwdVBwU0hhcHBJdWlzeEczYkZlVWE0d0theGhydHZNYmxmcm5YZUd1SitBbmlmaisxWnJoNXAzR0VrYlJZMDlXMkRvUURhbm9sRHRjQXpJek5LYUU5UmdqQlFFbm5kVWtsTkd3VHVtakFBeE9FUUdsSnFDMnc0KzJoWUhkb2k2eVhtaGp5XC9iWmFGOXNEWXRVUitFaktBandrdm1jS1l0ZjhQT2tpTzVlam56cG9vQTFFRUtJQU5QajFsV2pkdXR3UEkzRFFGZUVINE56RTc1a1dac2pWdFdsUHZtVzNobU5NdEhsR0xmWm1LRnJnRU0zbE4yVFRwb3lWemcxa1pGRkJVOE50N1pkS0k2XC9GM1JLclQzVFVXK2JrNnI1eTVLak5weUxHcFRQN3lZdTRXd1BDb2lOcU1lVm5DTnNHSDNya1QrbU9ac2dTSUhRbjFWdXA4TlwvbTBFb3Y0cU9yTHFtTm5FYnF5RkM0aDY0RHlHaUNmMVNcL2ltMHljcHNqNEs5ZzhaNFhNTlRieE0xUT09IiwibWFjIjoiN2MxOGU5NmU0ODJkZmM3NDIyMzdhMTA2MDJiZWQ2YTc2OWNhZGRhOGYyMjRiZmIwMzFmZTcxNGEyYjY1YWM2NyJ9",
-        "txbz": 300,
-        "aliAccount": "13011059586",
-        "aliName": "连少阳",
-        "appToken": "AT_9QMHP2jfb733ObTbxXFA3ZsrFTz0xtPR",
-        "topicIds": "24413",
-        "wxpusher_token": "AT_7hdc7iGQe2AMMo5rWY8Hbc5nvVtvz81y",
-        "wxpusher_uid":"UID_MtdXVwIx91mFMiwqCE8ERXWc0by5"
-    }
-]
+    accounts = getEnv("hook_mmkk")
+
     push_msg = ""
     for index, account in enumerate(accounts):
         push_msg += f"\n{'-' * 50}\n"
