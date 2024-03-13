@@ -214,14 +214,13 @@ class TASK:
 
     def do_read(self, url, referer, jkey=None, retry=0):
         self.read_count += 1
-        if retry==1:
-            self.read_count = self.read_count-1
         if retry ==0:
             if jkey is None:
-                url1 = url + f'&r={round(random.uniform(0, 1), 16)}'
+                url1 = url + f'&r={round(random.uniform(0, 1), 17)}'
             else:
-                url1 = url + f'&r={round(random.uniform(0, 1), 16)}&jkey={jkey}'
+                url1 = url + f'&r={round(random.uniform(0, 1), 17)}&jkey={jkey}'
         else:
+            self.read_count = self.read_count - 1
             url1 = url
         add_headers = {
             "Referer": referer + '/',
