@@ -274,7 +274,7 @@ class TASK:
             self.log("提现失败")
             return
         # self.log(res)
-        if '"code":0' in res:
+        if '"code":0' in res.text:
             self.log(f"提现成功")
         else:
             self.log(f"提现失败：{res.text}")
@@ -348,7 +348,6 @@ class TASK:
 
 
 def getEnv(key):  # line:343`
-    inviteUrl = 'http://44521803071743.emoxtvg.cn/r?upuid=445218'
     env_str = os.getenv(key)
     if env_str is None:
         print(f'\n青龙变量【{key}】没有获取到!自动退出')  # line:346
@@ -359,12 +358,10 @@ def getEnv(key):  # line:343`
         return env_str  # line:350
     except Exception as e:  # line:351
         print(f'请检查变量[{key}]参数是否填写正确 {e}')  # line:354
-        print(f"活动入口：{inviteUrl}")
 
 
 if __name__ == '__main__':
     common.check_cloud("hook_klyd", 1.2)
-
     accounts = getEnv("hook_klyd")
     for index, ck in enumerate(accounts):
         abc = TASK(index + 1, ck)
