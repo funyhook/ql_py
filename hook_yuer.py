@@ -407,17 +407,7 @@ def getEnv(key):  # line:343
 
 if __name__ == '__main__':
     common.check_cloud("hook_yuer", 1.2)
-    # accounts = getEnv("hook_yuer")
-    accounts = [{
-            'name': '不能',
-            'cookie': 'PHPSESSID=pf39atvk43b9n8m22u0adro30k',
-            'txbz': '30',
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/6.8.0(0x16080000) MacWechat/3.8.7(0x1308070c) XWEB/1191 Flue',
-            'wxpusher_token': 'AT_9QMHP2jfb733ObTbxXFA3ZsrFTz0xtPR',
-            'wxpusher_uid': 'UID_5vHye3PboLGAYPOZrB1hRpPhRqA0',
-            'topicIds': '24413'
-
-        }]
+    accounts = getEnv("hook_yuer")
     for index, ck in enumerate(accounts):
         abc = TASK(index + 1, ck)
         abc.run()
