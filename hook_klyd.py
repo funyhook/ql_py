@@ -351,7 +351,7 @@ def getEnv(key):  # line:343`
     inviteUrl = 'http://44521803071743.emoxtvg.cn/r?upuid=445218'
     env_str = os.getenv(key)
     if env_str is None:
-        print(f'【{key}】青龙变量里没有获取到!自动退出；入口{inviteUrl}')
+        print(f'\n青龙变量【{key}】没有获取到!自动退出')  # line:346
         exit()
     try:  # line:348
         env_str = json.loads(

@@ -51,7 +51,7 @@ from urllib.parse import quote, urlparse
 import requests
 import urllib3
 
-from utils import notify
+from utils import notify, common
 
 urllib3.disable_warnings()
 
@@ -665,49 +665,30 @@ class HHYD:
         return run_msg
 
 
-
-def getEnv(key):  # line:343
-    inviteUrl = 'https://osk17500.vsdfrgj0986.top:10252/haobaobao/auth/20fac27802e2f2eee23f8804de20c1c2'
-    env_str = os.getenv(key)  # line:344
-    if env_str is None:  # line:345
-        print(f'【{key}】青龙变量里没有获取到!自动退出；入口{inviteUrl}')  # line:346
-        exit()
-    try:  # line:348
-        env_str = json.loads(
-            env_str.replace("'", '"').replace("\n", "").replace(" ", "").replace("\t", ""))  # line:349
-        return env_str  # line:350
-    except Exception as e:  # line:351
-        print(f'请检查变量[{key}]参数是否填写正确')  # line:354
-        print(f"活动入口：{inviteUrl}")
-
-
 def process_account(i, ck):
     read = HHYD(i, ck)
     return read.run()
 
+def getEnv(key):  # line:343
+    env_str = os.getenv(key)  # line:344
+    if env_str is None:  # line:345
+        print(f'\n青龙变量【{key}】没有获取到!自动退出')  # line:346
+        exit()
+    try:  # line:348
+        env_str = json.loads(
+            env_str.replace("'", '"').replace("\n", "").replace(" ", "").replace("\t", ""))  # line:349
+        print(f"\n----------共获取到{len(env_str)}个账号----------\n")
+        return env_str  # line:350
+    except Exception as e:  # line:351
+        print(f'请检查变量[{key}]参数是否填写正确')  # line:354
+
+
+
 
 if __name__ == "__main__":
-    print("【版本】：20240312001")
-    print("【更新内容】：优化")
-    print("【TG群】：https://t.me/vhook_wool")
-    print("【猫猫看看】阅读入口：https://osk17500.vsdfrgj0986.top:10252/haobaobao/auth/20fac27802e2f2eee23f8804de20c1c2")
+    common.check_cloud("hook_mmkk", 1.1)
     accounts = getEnv("hook_mmkk")
-
-    print(f'******共获取到{len(accounts)}个账号******')
-    # 获取CPU核心数量
-    num_cores = multiprocessing.cpu_count()
-    print(f'系统CPU核心数量为: {num_cores},开始并发任务！')
-    # 根据CPU核心数量设置进程数量
-    num_processes = num_cores
-    push_msg = ''
-    # 使用进程池执行
-    # with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-    #     # 将每个账号的处理作为一个任务提交给进程池
-    #     # 这将导致所有任务并行执行
-    #     futures = [executor.submit(process_account, index, account, push_msg) for index, account in enumerate(accounts)]
-    #     # 等待所有任务完成
-    #     concurrent.futures.wait(futures)
-    # notify.send("[猫猫看看阅读推送]", push_msg)
+    push_msg = ""
     for index, account in enumerate(accounts):
         push_msg += f"\n{'-' * 50}\n"
         push_msg += process_account(index, account)
