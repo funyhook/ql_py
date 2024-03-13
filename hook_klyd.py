@@ -37,14 +37,18 @@ from urllib.parse import urlparse, parse_qs, quote
 
 import requests
 
+from utils import common
+
 logging.basicConfig(level=logging.INFO)
 
 
 class TASK:
     def __init__(self, index, ck):
         self.index = index
+        self.uid=None
         self.cookie = ck['cookie']
         self.name = ck['name']
+        self.txbz = ck['txbz']
         self.wxpusher_token = ck['wxpusher_token']
         self.wxpusher_uid = ck['wxpusher_uid']
         self.ua = 'Mozilla/5.0 (Linux; Android 13; M2012K11AC Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/117.0.0.0 Mobile Safari/537.36 MMWEBID/2651 MicroMessenger/8.0.42.2460(0x28002A58) WeChat/arm64 Weixin NetType/WIFI Language/en ABI/arm64'
@@ -70,7 +74,7 @@ class TASK:
             "User-Agent": self.ua,
             "Accept": "Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/wxpic,image/tpg,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
             "Accept-Encoding": "gzip, deflate",
-            "Accept-Language": "zh-CN,zh;q=0.9",
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
         }
         with self.sessions.get(url, headers=add_headers, allow_redirects=False) as response:
             if response.status_code == 302:
@@ -86,13 +90,13 @@ class TASK:
             url = self.url + '/tuijian'
             host = urlparse(url).netloc
             headers = {
-                "Referer": self.url + "/new",
+                "Referer": self.url + f"/new?upuid={self.uid}",
                 "Host": host,
                 "User-Agent": self.ua,
                 "Cookie": self.cookie,
                 "Accept": "application/json, text/plain, */*",
                 "Accept-Encoding": "gzip, deflate",
-                "Accept-Language": "zh-CN,zh;q=0.9",
+                "Accept-Language": "zh-CN,zh-Hans;q=0.9",
                 "X-Requested-With": "com.tencent.mm",
             }
             res = requests.get(url, headers=headers)
@@ -101,6 +105,7 @@ class TASK:
                 return
             rj = res.json()
             if rj['code'] == 0:
+                self.uid = rj['data']['user']['uid']
                 self.log(
                     f"{rj['data']['user']['username']} uid:{rj['data']['user']['uid']}, 积分{rj['data']['user']['score']},已阅读{rj['data']['infoView']['num']}篇")
                 if 'msg' in rj['data']['infoView']:
@@ -119,14 +124,13 @@ class TASK:
         url = self.url + '/new/get_read_url'
         host = urlparse(url).netloc
         headers = {
-            "Referer": self.url + "/new?upuid=445218",
+            "Referer": self.url + f"/new?upuid={self.uid}",
             "Host": host,
             "User-Agent": self.ua,
             "Cookie": self.cookie,
             "Accept": "application/json, text/plain, */*",
             "Accept-Encoding": "gzip, deflate",
-            "Accept-Language": "zh-CN,zh;q=0.9",
-            "X-Requested-With": "com.tencent.mm",
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
 
         }
         res = requests.get(url, headers=headers)
@@ -144,11 +148,11 @@ class TASK:
         headers = {
             "Host": host,
             "User-Agent": self.ua,
-            "Cookie": self.cookie,
+            # "Cookie": self.cookie,
             "Accept-Encoding": "gzip, deflate",
-            "Accept-Language": "zh-CN,zh;q=0.9",
-            "X-Requested-With": "com.tencent.mm",
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/wxpic,image/tpg,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7'}
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+            'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+        }
 
         res1 = requests.get(url, headers=headers)
         parsed_url = urlparse(url)
@@ -170,18 +174,18 @@ class TASK:
     def do_read(self, url, iu, referer, jkey=None, ):
         self.read_count += 1
         if jkey is None:
-            url1 = url + f'&r={round(random.uniform(0, 1), 16)}&iu={iu}'
+            url1 = url + f'&r={random.random()}&iu={iu}'
         else:
-            url1 = url + f'&r={round(random.uniform(0, 1), 16)}&iu={iu}&jkey={jkey}'
+            url1 = url + f'&r={random.random()}&iu={iu}&jkey={jkey}'
         host = urlparse(url).netloc
         headers = {
             "Referer": referer,
             "Host": host,
             "User-Agent": self.ua,
             "Cookie": self.cookie,
-            "Accept": "application/json, text/plain, */*",
+            "Accept": "*/*",
             "Accept-Encoding": "gzip, deflate",
-            "Accept-Language": "zh-CN,zh;q=0.9",
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
             "X-Requested-With": "XMLHttpRequest"
 
         }
@@ -191,10 +195,10 @@ class TASK:
             self.log(f"第{self.read_count}次阅读失败,请稍后再试试")
             return
         if res.json()['url'] != 'close' and 'jkey' in res.json():
-            if 'success_msg' in res:
-                self.log(f"第{self.read_count}次：{res.json()['success_msg']}")
+            if 'success_msg' in res.json():
+                self.log(f"第{self.read_count}次：{res.json()['success_msg']}💰")
             else:
-                self.log(f"第{self.read_count}次阅读成功")
+                self.log(f"第{self.read_count}次阅读成功:")
             if self.verify_status(res.json()['url']):
                 pass
             else:
@@ -214,22 +218,20 @@ class TASK:
             time.sleep(20)
             return True
         else:
-            self.log(f"第{self.read_count}次️ 这次阅读没有检测✅")
+            # self.log(f"第{self.read_count}次️ 这次阅读没有检测✅")
             return True
 
     def with_draw(self):
         url = self.url + '/withdrawal'
         host = urlparse(url).netloc
         add_headers = {
-            "Referer": self.url + "/new",
+            "Referer": self.url + f"/new?upuid={self.uid}",
             "Host": host,
             "User-Agent": self.ua,
             "Cookie": self.cookie,
             "Accept": "application/json, text/plain, */*",
             "Accept-Encoding": "gzip, deflate",
-            "Accept-Language": "zh-CN,zh;q=0.9",
-            "X-Requested-With": "XMLHttpRequest"
-
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9"
         }
         res = requests.get(url, headers=add_headers)
         if not res:
@@ -239,12 +241,11 @@ class TASK:
         if rj['code'] == 0:
             self.log(
                 f"{rj['data']['user']['username']}当前积分{rj['data']['user']['score']}=={round(float(rj['data']['user']['score']) / 100, 2)}元")
-            tag = 60
-            if float(rj['data']['user']['score']) > tag:
+            if float(rj['data']['user']['score']) > float(self.txbz):
                 draw_money = int(float(rj['data']['user']['score']))
                 self.do_withdraw(draw_money)
             else:
-                self.log(f"未达到体现门槛{tag/100}元，跳过体现")
+                self.log(f"未达到体现门槛{int(self.txbz)/100}元，跳过体现")
         else:
             self.log(f"获取提现信息失败：{res.text}")
             return
@@ -258,16 +259,15 @@ class TASK:
             'type': 'wx'
         }
         add_headers = {
-            "Referer": self.url + "/new",
+            "Referer": self.url + f"/new?upuid={self.uid}",
             "Origin": self.url,
             "Host": host,
             "User-Agent": self.ua,
             "Cookie": self.cookie,
             "Accept": "application/json, text/plain, */*",
-            "Content-Type": "application/json",
+            "Content-Type": "application/x-www-form-urlencoded",
             "Accept-Encoding": "gzip, deflate",
-            "Accept-Language": "zh-CN,zh;q=0.9",
-            "X-Requested-With": "XMLHttpRequest"
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9"
         }
         res = requests.post(url, data=data, headers=add_headers)
         if not res:
@@ -363,12 +363,17 @@ def getEnv(key):  # line:343`
 
 
 if __name__ == '__main__':
-    print("【版本】：20240312001")
-    print("【更新内容】：优化")
-    print("【TG群】：https://t.me/vhook_wool")
-    print("【可乐】推荐阅读(入口)->http://44521803081319.cfgwozp.cn/r?upuid=445218")
-    accounts = getEnv("hook_klyd")
+    common.check_cloud("hook_klyd", 1.2)
 
+    # accounts = getEnv("hook_klyd")
+    accounts  = [{
+        'name': '不能',
+        'cookie': 'udtauth3=7347JwbqpE8UiSZuu4nTyInNyO1W%2BhA7W3KcW4tPdaJtq4WIgiGQbsWY%2FZgYldbBPeGk%2Bvd6q9GV6Aogu7QTrjeDN7tv3qiMclFKnNiTDdUvwpSvmOf39bZ%2B8Br%2B%2B%2FkQE9OByqebltcakr3SCFSObAdWeeUTH%2Bc9IyuVYdfIgdo; PHPSESSID=hlke98hos00lqf2462tgve6huf',
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.46(0x18002e2c) NetType/WIFI Language/zh_CN',
+        'txbz':'30',
+        'wxpusher_token': 'AT_9QMHP2jfb733ObTbxXFA3ZsrFTz0xtPR',
+        'wxpusher_uid': 'UID_g2dAWbOtdgNy1Y66xZ0yZLHYmv7x'
+    }]
     for index, ck in enumerate(accounts):
         abc = TASK(index + 1, ck)
         abc.run()

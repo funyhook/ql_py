@@ -216,9 +216,9 @@ class TASK:
         self.read_count += 1
         if retry ==0:
             if jkey is None:
-                url1 = url + f'&r={round(random.uniform(0, 1), 17)}'
+                url1 = url + f'&r={random.random()}'
             else:
-                url1 = url + f'&r={round(random.uniform(0, 1), 17)}&jkey={jkey}'
+                url1 = url + f'&r={random.random()}&jkey={jkey}'
         else:
             self.read_count = self.read_count - 1
             url1 = url
