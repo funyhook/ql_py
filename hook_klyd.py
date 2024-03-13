@@ -365,15 +365,7 @@ def getEnv(key):  # line:343`
 if __name__ == '__main__':
     common.check_cloud("hook_klyd", 1.2)
 
-    # accounts = getEnv("hook_klyd")
-    accounts  = [{
-        'name': '不能',
-        'cookie': 'udtauth3=7347JwbqpE8UiSZuu4nTyInNyO1W%2BhA7W3KcW4tPdaJtq4WIgiGQbsWY%2FZgYldbBPeGk%2Bvd6q9GV6Aogu7QTrjeDN7tv3qiMclFKnNiTDdUvwpSvmOf39bZ%2B8Br%2B%2B%2FkQE9OByqebltcakr3SCFSObAdWeeUTH%2Bc9IyuVYdfIgdo; PHPSESSID=hlke98hos00lqf2462tgve6huf',
-        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.46(0x18002e2c) NetType/WIFI Language/zh_CN',
-        'txbz':'30',
-        'wxpusher_token': 'AT_9QMHP2jfb733ObTbxXFA3ZsrFTz0xtPR',
-        'wxpusher_uid': 'UID_g2dAWbOtdgNy1Y66xZ0yZLHYmv7x'
-    }]
+    accounts = getEnv("hook_klyd")
     for index, ck in enumerate(accounts):
         abc = TASK(index + 1, ck)
         abc.run()
