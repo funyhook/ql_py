@@ -57,14 +57,16 @@ class TASK:
         self.url = None
         self.host = None
         self.index = no
+        self.name = account["name"]
         self.cookie = account['cookie']
         self.name = account['name']
         self.txbz = account['txbz']
-        self.wxpusher_token = account['wxpusher_token']
-        self.wxpusher_uid = account['wxpusher_uid']
-        self.ua = 'Mozilla/5.0 (Linux; Android 13; M2012K11AC Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/117.0.0.0 Mobile Safari/537.36 MMWEBID/2651 MicroMessenger/8.0.42.2460(0x28002A58) WeChat/arm64 Weixin NetType/WIFI Language/en ABI/arm64'
-        if hasattr(account, "User-Agent") and account['User-Agent'] != "":
-            self.ua = account['User-Agent']
+        self.wxpusher_token = account.get("wxpusher_token",None)
+        self.wxpusher_uid = account.get("wxpusher_uid",None)
+        self.aliAccount = account.get("aliAccount", None)
+        self.aliName = account.get("aliName", None)
+        self.ua = "Mozilla/5.0 (Linux; Android 13; M2012K11AC Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/117.0.0.0 Mobile Safari/537.36 MMWEBID/2651 MicroMessenger/8.0.42.2460(0x28002A58) WeChat/arm64 Weixin NetType/WIFI Language/en ABI/arm64"
+        self.ua = account.get("User-Agent",self.ua)
         self.logger = logging.getLogger(f"用户{self.index}")
         self.content = ''
         self.get_base_url()

@@ -100,22 +100,22 @@ def extract_middle_text(source, before_text, after_text, all_matches=False):
 
 
 class HHYD:
-    def __init__(self, i, cg):
+    def __init__(self, i, account):
         self.readJumpPath = None
         self.inviteUrl = None
         self.remain = None
-        self.Cookie = cg["Cookie"]
         self.index = i + 1
-        self.txbz = cg.get("txbz", 30)
-        self.topicIds = cg.get("topicIds", "")
-        self.appToken = cg.get("appToken", "")
-        self.wxpusher_token = cg['wxpusher_token']
-        self.wxpusher_uid = cg['wxpusher_uid']
-        self.aliAccount = cg.get("aliAccount", None)
-        self.aliName = cg.get("aliName", None)
-        self.name = cg["name"]
-        self.ua = cg.get("User-Agent",
-                         "Mozilla/5.0 (Linux; Android 13; M2012K11AC Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/117.0.0.0 Mobile Safari/537.36 MMWEBID/2651 MicroMessenger/8.0.42.2460(0x28002A58) WeChat/arm64 Weixin NetType/WIFI Language/en ABI/arm64")
+        self.name = account["name"]
+        self.Cookie = account["Cookie"]
+        self.txbz = account.get("txbz", 30)
+        self.topicIds = account.get("topicIds", "")
+        self.appToken = account.get("appToken", "")
+        self.wxpusher_token = account.get("wxpusher_token",None)
+        self.wxpusher_uid = account.get("wxpusher_uid",None)
+        self.aliAccount = account.get("aliAccount", None)
+        self.aliName = account.get("aliName", None)
+        self.ua = "Mozilla/5.0 (Linux; Android 13; M2012K11AC Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/117.0.0.0 Mobile Safari/537.36 MMWEBID/2651 MicroMessenger/8.0.42.2460(0x28002A58) WeChat/arm64 Weixin NetType/WIFI Language/en ABI/arm64"
+        self.ua = account.get("User-Agent",self.ua)
         self.domnainHost = "1698855139.hxiong.top"
         self.request_id = ""
         self.headers = {

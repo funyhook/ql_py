@@ -126,22 +126,21 @@ checkDict = {
 class HHYD:  # line:145:class HHYD:
     def __init__(self, i, cg):
         self.shoutu_balance = 0
+        self.index = i + 1
+        self.name = cg["name"]
         self.unionId = cg["unionId"]
         self.ysm_uid = cg["ysm_uid"]
-        self.index = i + 1
         self.txbz = cg["txbz"]
         self.topicIds = cg["topicIds"]
         self.appToken = cg["appToken"]
-        self.wxpusher_token = cg['wxpusher_token']
-        self.wxpusher_uid = cg['wxpusher_uid']
-        self.aliAccount = cg["aliAccount"] or ""
-        self.aliName = cg["aliName"] or ""
-        self.name = cg["name"]
-        self.domnainHost = "1698855139.hxiong.top"
+        self.wxpusher_token = account.get("wxpusher_token",None)
+        self.wxpusher_uid = account.get("wxpusher_uid",None)
+        self.aliAccount = account.get("aliAccount", None)
+        self.aliName = account.get("aliName", None)
+        self.ua = "Mozilla/5.0 (Linux; Android 13; M2012K11AC Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/117.0.0.0 Mobile Safari/537.36 MMWEBID/2651 MicroMessenger/8.0.42.2460(0x28002A58) WeChat/arm64 Weixin NetType/WIFI Language/en ABI/arm64"
+        self.ua = account.get("User-Agent", self.ua)
         self.exchangeParams = ""
-        self.ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 NetType/WIFI MicroMessenger/6.8.0(0x16080000) MacWechat/3.8.7(0x1308070c) XWEB/1191 Flue'
-        if hasattr(cg, "User-Agent") and cg['User-Agent'] != "":
-            self.ua = cg['User-Agent']
+        self.domnainHost = "1698855139.hxiong.top"
         self.headers = {
             "Connection": "keep-alive",
             "Accept": "application/json, text/javascript, */*; q=0.01",
