@@ -673,8 +673,6 @@ if __name__ == "__main__":
     common.check_cloud("hook_xyy", 1.1)
     accounts = getEnv("hook_xyy")
     push_msg = ''
-    print(f'******共获取到{len(accounts)}个账号******')
-
     for index, account in enumerate(accounts):
         # push_msg += f"\n{'-' * 50}\n"
         push_msg += process_account(index, account)
