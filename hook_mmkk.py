@@ -643,10 +643,10 @@ class HHYD:
 
     def run(self):
         run_msg = ''
-        sleepTime = random.randint(3, 5)
-        print(f"降低封号风险，随机休息{sleepTime}秒")
-        time.sleep(sleepTime)
         self.log(f"{'=' * 13}{self.timeStr()}开始运行{'=' * 13}")
+        sleepTime = random.randint(3, 5)
+        self.log(f"降低封号风险，随机休息{sleepTime}秒")
+        time.sleep(sleepTime)
         if self.init():
             self.user_info()
             self.gold()

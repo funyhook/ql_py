@@ -337,9 +337,10 @@ class TASK:
             self.log(f"第{self.read_count}次，推送文章到autman异常️❗️❗{e}")
 
     def run(self, ):
+        self.log(f"{'=' * 13}开始运行{'=' * 13}")
         sleepTime = random.randint(3, 5)
-        print(f"降低封号风险，随机休息{sleepTime}秒")
-        # time.sleep(sleepTime)
+        self.log(f"降低封号风险，随机休息{sleepTime}秒")
+        time.sleep(sleepTime)
         self.get_base_url()
         self.log(f"{'=' * 13}开始运行{'=' * 13}")
         if self.user_info():

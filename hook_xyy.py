@@ -634,10 +634,10 @@ class HHYD:  # line:145:class HHYD:
 
     def run(self):
         run_msg = ''
+        self.log(f"{'=' * 13}开始运行{'=' * 13}")
         sleepTime = random.randint(3, 5)
-        print(f"降低封号风险，随机休息{sleepTime}秒")
+        self.log(f"降低封号风险，随机休息{sleepTime}秒")
         time.sleep(sleepTime)
-        print(f"{'+' * 20}开始第{self.index}个账号{'+' * 20}")
         if self.init():
             self.log(f"账户余额：{self.shoutu_balance}元")
             self.user_info()
