@@ -112,8 +112,8 @@ class HHYD:
         self.appToken = cg["appToken"]
         self.wxpusher_token = cg['wxpusher_token']
         self.wxpusher_uid = cg['wxpusher_uid']
-        self.aliAccount = cg["aliAccount"] or ""
-        self.aliName = cg["aliName"] or ""
+        self.aliAccount = cg.get("aliAccount",None)
+        self.aliName = cg.get("aliName",None)
         self.name = cg["name"]
         self.ua = 'Mozilla/5.0 (Linux; Android 13; M2012K11AC Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/117.0.0.0 Mobile Safari/537.36 MMWEBID/2651 MicroMessenger/8.0.42.2460(0x28002A58) WeChat/arm64 Weixin NetType/WIFI Language/en ABI/arm64'
         if hasattr(cg, "User-Agent") and cg['User-Agent'] != "":
