@@ -45,7 +45,7 @@ from urllib.parse import quote, urlparse
 import requests
 import urllib3
 
-from utils import notify
+from utils import notify, common
 
 urllib3.disable_warnings()
 
@@ -299,7 +299,12 @@ class HHYD:  # line:145:class HHYD:
             ):  # line:289:while res["errcode"] != 0:
                 timeStamp = str(ts())  # line:290:timeStamp = str(ts())
                 psgn = hashlib.md5(
-                    (info[1]["Host"] + info[0] + timeStamp + "A&I25LILIYDS$").encode()
+                    (
+                            info[1]["Origin"].replace("https://", "")[0:11]
+                            + info[0]
+                            + timeStamp
+                            + "A&I25LILIYDS$"
+                    ).encode()
                 ).hexdigest()
                 self.params = {
                     "uk": info[0],
@@ -651,13 +656,22 @@ def process_account(i, ck):
     read = HHYD(i, ck)
     return read.run()
 
+def getEnv(key):  # line:343
+    env_str = os.getenv(key)  # line:344
+    if env_str is None:  # line:345
+        print(f'青龙变量【{key}】没有获取到!自动退出')  # line:346
+        exit()
+    try:  # line:348
+        env_str = json.loads(
+            env_str.replace("'", '"').replace("\n", "").replace(" ", "").replace("\t", ""))  # line:349
+        print(f"\n----------共获取到{len(env_str)}个账号----------\n")
+        return env_str  # line:350
+    except Exception as e:  # line:351
+        print(f'请检查变量[{key}]参数是否填写正确')  # line:354
+
 
 if __name__ == "__main__":
-    print("【版本】：20240312001")
-    print("【更新内容】：优化")
-    print("【TG群】：https://t.me/vhook_wool")
-    print(
-        "【小阅阅】 推荐阅读(入口)->https://osl4.f4135.shop/yunonline/v1/auth/c5c3f97ce3894f1c08593c4a6c54dbfe?codeurl=osl4.f4135.shop&codeuserid=2&time=1709089052")
+    common.check_cloud("hook_xyy", 1.1)
     accounts = getEnv("hook_xyy")
     push_msg = ''
     print(f'******共获取到{len(accounts)}个账号******')
