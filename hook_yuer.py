@@ -406,7 +406,7 @@ def getEnv(key):  # line:343
 
 
 if __name__ == '__main__':
-    common.check_cloud("hook_yuer", 1.1)
+    common.check_cloud("hook_yuer", 1.2)
     # accounts = getEnv("hook_yuer")
     accounts = [{
             'name': '不能',
