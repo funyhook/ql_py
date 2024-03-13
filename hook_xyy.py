@@ -648,6 +648,7 @@ class HHYD:  # line:145:class HHYD:
             run_msg = self.gold()
             time.sleep(3)
             self.withdraw()
+        self.log(f"{'=' * 13}运行结束{'=' * 13}\n")
         return run_msg
 
 

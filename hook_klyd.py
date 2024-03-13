@@ -59,13 +59,20 @@ class TASK:
         self.logger = logging.getLogger(f"用户{self.index}")
         self.content = ''
         self.read_count = 0
+        self.datTimeformat = '%Y-%m-%d %H:%M:%S'
+
 
     def log(self, msg):  # 改写一下日志
         timeStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         print(f"{timeStr}-用户{self.index}【{self.name}】：{msg}")
 
-    def close(self):
-        self.sessions.close()
+
+    def ts(self):
+        return str(int(time.time())) + "000"
+
+    def timeStr(self):
+        return datetime.now().strftime(self.datTimeformat)
+
 
     def get_base_url(self):
         url = 'http://44521803071743.emoxtvg.cn/r?upuid=445218'
@@ -337,7 +344,7 @@ class TASK:
             self.log(f"第{self.read_count}次，推送文章到autman异常️❗️❗{e}")
 
     def run(self, ):
-        self.log(f"{'=' * 13}开始运行{'=' * 13}")
+        self.log(f"{'=' * 13}{self.timeStr()}开始运行{'=' * 13}")
         sleepTime = random.randint(3, 5)
         self.log(f"降低封号风险，随机休息{sleepTime}秒")
         time.sleep(sleepTime)
@@ -346,7 +353,7 @@ class TASK:
         if self.user_info():
             self.get_article()
         self.with_draw()
-        self.log(f"{'=' * 13}运行结束{'=' * 13}")
+        self.log(f"{'=' * 13}{self.timeStr()}运行结束{'=' * 13}\n")
 
 
 def getEnv(key):  # line:343`
