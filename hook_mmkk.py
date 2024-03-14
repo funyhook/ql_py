@@ -594,8 +594,7 @@ class HHYD:
             config = json.loads(wxpusher_config)
             self.wxpusher_token = config['token']
             self.wxpusher_uid = random.choice(config['uids'])
-        self.log(f"➡️wxpusher-推送至-->{self.wxpusher_uid}")
-
+        self.log(f"👉️👉️👉️开启推送至wxpusher->{self.wxpusher_uid}")
         datapust = {
             "appToken": self.wxpusher_token,
             "content": f"""<body onload="window.location.href='{url}'">出现检测文章！！！\n<a style='padding:10px;color:red;font-size:20px;' href='{url}'>点击我打开待检测文章</a>\n请尽快点击链接完成阅读\n</body>""",
@@ -620,7 +619,7 @@ class HHYD:
 
     def pushAutMan(self, title, msg):
         autman_push_config = os.getenv("autman_push_config") or ""
-        if  autman_push_config and autman_push_config != "":
+        if autman_push_config and autman_push_config != "":
             self.log("👉️👉️👉️开启推送至autman--->")
             config = json.loads(autman_push_config)
             datapust = {
