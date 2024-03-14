@@ -355,8 +355,8 @@ class TASK:
 
     def pushAutMan(self, title, msg):
         autman_push_config = os.getenv("autman_push_config") or ""
-        if  autman_push_config and autman_push_config == "":
-            self.log("➡️➡️➡️开启推送至autman--->")
+        if  autman_push_config and autman_push_config != "":
+            self.log("👉️👉️👉️开启推送至autman--->")
             config = json.loads(autman_push_config)
             datapust = {
                 "token": config['token'],

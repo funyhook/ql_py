@@ -318,30 +318,26 @@ class TASK:
 
     def pushAutMan(self, title, msg):
         autman_push_config = os.getenv("autman_push_config") or ""
-        if not autman_push_config or autman_push_config == "":
-            self.log(f"第{self.read_count}次，未配置autman推送，跳过推送至autman！")
-            return
-        config = json.loads(autman_push_config)
-        datapust = {
-            "token": config['token'],
-            "plat": config['plat'],
-            "groupCode": config['groupCode'],
-            "userId": config['userId'],
-            "title": title,
-            "content": msg
-        }
-        headers = {
-            "Content-Type": "application/json"
-        }
-        try:
-
-            p = requests.post(config['url'], data=json.dumps(datapust), headers=headers)
-            if p.json()["ok"]:
-                self.log(f"第{self.read_count}次，推送文章到autman成功✅")
-            else:
-                self.log(f"第{self.read_count}次，推送文章到autman失败😭😭😭")
-        except Exception as e:
-            self.log(f"第{self.read_count}次，推送文章到autman异常️❗️❗{e}")
+        if autman_push_config and autman_push_config != "":
+            self.log("👉️👉️👉️开启推送至autman--->")
+            config = json.loads(autman_push_config)
+            datapust = {
+                "token": config['token'],
+                "plat": config['plat'],
+                "groupCode": config['groupCode'],
+                "userId": config['userId'],
+                "title": title,
+                "content": msg
+            }
+            try:
+                p = requests.post(config['url'], data=json.dumps(datapust),
+                                  headers={"Content-Type": "application/json"})
+                if p.json()["ok"]:
+                    self.log("✅推送文章到autman成功✅")
+                else:
+                    self.log(" ❗️❗️❗推送文章到autman失败❗️❗️❗")
+            except Exception as e:
+                self.log(f"❌ 推送文章到autman异常！！！！{e}")
 
     def run(self, ):
         self.log(f"{'=' * 13}{self.timeStr()}开始运行{'=' * 13}")
