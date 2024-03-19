@@ -7,7 +7,6 @@ def check_cloud(name, local_ver=1.0):
     res = requests.get("https://jihulab.com/vhook/control/-/raw/main/ql.json")
     if res.status_code == 200:
         verRes = res.json().get(name, {})
-        print(verRes)
         if verRes:
             r_ver = verRes['ver']
             r_log = verRes['log']
