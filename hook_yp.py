@@ -2,7 +2,7 @@
 
 # 反馈群：https://t.me/vhook_wool
 # app：甬派
-# 抓包域名：https://webapi.qmai.cn任意请求中 userId deviceId
+# 抓包域名：https://ypapp.cnnb.com.cn任意请求中 userId deviceId
 # export hook_yp='[
 #   {
 #     "userId":"userId",
