@@ -1,6 +1,18 @@
-# 项目：hook_yp.py
-# 构建时间：2024-03-20 08:59:21
+# 仅供学习交流，请在下载后的24小时内完全删除 请勿将任何内容用于商业或非法目的，否则后果自负。
+
 # 反馈群：https://t.me/vhook_wool
+# app：甬派
+# 抓包域名：https://webapi.qmai.cn任意请求中的请求头【qm-user-token】
+# export hook_yp='[
+#   {
+#     "userId":"userId",
+#     "deviceId":"deviceId",
+#     "ua":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181",
+#     "name":"ls",
+#     "zfbName":"支付宝姓名",
+#     "zfbAccount":"支付宝账号"
+#   }
+# ]'
 """
 new Env('甬派');
 0 7 * * * hook_yp.py
