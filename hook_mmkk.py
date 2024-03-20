@@ -1,6 +1,41 @@
-# 项目：hook_mmkk.py
-# 构建时间：2024-03-19 14:37:56
-# 反馈群：https://t.me/vhook_wool
+"""
+* 仅供学习交流，请在下载后的24小时内完全删除 请勿将任何内容用于商业或非法目的，否则后果自负。
+* 反馈群：https://t.me/vhook_wool
+* 版本：2024-03-12（更新算法）
+* 活动入口,微信打开：
+* 如果连接过期了运行一下就出来了最新的入口！
+* https://osk17500.vsdfrgj0986.top:10252/haobaobao/auth/20fac27802e2f2eee23f8804de20c1c2
+*
+* 打开活动入口，抓包的任意接口cookies中的Cookie参数
+
+* 变量
+export hook_mmkk='[
+    {
+        "name": "ls",
+        "Cookie": "=1; bbus=%253D",
+        "txbz": 3000,
+        "aliAccount": "",
+        "aliName": "",
+        "appToken": "",
+        "topicIds": ""
+    },
+]'
+
+* autman 推送配置
+export autman_push_config='{
+    "url":"http://ip:port/push",
+    "token":"自定义token",
+    "plat":"wb",
+    "userId":"用户ID",
+    "groupCode":"群号"
+}'
+* 定时运行每半小时一次
+* 达到标准自动提现
+* 达到标准，自动提现
+
+cron: 0 */25 8-22 * * *
+new Env('猫猫看看阅读');
+"""
 import sys
 PYTHON_VERSION = ".".join(str(i) for i in sys.version_info[:2])
 if PYTHON_VERSION != "3.11":

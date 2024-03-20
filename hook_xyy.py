@@ -1,6 +1,34 @@
-# 项目：hook_xyy.py
-# 构建时间：2024-03-19 14:38:54
-# 反馈群：https://t.me/vhook_wool
+"""
+cron: 30 */30 8-22 * * *
+new Env('小阅阅阅读');
+* 活动入口,微信打开：https://osl4.f4135.shop/yunonline/v1/auth/c5c3f97ce3894f1c08593c4a6c54dbfe?codeurl=osl4.f4135.shop&codeuserid=2&time=1709089052
+* 打开活动入口，抓包的任意接口cookies中的Cookie参数
+* 反馈群：https://t.me/vhook_wool
+* 变量
+export hook_xyy='[
+    {
+        "name": "ls",
+        "ysm_uid": "",
+        "unionId": "",
+        "txbz": 3000,
+        "aliAccount": "",
+        "aliName": "",
+        "appToken": "",
+        "topicIds": ""
+    },
+]'
+*autman 推送配置 配合插件市场【推送api】插件
+export autman_push_config='{
+    "url":"http://ip:port/push",
+    "token":"自定义token",
+    "plat":"wb",
+    "userId":"用户ID",
+    "groupCode":"群号"
+}'
+* 定时运行每半小时一次
+* 达到标准自动提现
+* 达到标准，自动提现
+"""
 import sys
 PYTHON_VERSION = ".".join(str(i) for i in sys.version_info[:2])
 if PYTHON_VERSION != "3.11":

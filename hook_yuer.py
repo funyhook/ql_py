@@ -1,6 +1,36 @@
-# 项目：hook_yuer.py
-# 构建时间：2024-03-19 14:39:30
-# 反馈群：https://t.me/vhook_wool
+"""
+代码请勿用于非法盈利,一切与本人无关,该代码仅用于学习交流,请阅览下载24小时内删除代码
+new Env("鱼儿阅读")
+cron: 9 9-21/2 * * *
+反馈群：https://t.me/vhook_wool
+推荐阅读 入口-> http://h5.alswywo.cn/pipa_read?upuid=1601717 (如无法打开，请复制链接在手机浏览器打开，获取最新入口)
+export hook_yuer="[
+    {
+        'name': '不能',
+        'cookie': 'PHPSESSID=',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 MicroMessenger/6.8.0(0x16080000) NetType/WIFI MiniProgramEnv/Mac MacWechat/WMPF MacWechat/3.8.7(0x13080709) XWEB/1181',
+        'txbz':'30',
+        'wxpusher_token': '',
+        'wxpusher_uid': ''
+    }
+]"
+
+autman 推送配置 需要市场安装【消息推送API】插件
+export autman_push_config='{
+    "url":"http://ip:port/push",
+    "token":"自定义token",
+    "plat":"wb",
+    "userId":"用户ID",
+    "groupCode":"群号"
+}'
+wxpusher推送配置
+export wxpusher_config='{
+    "wxpusher_token":"",
+    "uids":["","",""],#推送到个人需要和账号数量匹配
+    "topicIds":[121212,121212,121212] #推送到主题
+}'
+"""
+
 import sys
 PYTHON_VERSION = ".".join(str(i) for i in sys.version_info[:2])
 if PYTHON_VERSION != "3.11":
