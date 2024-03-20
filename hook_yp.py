@@ -2,7 +2,7 @@
 
 # 反馈群：https://t.me/vhook_wool
 # app：甬派
-# 抓包域名：https://webapi.qmai.cn任意请求中的请求头【qm-user-token】
+# 抓包域名：https://webapi.qmai.cn任意请求中 userId deviceId
 # export hook_yp='[
 #   {
 #     "userId":"userId",
@@ -14,7 +14,7 @@
 #   }
 # ]'
 """
-new Env('甬派');
+new Env('甬派-任务-抽奖');
 0 7 * * * hook_yp.py
 """
 import sys
