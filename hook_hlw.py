@@ -1,10 +1,17 @@
 """
 cron: 30 */30 8-22 * * *
 new Env('茅台-小程序预约');
-* 活动入口,微信打开：
-* 如果连接过期了运行一下就出来了最新的入口！
-* https://osl4.f4135.shop/yunonline/v1/auth/c5c3f97ce3894f1c08593c4a6c54dbfe?codeurl=osl4.f4135.shop&codeuserid=2&time=1709089052
-* 打开活动入口，抓包的任意接口cookies中的Cookie参数
+* 活动入口,复制微信打开：
+
+#小程序://新联惠购/iBv4JN7yZancoGB
+#小程序://贵旅优品/geldDHLX1vi8iCD
+#小程序://空港乐购/QARsRKfuhQpUJ4g
+#小程序://贵盐黔品/xn1xSjwFVHYICVg
+#小程序://遵航出山/Cw8UgqyaHH5MjTq
+#小程序://乐旅商城/9x55IQRswG6A2Jb
+#小程序://航旅黔购/8PpYxSkynH2zxve
+#小程序://黔寻积分/rR5YQWmtsb0Eewu
+
 * 反馈群：https://t.me/vhook_wool
 * 变量
 export hook_huluwa='[
