@@ -14,7 +14,7 @@ new Env('茅台-小程序预约');
 
 * 反馈群：https://t.me/vhook_wool
 * 变量
-export hook_huluwa='[
+export hook_hlw='[
     {
         "name": "备注",
         "XLTH_COOKIE":"新联惠购的token",
