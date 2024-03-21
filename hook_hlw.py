@@ -1,6 +1,10 @@
 """
 cron: 30 8 * * *
 new Env('茅台-小程序预约');
+
+* 仅供学习交流，请在下载后的24小时内完全删除 请勿将任何内容用于商业或非法目的，否则后果自负。
+* 反馈群：https://t.me/vhook_wool
+
 * 活动入口,复制微信打开：
 
 #小程序://新联惠购/iBv4JN7yZancoGB
@@ -12,7 +16,7 @@ new Env('茅台-小程序预约');
 #小程序://航旅黔购/8PpYxSkynH2zxve
 #小程序://黔寻积分/rR5YQWmtsb0Eewu
 
-* 反馈群：https://t.me/vhook_wool
+
 * 变量
 export hook_hlw='[
     {
