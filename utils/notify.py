@@ -912,7 +912,7 @@ def send(title: str, content: str) -> None:
 
     hitokoto = push_config.get("HITOKOTO")
 
-    text = one() if hitokoto else ""
+    text = "本通知 By：https://github.com/funyhook/ql_py"
     content += "\n\n" + text
 
     ts = [
