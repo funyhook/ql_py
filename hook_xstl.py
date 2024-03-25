@@ -1,7 +1,7 @@
 """
 cron: 30 9 * * *
 new Env('APP-潇洒桐庐');
-
+入口：https://app.tmuyun.com/webChannels/invite?inviteCode=WXCWTH&tenantId=59&accountId=656eb4a0f34e164763bd9d49
 代码请勿用于非法盈利,一切与本人无关,该代码仅用于学习交流,请阅览下载24小时内删除代码
 * 反馈群：https://t.me/vhook_wool
 * 变量
